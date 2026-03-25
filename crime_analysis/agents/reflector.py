@@ -248,77 +248,65 @@ class ReflectorAgent:
         conflicts = []
         is_hard = False
 
-        if len(reports) < 2:
-            return conflicts, is_hard
+        # ── 合併後：從單一 ActionEmotion Agent 讀取兩個值 ──────
+        # 合併前：兩個獨立 Agent 互相驗證
+        # 合併後：同一 Agent 內部的時序一致性（attack_frame vs escalation_start_frame）
+        # 邏輯不變：驗證「模型預測的攻擊時間點」和「情緒升溫時間點」是否邏輯一致
 
-        te_report = next(
+        ae_report = next(
             (r for r in reports
-             if "時間" in r.agent_name or "情緒" in r.agent_name or "Emotion" in r.agent_name),
-            None,
-        )
-        action_report = next(
-            (r for r in reports if "行為" in r.agent_name or "Action" in r.agent_name),
+             if "行為情緒" in r.agent_name or "ActionEmotion" in r.agent_name
+             or ("行為" in r.agent_name and "情緒" in r.agent_name)),
             None,
         )
 
-        if te_report and action_report:
-            # ── fps-aware 門檻 ────────────────────────────
-            fps = float(te_report.metadata.get("video_fps", DEFAULT_VIDEO_FPS))
+        if ae_report:
+            fps = float(ae_report.metadata.get("video_fps", DEFAULT_VIDEO_FPS))
             threshold_frames = int(TEMPORAL_GAP_SECONDS * fps)
 
-            act_frames = sorted(action_report.frame_references)
-            te_frames  = sorted(te_report.frame_references)
+            act_frames = sorted(ae_report.frame_references)
 
-            if act_frames and te_frames:
-                # 攻擊幀：Action Agent 第一個 evidence_frame
-                attack_frame = act_frames[0]
+            # 攻擊幀：ActionEmotion Agent evidence_frames 第一個
+            attack_frame = act_frames[0] if act_frames else None
 
-                # 升溫幀：優先讀新欄位，次找 emotion_trajectory，再 fallback
-                escalation_frame = te_report.metadata.get("escalation_start_frame")
-                if escalation_frame is None:
-                    traj = te_report.metadata.get("emotion_trajectory", [])
-                    for t in traj:
-                        if t.get("angry", 0.0) + t.get("fear", 0.0) > ESCALATION_CALM_THRESHOLD:
-                            escalation_frame = t["frame"]
-                            break
-                if escalation_frame is None:
-                    escalation_frame = te_frames[0]
+            # 升溫幀：同一 Agent 內部的 escalation_start_frame
+            escalation_frame = ae_report.metadata.get("escalation_start_frame")
 
+            if attack_frame is not None and escalation_frame is not None:
                 gap = escalation_frame - attack_frame
 
-                # HARD ①：攻擊幀顯著早於升溫幀
+                # HARD ①：攻擊幀顯著早於升溫幀（不合理：應先升溫再攻擊）
                 if attack_frame < escalation_frame and gap > threshold_frames:
                     is_hard = True
                     conflicts.append(ConflictRecord(
-                        agent_a=action_report.agent_name,
-                        agent_b=te_report.agent_name,
+                        agent_a=ae_report.agent_name,
+                        agent_b=ae_report.agent_name,
                         conflict_type="temporal_inconsistency",
                         description=(
                             f"攻擊幀 {attack_frame} 比情緒升溫幀 {escalation_frame} "
                             f"早 {gap} 幀（閾值 {threshold_frames}，fps={fps:.0f}），"
-                            "攻擊先於情緒升溫（Constraint Propagation HARD）"
+                            "攻擊先於情緒升溫，內部時序不一致（L1 HARD）"
                         ),
                         severity=0.9,
                         frames_a=act_frames[:3],
-                        frames_b=te_frames[:3],
+                        frames_b=[escalation_frame],
                     ))
 
-                # HARD ②：引用幀無重疊 AND 時間差過大
-                overlap = set(act_frames) & set(te_frames)
-                if not overlap and abs(attack_frame - escalation_frame) > threshold_frames:
+                # HARD ②：gap 過大（攻擊與情緒升溫相差太遠）
+                if abs(gap) > threshold_frames * 3:
                     is_hard = True
                     conflicts.append(ConflictRecord(
-                        agent_a=action_report.agent_name,
-                        agent_b=te_report.agent_name,
+                        agent_a=ae_report.agent_name,
+                        agent_b=ae_report.agent_name,
                         conflict_type="temporal_inconsistency",
                         description=(
-                            f"行為與情緒代理人引用幀無重疊，"
-                            f"時間差 {abs(attack_frame - escalation_frame)} 幀 "
-                            f"> 閾值 {threshold_frames}（fps={fps:.0f}）"
+                            f"攻擊幀與情緒升溫幀相差 {abs(gap)} 幀"
+                            f"（3× 閾值 {threshold_frames * 3}，fps={fps:.0f}），"
+                            "行為與情緒時序嚴重不吻合"
                         ),
                         severity=0.7,
                         frames_a=act_frames[:3],
-                        frames_b=te_frames[:3],
+                        frames_b=[escalation_frame],
                     ))
 
         # HARD ③：類別直接矛盾（不含 Normal）
