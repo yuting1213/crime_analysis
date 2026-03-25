@@ -126,24 +126,37 @@ class PlannerAgent:
         if ae_confidence < 0.4:
             logger.info(f"[Planner] conf={ae_confidence:.2f} < 0.4 → 跳過 RAG 查詢")
 
-        # ── Step 3：RAG 查詢 + Rlegal ───────────────────
+        # ── Step 3：法律整合（3a RAG → 3b 報告生成 → 3c Rlegal）──
+        # 職責邊界：RAGModule 是工具；Planner（Qwen3-7B）是推理引擎；兩者不混在一起。
         crime_type = ae_report.crime_category if ae_report else "Normal"
         rag_results: Dict = {"laws": [], "judgments": []}
         rlegal = 0.0
 
+        # Step 3a：RAG 查詢取候選法條
         if ae_confidence >= 0.4 and self.rag and crime_type != "Normal":
             rationale = ae_report.metadata.get("rationale", "") if ae_report else ""
-            query_text = self.rag.generate_hypothetical_doc(rationale, crime_type) if hasattr(self.rag, 'generate_hypothetical_doc') else rationale
+            query_text = (
+                self.rag.generate_hypothetical_doc(rationale, crime_type)
+                if hasattr(self.rag, "generate_hypothetical_doc") else rationale
+            )
             rag_results = self.rag.query(query_text, query_type="semantic")
             self._total_turns += 1
-            logger.info(
-                f"[Planner] RAG 查詢完成：{len(rag_results.get('laws', []))} 條法條"
-            )
+            logger.info(f"[Planner] Step 3a: RAG 查詢 → {len(rag_results.get('laws', []))} 條法條")
 
-        # Rlegal：查表法（不依賴 Semantic Agent）
-        if self.rag and ae_report:
-            final_report_text = ae_report.metadata.get("rationale", "")
-            rlegal = self.rag.compute_rlegal(crime_type, final_report_text)
+        # Step 3b：Planner（Qwen3-7B）整合所有資訊生成報告文字
+        # TODO: 此處呼叫 Qwen3-7B，傳入 ae_report.rationale + rag_results + conflict_type
+        #       生成完整鑑定報告文字並儲存在 generated_report_text
+        #       目前以 ae_report.rationale 作為 proxy（DPO 訓練後替換）
+        generated_report_text = ae_report.metadata.get("rationale", "") if ae_report else ""
+
+        # Step 3c：compute_rlegal 在報告文字生成後才呼叫
+        # 重要：Rlegal 比對的是「最終報告文字」，不是 AE 的 rationale
+        #       呼叫時機：Step 3b 生成 generated_report_text 之後
+        if self.rag and crime_type != "Normal":
+            rlegal = self.rag.compute_rlegal(crime_type, generated_report_text)
+            if ae_report:
+                ae_report.metadata["rlegal"] = rlegal   # 注入供 Reflector +0.1 加分使用
+            logger.info(f"[Planner] Step 3c: Rlegal={rlegal:.3f} ({crime_type})")
 
         # ── Reflector CASAM + 衝突解決 ──────────────────
         max_reassign = 2 if crime_type in HIGH_SEVERITY_CRIMES else 1

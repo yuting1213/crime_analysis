@@ -359,43 +359,36 @@ class ReflectorAgent:
         conflicts = []
         is_hard = False
 
-        te_report = next(
+        # 合併後：從單一 ActionEmotion Agent 讀取兩個值
+        ae_report = next(
             (r for r in reports
-             if "時間" in r.agent_name or "情緒" in r.agent_name),
-            None,
-        )
-        action_report = next(
-            (r for r in reports if "行為" in r.agent_name),
+             if "行為情緒" in r.agent_name or "ActionEmotion" in r.agent_name
+             or ("行為" in r.agent_name and "情緒" in r.agent_name)),
             None,
         )
 
         # ── HARD ①：情緒平靜 + HIGH_SEVERITY ─────────────
-        if te_report and action_report:
-            # 優先從新欄位讀 escalation_score，fallback 到 emotion_summary
-            te_meta    = te_report.metadata or {}
-            escalation = te_meta.get(
-                "escalation_score",
-                te_meta.get("emotion_summary", {}).get("emotion_escalation"),
-            )
+        if ae_report:
+            ae_meta    = ae_report.metadata or {}
+            escalation = ae_meta.get("escalation_score")
             if (escalation is not None
                     and escalation < ESCALATION_CALM_THRESHOLD
-                    and action_report.crime_category in HIGH_SEVERITY_CRIMES
-                    and action_report.confidence > CONFIDENCE_HARD_THRESHOLD):
+                    and ae_report.crime_category in HIGH_SEVERITY_CRIMES
+                    and ae_report.confidence > CONFIDENCE_HARD_THRESHOLD):
                 is_hard = True
                 conflicts.append(ConflictRecord(
-                    agent_a=action_report.agent_name,
-                    agent_b=te_report.agent_name,
+                    agent_a=ae_report.agent_name,
+                    agent_b="CausalRule",
                     conflict_type="causal_conflict",
                     description=(
                         f"情緒升溫值 {escalation:.3f} < {ESCALATION_CALM_THRESHOLD}"
                         f"（Kilic & Tuceryan 2024 P25 門檻），"
-                        f"但行為代理人判定 {action_report.crime_category}"
-                        f"（信心 {action_report.confidence:.2f} > {CONFIDENCE_HARD_THRESHOLD}），"
+                        f"但 ActionEmotion 判定 {ae_report.crime_category}"
+                        f"（信心 {ae_report.confidence:.2f} > {CONFIDENCE_HARD_THRESHOLD}），"
                         "缺乏情緒觸發前兆 → CP HARD"
                     ),
                     severity=0.9,
-                    frames_a=action_report.frame_references[:3],
-                    frames_b=te_report.frame_references[:3],
+                    frames_a=ae_report.frame_references[:3],
                 ))
 
         # ── HARD ②：HIGH_SEVERITY + 完全無前兆 ───────────
@@ -691,17 +684,26 @@ class ReflectorAgent:
         K = mean(K_ij) over all pairs
         Rcons_base = 1.0 − K
 
+        合併後架構（ActionEmotion + Environment）：
+          合併前：K 量化 Action vs TimeEmotion 兩個獨立模態的信念衝突
+          合併後：K 量化 ActionEmotion vs Environment 的信念衝突
+                  → 環境條件支不支撐行為分析的結論
+          無 Environment Agent 時：
+                  使用預設信念函數 m_env（假設環境完全支持 AE 的判斷）
+                  → K ≈ 0，Rcons_base ≈ 1.0（由加分項決定最終分數）
+
         加分項（設計規則，與 D-S 互補）：
-          +0.2  所有代理人幀引用有非空交集
+          +0.2  ActionEmotion 幀引用與 Environment 幀引用有非空交集
           +0.2  因果鏈覆蓋 pre/during/post 三段
-          +0.1  Semantic Agent 法律覆蓋率 > 0.8
+          +0.1  Rlegal > 0.8（由 Planner 計算後注入 ae_report.metadata）
 
         Rcons_final = clip(Rcons_base + bonus, 0.0, 1.3)
         """
         cat_reports = [r for r in reports if r.crime_category != "ENVIRONMENTAL_ASSESSMENT"]
+        env_reports = [r for r in reports if r.crime_category == "ENVIRONMENTAL_ASSESSMENT"]
 
         # ── 信念質量函數 ──────────────────────────────────
-        def _mass(report: AgentReport) -> Dict[str, float]:
+        def _mass(report: AgentReport, is_env: bool = False) -> Dict[str, float]:
             n_frames = len(report.frame_references)
             if n_frames == 0:
                 u = 0.30
@@ -709,9 +711,16 @@ class ReflectorAgent:
                 u = 0.15
             else:
                 u = 0.05
-            m_crime = report.confidence * (1.0 - u)
-            m_unc   = u
-            m_no    = max(0.0, 1.0 - m_crime - m_unc)
+            if is_env:
+                # Environment Agent：高可信度 → 支持 AE 判斷；低可信度 → 不確定增加
+                env_conf = report.confidence
+                m_crime  = env_conf * (1.0 - u)           # 環境支持犯罪判斷的程度
+                m_unc    = u + (1.0 - env_conf) * 0.3     # 可信度低 → 不確定增加
+                m_no     = max(0.0, 1.0 - m_crime - m_unc)
+            else:
+                m_crime = report.confidence * (1.0 - u)
+                m_unc   = u
+                m_no    = max(0.0, 1.0 - m_crime - m_unc)
             return {
                 "crime":    m_crime,
                 "no_crime": m_no,
@@ -720,16 +729,30 @@ class ReflectorAgent:
             }
 
         # ── Pairwise 衝突係數 K_ij ──────────────────────
-        masses = [_mass(r) for r in cat_reports]
+        # 合併後：ActionEmotion × Environment（而非 Action × TimeEmotion）
         k_values: List[float] = []
-        for i in range(len(masses)):
-            for j in range(i + 1, len(masses)):
-                mi, mj = masses[i], masses[j]
-                # 基礎衝突：crime × no_crime 互斥
-                k_ij = mi["crime"] * mj["no_crime"] + mi["no_crime"] * mj["crime"]
-                # 不同類別：crime_A × crime_B 互斥（兩個假設不能同時為真）
-                if mi["category"] != mj["category"]:
-                    k_ij += mi["crime"] * mj["crime"]
+
+        if cat_reports and env_reports:
+            # 有 Environment Agent：計算 AE × Env 的 K
+            for ae_r in cat_reports:
+                for env_r in env_reports:
+                    mi = _mass(ae_r, is_env=False)
+                    mj = _mass(env_r, is_env=True)
+                    # 基礎衝突：crime × no_crime
+                    k_ij = mi["crime"] * mj["no_crime"] + mi["no_crime"] * mj["crime"]
+                    k_values.append(min(k_ij, 1.0))
+        elif cat_reports:
+            # 無 Environment Agent：使用預設信念函數（環境完全支持 AE 判斷）
+            for ae_r in cat_reports:
+                mi = _mass(ae_r, is_env=False)
+                # m_env_default：假設環境可信度 = ae_conf（無獨立資訊，不增加衝突）
+                m_env_default = {
+                    "crime":    ae_r.confidence * 0.95,
+                    "no_crime": 0.03,
+                    "uncertain": 0.02 + (1.0 - ae_r.confidence) * 0.1,
+                    "category": ae_r.crime_category,
+                }
+                k_ij = mi["crime"] * m_env_default["no_crime"] + mi["no_crime"] * m_env_default["crime"]
                 k_values.append(min(k_ij, 1.0))
 
         K = float(sum(k_values) / len(k_values)) if k_values else 0.0
@@ -738,29 +761,29 @@ class ReflectorAgent:
         # ── 加分項（保留設計規則，與 D-S 互補）──────────
         bonus = 0.0
 
-        # +0.2 幀引用交集非空
-        if len(cat_reports) >= 2:
-            frame_sets = [set(r.frame_references) for r in cat_reports if r.frame_references]
-            if len(frame_sets) >= 2:
-                intersection = frame_sets[0]
-                for fs in frame_sets[1:]:
-                    intersection &= fs
-                if intersection:
-                    bonus += 0.2
+        # +0.2 AE 幀引用與 Env 幀引用有非空交集
+        all_frame_sets = [set(r.frame_references) for r in reports if r.frame_references]
+        if len(all_frame_sets) >= 2:
+            intersection = all_frame_sets[0]
+            for fs in all_frame_sets[1:]:
+                intersection &= fs
+            if intersection:
+                bonus += 0.2
 
-        # +0.2 因果鏈覆蓋三段
+        # +0.2 因果鏈覆蓋三段（ActionEmotion 的 metadata）
         has_causal_chain = any(
-            any(e.get("type") == "causal_chain" for e in r.evidence)
+            bool(r.metadata.get("causal_chain"))
+            and bool(r.metadata.get("pre_crime_indicators"))
+            and bool(r.metadata.get("post_crime_indicators"))
             for r in cat_reports
         )
         if has_causal_chain:
             bonus += 0.2
 
-        # +0.1 Semantic Agent 法律覆蓋率 > 0.8
+        # +0.1 Rlegal > 0.8（由 Planner 在 Step 3c 計算後注入 ae_report.metadata）
         for r in cat_reports:
-            if "法律" in r.agent_name or "Semantic" in r.agent_name.lower():
-                if r.metadata.get("rlegal", 0.0) > 0.8:
-                    bonus += 0.1
+            if r.metadata.get("rlegal", 0.0) > 0.8:
+                bonus += 0.1
                 break
 
         score = rcons_base + bonus

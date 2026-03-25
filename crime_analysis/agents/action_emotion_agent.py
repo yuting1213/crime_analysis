@@ -1,14 +1,28 @@
 """
 ActionEmotionAgent - 行為情緒融合代理
-合併 ActionAgent（R3D-18 行為識別）與 TimeEmotionAgent（ViT + 姿態 + 情緒）
-早期融合架構：1386D → FusionEncoder(Transformer) → crime_head + escalation_head
+合併原 ActionAgent 與 TimeEmotionAgent，採早期融合架構。
+
+特徵提取（各 backbone 維持不變）：
+  I3D-ResNet50（以 R3D-18 替代，計算成本考量）→ 512D   行為特徵（動作識別）
+  ViT-Base [CLS] token                          → 768D   視覺語意特徵
+  MediaPipe Pose 33 keypoints × 3               →  99D   姿態特徵
+  DeepFace 情緒機率                              →   7D   情緒特徵
+  ─────────────────────────────────────────────────────
+  合計                                          1386D
+  → InputProjection（Linear + LayerNorm + ReLU）→ 512D
+  → FusionEncoder（4層 TransformerEncoder，8 heads）→ 512D
+  → crime_head（Linear→13類）+ escalation_head（Linear→1）
+
+注意：論文描述 backbone 為 I3D-ResNet50（Elmetwally et al. 2025 原始設計）；
+      實作以 R3D-18 替代（相同輸出維度 512D，計算成本更低）。
+      MIL Ranking Loss 的訓練邏輯依 I3D 的 snippet 設計不變。
 
 參考文獻：
-- Elmetwally et al. (2025) Deep learning based anomaly detection in real-time video
-- Kilic & Tuceryan (2024) Crime Detection from Pre-crime Video Analysis
-  with Augmented Pose and Emotion Information
-- Zou et al. (2025) Unlocking Vision-Language Models for Video Anomaly Detection
-  via Fine-Grained Prompting
+  Elmetwally et al. (2025) Deep learning based anomaly detection in real-time video
+  Kilic & Tuceryan (2024) Crime Detection from Pre-crime Video Analysis
+    with Augmented Pose and Emotion Information
+  Zou et al. (2025) Unlocking Vision-Language Models for Video Anomaly Detection
+    via Fine-Grained Prompting
 """
 import logging
 import warnings
