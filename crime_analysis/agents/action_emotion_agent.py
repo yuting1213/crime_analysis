@@ -13,9 +13,19 @@ ActionEmotionAgent - 行為情緒融合代理
   → FusionEncoder（4層 TransformerEncoder，8 heads）→ 512D
   → crime_head（Linear→13類）+ escalation_head（Linear→1）
 
-注意：論文描述 backbone 為 I3D-ResNet50（Elmetwally et al. 2025 原始設計）；
-      實作以 R3D-18 替代（相同輸出維度 512D，計算成本更低）。
-      MIL Ranking Loss 的訓練邏輯依 I3D 的 snippet 設計不變。
+Backbone 說明：
+  論文方法論引用：I3D-ResNet50（Elmetwally et al. 2025 原始設計）
+  程式碼實作：    R3D-18 替代（torchvision 原生支援，無需額外安裝）
+
+  R3D-18 替代理由（三點）：
+  ① 輸出維度相同（512D），不影響後續 1386D 融合計算
+  ② 監視器低解析度影像（通常 ≤ 480p）上，兩者特徵表達差異有限
+  ③ 本地端搭配 Qwen3-7B 的資源限制下，R3D-18 計算成本更低
+  → 若消融實驗顯示差異不顯著，論文可寫：
+    「以 R3D-18 作為計算效率考量的替代實作，在本資料集上
+     與 I3D-ResNet50 的性能差異在可接受範圍內」
+
+  MIL Ranking Loss 的訓練邏輯（32 snippets × 16 frames）依 I3D 設計不變。
 
 參考文獻：
   Elmetwally et al. (2025) Deep learning based anomaly detection in real-time video

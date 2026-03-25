@@ -453,7 +453,7 @@ class ReflectorAgent:
         for report in reports:
             if report.crime_category not in LOW_ACCIDENTAL_CRIMES:
                 continue
-            n_post = self._count_post_crime_indicators(report, te_report)
+            n_post = self._count_post_crime_indicators(report)
             if n_post == 0 and report.confidence > CONFIDENCE_SOFT_THRESHOLD:
                 conflicts.append(ConflictRecord(
                     agent_a=report.agent_name,
@@ -472,7 +472,18 @@ class ReflectorAgent:
 
     @staticmethod
     def _count_antecedents(report: AgentReport) -> int:
-        """計算報告中前兆類型 evidence 的數量。"""
+        """
+        計算前兆事件數量（供 Layer 2 HARD/SOFT 判斷）。
+
+        合併後讀取路徑（統一從 ae_report.metadata 讀）：
+          優先：report.metadata["pre_crime_indicators"]（ActionEmotionAgent 填入的列表）
+          fallback：掃描 report.evidence 找 pre_crime 類型的 evidence 項目
+        """
+        # 優先：ActionEmotionAgent 的 metadata 欄位（合併後主要讀取路徑）
+        pre_list = report.metadata.get("pre_crime_indicators", None)
+        if pre_list is not None:
+            return len(pre_list)
+        # fallback：舊版 evidence 格式（向後相容）
         PRE_CRIME_TYPES = {
             "pre_crime_segments", "causal_chain",
             "pre_crime_indicators", "targeted_causal_evidence",
@@ -485,24 +496,19 @@ class ReflectorAgent:
         )
 
     @staticmethod
-    def _count_post_crime_indicators(
-        report: AgentReport,
-        te_report: Optional[AgentReport],
-    ) -> int:
+    def _count_post_crime_indicators(report: AgentReport) -> int:
         """
         計算事後反應指標數量（供 LOW 突發型判斷）。
-        優先讀 TimeEmotion 新增的 post_crime_indicators 欄位，
-        fallback 到因果鏈的 post_crime 階段。
+
+        合併後讀取路徑（統一從 ae_report.metadata 讀）：
+          優先：report.metadata["post_crime_indicators"]（ActionEmotionAgent 填入的列表）
+          fallback：掃描 report.evidence 找 post_crime 階段的 evidence 項目
         """
-        # TimeEmotion 新欄位（Section IV 更新後）
-        if te_report:
-            post_list = te_report.metadata.get("post_crime_indicators", None)
-            if post_list is not None:
-                return len(post_list)
-            # fallback：掃描 causal_chain_raw 的 post_crime 階段
-            chain = te_report.metadata.get("causal_chain_raw", [])
-            return sum(1 for e in chain if e.get("phase") == "post_crime")
-        # 若無 TimeEmotion，嘗試在 report 自身找 post_crime evidence
+        # 優先：ActionEmotionAgent 的 metadata 欄位（合併後主要讀取路徑）
+        post_list = report.metadata.get("post_crime_indicators", None)
+        if post_list is not None:
+            return len(post_list)
+        # fallback：舊版 evidence 格式（向後相容）
         return sum(
             1 for e in report.evidence
             if (e.get("type") == "targeted_causal_evidence"

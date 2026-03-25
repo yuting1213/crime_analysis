@@ -150,12 +150,16 @@ class PlannerAgent:
         generated_report_text = ae_report.metadata.get("rationale", "") if ae_report else ""
 
         # Step 3c：compute_rlegal 在報告文字生成後才呼叫
-        # 重要：Rlegal 比對的是「最終報告文字」，不是 AE 的 rationale
-        #       呼叫時機：Step 3b 生成 generated_report_text 之後
+        # 重要：Rlegal 比對的是「Step 3b 生成的最終報告文字」，不是 AE 的 rationale
+        # ── 注意：rlegal 是 Planner 計算後注入 ae_report.metadata 的 ──
+        #    不是 ActionEmotionAgent 自行輸出的欄位。
+        #    ae_report.metadata["rlegal"] 只有在 Planner Step 3c 執行後才存在。
         if self.rag and crime_type != "Normal":
             rlegal = self.rag.compute_rlegal(crime_type, generated_report_text)
             if ae_report:
-                ae_report.metadata["rlegal"] = rlegal   # 注入供 Reflector +0.1 加分使用
+                # Planner 注入（非 ActionEmotionAgent 輸出）
+                # 供 Reflector _compute_consistency_score 的加分項 +0.1 讀取
+                ae_report.metadata["rlegal"] = rlegal
             logger.info(f"[Planner] Step 3c: Rlegal={rlegal:.3f} ({crime_type})")
 
         # ── Reflector CASAM + 衝突解決 ──────────────────
