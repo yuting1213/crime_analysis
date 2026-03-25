@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+*.whl
+
+# 虛擬環境
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 模型權重（太大）
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+
+# RAG 資料庫（動態產生，不納入版控）
+crime_analysis/rag_db/
+crime_analysis/chroma_db/
+
+# 裁判書原始資料（敏感/龐大）
+crime_analysis/data/rag/judgments/raw/
+
+# 環境變數
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# 日誌
+*.log
+logs/

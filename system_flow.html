@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>Multi-Agent Crime Analysis System Flow</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #58a6ff;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+  }
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+<h1>Multi-Agent LLM System for Crime Video Analysis — 系統流程圖</h1>
+<div class="mermaid">
+flowchart TD
+    INPUT([🎥 監視影片]) --> S1
+
+    %% ── Step 1 ──
+    subgraph S1["Step 1  條件式"]
+        E1{品質差\nor 遮擋?}
+        ENV["🏙️ Environment Agent\nDQN + R3D-18\n32 segments · LAB光線 · MOG2遮擋\nAberkane & Boudihir 2019"]
+        E1 -->|Yes| ENV
+    end
+
+    %% ── Step 2 ──
+    subgraph S2["Step 2  並行"]
+        direction LR
+        ACT["⚡ Action Agent\nMIL + R3D-18\n32 snippets · 10-crop\nASK-HINT Q*（3群組）\nElmetwally 2025 · Zou 2025"]
+        TE["🕐 Time & Emotion Agent\nViT-768 + Pose-99 + Emotion-7\n4層 Transformer\n因果鏈 Pre→Crime→Post\nKilic & Tuceryan 2024"]
+    end
+
+    %% ── Step 3 ──
+    subgraph S3["Step 3  循序"]
+        CONF{conf ≥ 0.6?}
+        SEM["⚖️ Semantic Agent\nHyDE + H-RAG\nBM25 + BGE-M3 + RRF\nRlegal 法律要件覆蓋率\nGao 2022 · BAAI BGE-M3"]
+        SKIP[跳過]
+        CONF -->|Yes| SEM
+        CONF -->|No < 0.4| SKIP
+    end
+
+    %% ── RAG ──
+    subgraph RAG["📚 H-RAG 知識庫"]
+        direction LR
+        DB1["刑法條文\n每條一chunk"]
+        DB2["裁判書判例\n段落chunk"]
+        RRF["BM25 + BGE-M3\n→ RRF 融合"]
+        DB1 & DB2 --> RRF
+    end
+
+    %% ── Reflector ──
+    subgraph REF["🔍 Reflector  CASAM 三層審計"]
+        L1["L1 時序\n攻擊幀 vs 情緒升溫幀"]
+        L2["L2 因果前兆\nHigh Severity 無前兆 → HARD\nMedium Severity 不足 → SOFT"]
+        L3["L3 虛假相關\n環境可信度低 + 信心高"]
+        RCONS["Rcons 一致性分數\n懲罰×乘法  獎勵+加法  上限1.3"]
+        L1 & L2 & L3 --> RCONS
+    end
+
+    %% ── 衝突解決 ──
+    subgraph CR["衝突解決"]
+        CT{衝突?}
+        SOFT["SOFT → refine()"]
+        HARD["HARD → re-analyze()"]
+        DONE["NONE ✓"]
+        CT -->|SOFT| SOFT --> CT
+        CT -->|HARD| HARD --> CT
+        CT -->|NONE\nor 達上限| DONE
+    end
+
+    %% ── 獎勵 ──
+    RW["🏆 R = w1·Racc + w2·Rcons + w3·Rlegal − w4·Rcost\n暴力: w1↑  財產: w3↑  GRPO 訓練信號"]
+
+    OUTPUT(["📋 最終鑑定報告"])
+
+    %% ── 主流程連線 ──
+    S1 --> S2
+    ENV -->|env_confidence| S2
+    S2 --> ACT & TE
+    ACT & TE --> CONF
+    ACT -->|action_category| SEM
+    SEM <-->|查詢/回傳| RRF
+
+    ACT & TE --> L1
+    ACT & TE & SEM --> L2
+    ENV --> L3
+
+    RCONS --> CT
+    DONE --> RW
+    SKIP --> RW
+    RW --> OUTPUT
+
+    %% ── 樣式 ──
+    classDef agent fill:#0d2137,stroke:#4a9eff,stroke-width:2px,color:#cce6ff
+    classDef step  fill:#12082a,stroke:#9b59b6,stroke-width:1.5px,color:#e8d5ff
+    classDef ref   fill:#071a10,stroke:#27ae60,stroke-width:2px,color:#c8ffd4
+    classDef rag   fill:#1a1000,stroke:#f39c12,stroke-width:2px,color:#ffe8a0
+    classDef rw    fill:#1a0808,stroke:#e74c3c,stroke-width:2px,color:#ffd0d0
+    classDef io    fill:#1a1a1a,stroke:#7f8c8d,stroke-width:2px,color:#ecf0f1
+
+    class ACT,TE,SEM,ENV agent
+    class S1,S2,S3 step
+    class L1,L2,L3,RCONS,REF ref
+    class DB1,DB2,RRF,RAG rag
+    class RW rw
+    class INPUT,OUTPUT io
+</div>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    flowchart: { curve: 'basis', padding: 20 },
+    themeVariables: {
+      primaryColor: '#1e3a5f',
+      primaryTextColor: '#cce6ff',
+      primaryBorderColor: '#4a9eff',
+      lineColor: '#58a6ff',
+      secondaryColor: '#1a0d3a',
+      tertiaryColor: '#0a2010',
+      background: '#0d1117',
+      mainBkg: '#161b22',
+      nodeBorder: '#30363d',
+      clusterBkg: '#161b22',
+      titleColor: '#58a6ff',
+      edgeLabelBackground: '#0d1117',
+      fontFamily: 'Segoe UI, sans-serif',
+    }
+  });
+</script>
+</body>
+</html>
