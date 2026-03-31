@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 # Legal elements required to establish each crime type under Taiwan Criminal Code
 LEGAL_ELEMENTS = {
-    "Assault":       ["故意", "傷害行為", "傷害結果", "因果關係"],
+    "Assault":       ["故意", "傷害行為", "傷害結果", "因果關係", "違法性"],
     "Fighting":      ["互毆事實", "傷害故意", "雙方積極攻擊"],
     "Shooting":      ["使用槍械或凶器", "殺傷意圖", "危害公共安全"],
     "Robbery":       ["不法所有意圖", "強暴或脅迫手段", "取得財物", "因果關係"],
@@ -188,7 +188,20 @@ class RAGModule:
             )
             return 0.0
 
-        covered = sum(1 for el in elements if el in report_text)
+        # 否定偵測：「不構成傷害行為」「無故意」「欠缺因果關係」不應計分
+        negation_prefixes = ("不", "無", "非", "未", "欠缺", "不具", "不構成", "排除")
+
+        covered = 0
+        for el in elements:
+            if el not in report_text:
+                continue
+            # 檢查要件前方是否有否定詞
+            idx = report_text.index(el)
+            context_before = report_text[max(0, idx - 4):idx]
+            if any(context_before.endswith(neg) for neg in negation_prefixes):
+                continue  # 被否定的要件不計分
+            covered += 1
+
         return covered / len(elements)
 
     # ------------------------------------------------------------------

@@ -127,7 +127,7 @@ class LawPreprocessor:
         chunks = []
         for item in data:
             article_id = str(item.get("article_id", ""))
-            crime_category = ARTICLE_TO_CATEGORY.get(article_id, "Other")
+            crime_category = item.get("crime_category") or ARTICLE_TO_CATEGORY.get(article_id, "Other")
 
             chunk = LawChunk(
                 article_id=article_id,
@@ -208,18 +208,57 @@ class LawPreprocessor:
         logger.info(f"法條文字前處理完成：{len(chunks)} 條")
         return chunks
 
+    # 法律術語詞典（用於 jieba 自定義詞 + BM25 索引增強）
+    LEGAL_TERMS = {
+        # 行為態樣
+        "傷害", "殺人", "竊盜", "搶奪", "強盜", "毀損", "放火", "爆炸",
+        "強制", "逮捕", "重傷", "施強暴", "脅迫", "遺棄", "拘禁",
+        "侵入住宅", "竊取", "搶奪", "勒贖", "縱火",
+        # 主觀要件
+        "故意", "過失", "意圖", "不法所有意圖", "殺傷意圖",
+        "直接故意", "間接故意",
+        # 構成要件
+        "因果關係", "違法性", "有責性", "構成要件",
+        "傷害行為", "傷害結果", "竊取行為", "毀損行為", "放火行為",
+        "強暴", "互毆", "秘密竊取",
+        # 阻卻事由
+        "正當防衛", "緊急避難", "阻卻違法",
+        # 法律用語
+        "公共危險", "妨害自由", "妨害秩序",
+        "有期徒刑", "無期徒刑", "拘役", "罰金",
+        "未遂", "既遂", "加重", "減輕",
+    }
+    _jieba_loaded = False
+
     def _extract_keywords(self, content: str) -> List[str]:
         """
-        提取法律關鍵詞（用於 BM25 索引增強）
-        例：「傷害他人之身體或健康者」→ ['傷害', '身體', '健康']
-        TODO: 可改用 jieba 分詞 + 法律術語字典
+        使用 jieba 分詞 + 法律術語詞典提取關鍵詞。
+        兩層策略：(1) 詞典直接匹配 (2) jieba 分詞後過濾法律詞彙。
         """
-        legal_terms = [
-            "傷害", "殺人", "竊盜", "搶奪", "強盜", "毀損",
-            "施強暴", "脅迫", "意圖", "故意", "過失",
-            "放火", "爆炸", "強制", "逮捕", "重傷",
-        ]
-        return [t for t in legal_terms if t in content]
+        # 載入自定義詞典（只做一次）
+        if not LawPreprocessor._jieba_loaded:
+            try:
+                import jieba
+                for term in self.LEGAL_TERMS:
+                    jieba.add_word(term, freq=10000)
+                LawPreprocessor._jieba_loaded = True
+            except ImportError:
+                pass
+
+        # 層 1：直接匹配法律術語
+        matched = {t for t in self.LEGAL_TERMS if t in content}
+
+        # 層 2：jieba 分詞，保留 >= 2 字的詞（過濾虛詞）
+        try:
+            import jieba
+            tokens = jieba.cut(content)
+            for tok in tokens:
+                if len(tok) >= 2 and tok in self.LEGAL_TERMS:
+                    matched.add(tok)
+        except ImportError:
+            pass
+
+        return sorted(matched)
 
 
 class JudgmentPreprocessor:

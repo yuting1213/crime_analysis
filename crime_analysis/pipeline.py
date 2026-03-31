@@ -1,5 +1,17 @@
 """
 主系統流程 - 組裝所有模組的入口點
+
+架構（簡化後）：
+    [影片輸入]
+        ↓
+    [Planner（規則式）]
+        ├─ Step 1: Environment Agent（條件式）
+        ├─ Step 2: ActionEmotion Agent
+        └─ Step 3: RAG 查詢 → Qwen3 報告生成 → Rlegal
+        ↓
+    [Reflector CASAM] ← 衝突解決
+        ↓
+    [結構化鑑定報告] ←── DPO 對齊
 """
 import logging
 from pathlib import Path
@@ -7,11 +19,11 @@ from typing import Any, Dict, List, Optional
 
 from config import cfg
 from agents import (
-    EnvironmentAgent, ActionAgent,
-    TimeEmotionAgent, SemanticAgent,
+    EnvironmentAgent, ActionEmotionAgent,
     ReflectorAgent, PlannerAgent,
 )
 from rag import HierarchicalRAG, LawPreprocessor, JudgmentPreprocessor
+from rag.rag_module import RAGModule
 from training import RewardCalculator, GRPOTrainer, DPOTrainer
 from evaluation import MetricsCalculator, LLMJudge
 
@@ -25,13 +37,12 @@ class CrimeAnalysisPipeline:
     架構：
         [影片輸入]
             ↓
-        [Planner] ←── GRPO 訓練
-            ↓ 分配任務
-        [Environment] [Action] [Time&Emotion] [Semantic←H-RAG]
-            ↓ 各自回報
-        [Reflector] ←── CASAM
-            ↓ 衝突回饋
-        [Planner 最終裁決]
+        [Planner（規則式三步驟）]
+            ├─ Step 1: Environment Agent（條件式）
+            ├─ Step 2: ActionEmotion Agent
+            └─ Step 3: RAG + Qwen3 報告生成 + Rlegal
+            ↓
+        [Reflector CASAM] ← 衝突解決
             ↓
         [結構化鑑定報告] ←── DPO 對齊
     """
@@ -39,23 +50,22 @@ class CrimeAnalysisPipeline:
     def __init__(self):
         # 建立 H-RAG 系統
         self.rag = HierarchicalRAG(cfg.rag)
+        self.rag_module = RAGModule(self.rag)
 
-        # 建立四個 Local Solver
-        self.local_agents = [
-            EnvironmentAgent(),
-            ActionAgent(),
-            TimeEmotionAgent(),
-            SemanticAgent(rag_system=self.rag),
-        ]
+        # 建立 Agent（新架構：Environment + ActionEmotion）
+        agents_dict = {
+            "environment": EnvironmentAgent(),
+            "action_emotion": ActionEmotionAgent(),
+        }
 
         # 建立 Reflector
         self.reflector = ReflectorAgent()
 
-        # 建立 Planner
+        # 建立 Planner（規則式，接收 agents_dict + rag_module）
         self.planner = PlannerAgent(
-            local_agents=self.local_agents,
+            agents_dict=agents_dict,
             reflector=self.reflector,
-            reward_weights=cfg.reward,
+            rag_module=self.rag_module,
         )
 
         # 訓練器
@@ -114,21 +124,47 @@ class CrimeAnalysisPipeline:
     ) -> int:
         """
         建立 DPO 訓練資料集：
-        對每個影片生成兩份報告，以 GPT-4o 比較後建立偏好對
-        """
-        count = 0
-        for sample in video_samples:
-            # 生成兩份報告（使用不同溫度/Prompt）
-            result_a = self.planner.run(sample["frames"], sample.get("metadata", {}))
-            result_b = self.planner.run(sample["frames"], sample.get("metadata", {}))
+        對每個影片用不同溫度生成兩份報告，以 GPT-4o 比較後建立偏好對。
 
-            report_a = result_a.get("forensic_report", "")
-            report_b = result_b.get("forensic_report", "")
+        生成策略（定義在 DPOConfig）：
+        - pairs_per_category: 每個犯罪類別的目標偏好對數
+        - generation_temperatures: 用不同溫度產生多樣報告
+        - min_score_gap: Judge 分差太小的對會被丟棄
+        - position_bias_check: AB/BA 雙向校正
+
+        預估總量：13 類 × 15 對/類 = ~195 對（扣除 position bias 約剩 120~150 對）
+        """
+        temps = cfg.dpo.generation_temperatures
+        count = 0
+        category_counts: Dict[str, int] = {}
+
+        for sample in video_samples:
+            cat = sample.get("ground_truth", "Normal")
+            target = cfg.dpo.pairs_per_category
+            if category_counts.get(cat, 0) >= target:
+                continue
+
+            meta = sample.get("metadata", {})
+
+            # 選兩個不同溫度生成報告
+            temp_a = temps[count % len(temps)]
+            temp_b = temps[(count + 1) % len(temps)]
+            if temp_a == temp_b and len(temps) > 1:
+                temp_b = temps[(count + 2) % len(temps)]
+
+            meta_a = {**meta, "temperature": temp_a}
+            meta_b = {**meta, "temperature": temp_b}
+
+            result_a = self.planner.run(sample["frames"], meta_a)
+            result_b = self.planner.run(sample["frames"], meta_b)
+
+            report_a = result_a.get("fact_finding", {}).get("description", "")
+            report_b = result_b.get("fact_finding", {}).get("description", "")
 
             if not report_a or not report_b:
                 continue
 
-            prompt = f"影片類型：{sample.get('ground_truth', '未知')}，{sample.get('description', '')}"
+            prompt = f"影片類型：{cat}，{sample.get('description', '')}"
             pair = self.dpo_trainer.collect_preference_pair(
                 video_id=sample.get("video_id", str(count)),
                 prompt=prompt,
@@ -136,10 +172,20 @@ class CrimeAnalysisPipeline:
                 report_b=report_b,
             )
             if pair:
+                # 檢查分差是否足夠
+                gap = abs(pair.judge_score_chosen - pair.judge_score_rejected)
+                if gap < cfg.dpo.min_score_gap:
+                    self.dpo_trainer.get_dataset().pop()  # 移除品質太接近的對
+                    logger.debug(f"DPO 分差不足 ({gap:.2f} < {cfg.dpo.min_score_gap})，跳過")
+                    continue
                 count += 1
+                category_counts[cat] = category_counts.get(cat, 0) + 1
 
         self.dpo_trainer.export_to_jsonl(output_path)
-        logger.info(f"DPO 資料集：{count} 筆偏好對 → {output_path}")
+        logger.info(
+            f"DPO 資料集：{count} 筆偏好對 → {output_path}\n"
+            f"  各類別分布：{category_counts}"
+        )
         return count
 
     # ── RAG 初始化 ────────────────────────────────────────
@@ -172,50 +218,8 @@ class CrimeAnalysisPipeline:
         )
 
     # ── 消融實驗 ──────────────────────────────────────────
-
-    def run_ablation(
-        self,
-        test_samples: List[Dict],
-    ) -> Dict[str, Dict]:
-        """
-        Leave-One-Out 消融實驗
-        逐一移除單一 Agent，量化各模組貢獻
-        """
-        configs = {
-            "full_system": list(range(len(self.local_agents))),
-            "no_environment": [1, 2, 3],   # 移除 EnvironmentAgent
-            "no_action": [0, 2, 3],        # 移除 ActionAgent
-            "no_time_emotion": [0, 1, 3],  # 移除 TimeEmotionAgent
-            "no_semantic": [0, 1, 2],      # 移除 SemanticAgent
-        }
-
-        ablation_results: Dict[str, List[Dict]] = {}
-
-        for config_name, agent_indices in configs.items():
-            logger.info(f"消融實驗：{config_name}")
-            active_agents = [self.local_agents[i] for i in agent_indices]
-
-            temp_planner = PlannerAgent(
-                local_agents=active_agents,
-                reflector=self.reflector,
-            )
-
-            config_preds = []
-            for sample in test_samples:
-                result = temp_planner.run(
-                    sample["frames"], sample.get("metadata", {})
-                )
-                config_preds.append(result)
-
-            ablation_results[config_name] = config_preds
-
-        # 計算各 config 的分類指標
-        ground_truths = [s["ground_truth"] for s in test_samples]
-        metrics_table = self.metrics.compute_ablation_table(
-            ablation_results, ground_truths
-        )
-
-        return metrics_table
+    # 完整消融實驗請使用 scripts/run_ablation.py（支援 5 種變體）
+    # pipeline 保留簡易版供快速驗證
 
 
 if __name__ == "__main__":
@@ -238,4 +242,4 @@ if __name__ == "__main__":
     print(f"Rlegal：{result['rlegal']:.3f}")
     print(f"是否收斂：{result['is_convergent']}")
     print("\n=== 鑑定報告 ===")
-    print(result.get("forensic_report", "（無報告）"))
+    print(result.get("fact_finding", {}).get("description", "（無報告）"))

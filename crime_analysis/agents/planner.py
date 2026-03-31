@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional
 from .base_agent import AgentReport
 from .reflector import ReflectorAgent, ReflectorOutput
 from config import cfg
+from rag.rag_module import LEGAL_ELEMENTS, GROUP_LEGAL_CONTEXT
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,109 @@ def compute_rcost(
     return 1.0
 
 
+# ── Step 3b Prompt Template ────────────────────────────────
+REPORT_SYSTEM_PROMPT = """\
+你是一位台灣刑事鑑定報告撰寫專家。根據影片行為分析結果、法律檢索資料、與內部審查結論，\
+撰寫一份結構化的初步鑑定報告。
+
+報告要求：
+1. 必須以繁體中文撰寫
+2. 必須涵蓋所有適用的法律構成要件（逐一論述是否該當）
+3. 引用具體法條條號
+4. 區分「影片可觀察事實」與「推論」
+5. 若有衝突或不確定性，須明確說明
+"""
+
+REPORT_USER_TEMPLATE = """\
+## 案件資訊
+- 案件編號：{case_id}
+- 判定犯罪類型：{crime_type}
+- 分析信心：{confidence:.2f}
+
+## 行為分析摘要
+{rationale}
+
+## 適用法條
+{articles}
+
+## 構成要件檢核清單
+請逐一論述以下要件是否該當：
+{elements_checklist}
+
+## RAG 檢索法條摘要
+{rag_laws_summary}
+
+## 內部審查結果
+- 衝突類型：{conflict_type}
+- 一致性分數（Rcons）：{rcons:.2f}
+{conflict_detail}
+
+## 輸出格式
+請依下列結構撰寫報告：
+
+### 一、事實認定
+（根據影片觀察到的客觀事實）
+
+### 二、構成要件分析
+（逐一論述每個構成要件是否該當，引用影片證據）
+
+### 三、法律適用
+（引用具體法條條號與裁判見解）
+
+### 四、不確定性與限制
+（影片分析的限制、無法確認的事項）
+
+### 五、初步結論
+（綜合判斷）
+"""
+
+
+def build_report_prompt(
+    case_id: str,
+    crime_type: str,
+    confidence: float,
+    rationale: str,
+    rag_results: Dict,
+    conflict_type: str,
+    rcons: float,
+    conflict_detail: str = "",
+) -> List[Dict[str, str]]:
+    """組裝 Step 3b 報告生成的 chat messages。"""
+    elements = LEGAL_ELEMENTS.get(crime_type, [])
+    articles = GROUP_LEGAL_CONTEXT.get(crime_type, [])
+
+    elements_checklist = "\n".join(f"- [ ] {e}" for e in elements) if elements else "（無對應構成要件）"
+    articles_str = "、".join(articles) if articles else "（無對應法條）"
+
+    # 整理 RAG 檢索到的法條摘要
+    rag_laws = rag_results.get("laws", [])
+    if rag_laws:
+        rag_laws_summary = "\n".join(
+            f"- {l.get('article_id', '未知條號')}：{l.get('text', '')[:120]}"
+            for l in rag_laws[:5]
+        )
+    else:
+        rag_laws_summary = "（未檢索到相關法條）"
+
+    user_content = REPORT_USER_TEMPLATE.format(
+        case_id=case_id,
+        crime_type=crime_type,
+        confidence=confidence,
+        rationale=rationale or "（無行為分析摘要）",
+        articles=articles_str,
+        elements_checklist=elements_checklist,
+        rag_laws_summary=rag_laws_summary,
+        conflict_type=conflict_type,
+        rcons=rcons,
+        conflict_detail=conflict_detail,
+    )
+
+    return [
+        {"role": "system", "content": REPORT_SYSTEM_PROMPT},
+        {"role": "user",   "content": user_content},
+    ]
+
+
 class PlannerAgent:
     """
     規則式 Planner（不繼承 BaseAgent，角色是協調者）
@@ -81,6 +185,10 @@ class PlannerAgent:
         self.rag = rag_module          # RAGModule（由 pipeline 注入）
         self._total_turns: int = 0
         self._rcost_threshold_high: int = 8
+
+        # Step 3b 報告生成模型（延遲載入）
+        self._report_tokenizer = None
+        self._report_model = None
 
     # ── 主要入口 ─────────────────────────────────────────
 
@@ -144,10 +252,35 @@ class PlannerAgent:
             logger.info(f"[Planner] Step 3a: RAG 查詢 → {len(rag_results.get('laws', []))} 條法條")
 
         # Step 3b：Planner（Qwen3-7B）整合所有資訊生成報告文字
-        # TODO: 此處呼叫 Qwen3-7B，傳入 ae_report.rationale + rag_results + conflict_type
-        #       生成完整鑑定報告文字並儲存在 generated_report_text
-        #       目前以 ae_report.rationale 作為 proxy（DPO 訓練後替換）
-        generated_report_text = ae_report.metadata.get("rationale", "") if ae_report else ""
+        conflict_detail = ""
+        if hasattr(self, '_last_audit') and self._last_audit:
+            conflict_detail = f"- 衝突層：{self._last_audit.conflict_layer}"
+
+        report_messages = build_report_prompt(
+            case_id=case_id,
+            crime_type=crime_type,
+            confidence=ae_confidence,
+            rationale=ae_report.metadata.get("rationale", "") if ae_report else "",
+            rag_results=rag_results,
+            conflict_type="NONE",  # 首次生成，衝突解決在後面
+            rcons=0.0,
+            conflict_detail=conflict_detail,
+        )
+        temperature = video_metadata.get("temperature", cfg.model.temperature)
+        generated_report_text = self._call_qwen3(report_messages, temperature=temperature)
+
+        # Fallback：模型未載入或生成失敗時，用 RAG 結果 + 構成要件組裝基礎報告
+        if not generated_report_text:
+            generated_report_text = self._build_fallback_report(
+                crime_type, ae_confidence,
+                ae_report.metadata.get("rationale", "") if ae_report else "",
+                rag_results,
+            )
+            self._report_method = "fallback"
+            logger.info(f"[Planner] Step 3b: 使用結構化 fallback（{len(generated_report_text)} chars）")
+        else:
+            self._report_method = "qwen3"
+            logger.info(f"[Planner] Step 3b: Qwen3 生成完成（{len(generated_report_text)} chars）")
 
         # Step 3c：compute_rlegal 在報告文字生成後才呼叫
         # 重要：Rlegal 比對的是「Step 3b 生成的最終報告文字」，不是 AE 的 rationale
@@ -374,6 +507,7 @@ class PlannerAgent:
             "is_convergent": final_audit.is_convergent,
             "conflict_type": final_audit.conflict_type,
             # 完整代理人輸出
+            "report_generation_method": getattr(self, "_report_method", "unknown"),
             "agent_reports": [r.to_dict() for r in reports],
             "audit_log": final_audit.audit_log,
             "debate_log": self.reflector.get_debate_log(),
@@ -387,10 +521,20 @@ class PlannerAgent:
 
     # ── 評估函數（取代 GRPO 訓練信號）──────────────────────
 
-    def evaluate(self, result: Dict, ground_truth: str) -> Dict[str, float]:
+    def evaluate(
+        self,
+        result: Dict,
+        ground_truth: str,
+        llm_judge=None,
+    ) -> Dict[str, Any]:
         """
         四指標評估框架（測試階段使用，非訓練信號）：
         R = w1·Racc + w2·Rcons + w3·Rlegal − w4·Rcost
+
+        Args:
+            result: pipeline.run() 的輸出
+            ground_truth: 正確犯罪類別
+            llm_judge: 可選的 LLMJudge 實例，若提供則同時執行外部語意評分
         """
         racc  = 1.0 if result.get("final_category") == ground_truth else 0.0
         rcons  = result.get("rcons", 0.0)
@@ -404,13 +548,156 @@ class PlannerAgent:
             + w["w3"] * rlegal
             - w["w4"] * rcost
         )
-        return {
+        eval_result = {
             "R": total,
             "Racc": racc,
             "Rcons": rcons,
             "Rlegal": rlegal,
             "Rcost": rcost,
         }
+
+        # 可選：外部 LLM-as-Judge 語意評分
+        if llm_judge is not None:
+            crime_type = result.get("final_category", "Normal")
+            report_text = result.get("fact_finding", {}).get("description", "")
+            prompt = f"犯罪類別：{crime_type}，正確答案：{ground_truth}"
+            try:
+                judge_scores = llm_judge.rubric_score(prompt, report_text, crime_type)
+                eval_result["llm_judge"] = judge_scores
+            except Exception as e:
+                logger.warning(f"[evaluate] LLM Judge 評分失敗：{e}")
+                eval_result["llm_judge"] = None
+
+        return eval_result
+
+    # ── Step 3b: Fallback 報告組裝 ────────────────────────────
+
+    def _build_fallback_report(
+        self,
+        crime_type: str,
+        confidence: float,
+        rationale: str,
+        rag_results: Dict,
+    ) -> str:
+        """
+        當 Qwen3 不可用時，用 RAG 結果 + LEGAL_ELEMENTS 組裝基礎報告。
+        目的：讓 compute_rlegal 的 substring matching 能命中法律關鍵字。
+        """
+        elements = LEGAL_ELEMENTS.get(crime_type, [])
+        articles = GROUP_LEGAL_CONTEXT.get(crime_type, [])
+
+        parts = [f"一、事實認定\n本案經影片行為分析，判定犯罪類別為{crime_type}，信心程度{confidence:.2f}。"]
+
+        if rationale:
+            parts.append(f"行為分析摘要：{rationale}")
+
+        # 只放 RAG 查到的法條內容，不直接列出 LEGAL_ELEMENTS
+        # 讓 Rlegal 的 substring matching 自然命中或不命中
+        parts.append(f"\n二、法律適用")
+        if articles:
+            parts.append(f"本案可能適用{'、'.join(articles)}。")
+
+        rag_laws = rag_results.get("laws", [])
+        if rag_laws:
+            for law in rag_laws[:3]:
+                text = law.get("text", law.get("content", ""))[:200]
+                parts.append(f"{law.get('article_id', '')}：{text}")
+
+        parts.append(f"\n三、初步結論")
+        parts.append(f"綜合以上分析，本案涉及{crime_type}類型犯罪之可能性為{confidence:.0%}。")
+
+        return "\n".join(parts)
+
+    # ── Step 3b: Qwen3 報告生成 ─────────────────────────────
+
+    def _load_report_model(self):
+        """延遲載入 Qwen3-7B 報告生成模型。"""
+        if self._report_model is not None:
+            return
+        try:
+            from transformers import AutoModelForCausalLM, AutoTokenizer
+            model_name = cfg.model.report_model
+            logger.info(f"[Planner] 載入報告生成模型：{model_name}")
+            self._report_tokenizer = AutoTokenizer.from_pretrained(
+                model_name, trust_remote_code=True
+            )
+            self._report_model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                torch_dtype="auto",
+                device_map="auto",
+                trust_remote_code=True,
+            )
+            logger.info(f"[Planner] 模型載入完成：{model_name}")
+        except Exception as e:
+            logger.warning(f"[Planner] 無法載入報告生成模型：{e}，將使用 fallback")
+            self._report_model = None
+
+    def _call_qwen3(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: Optional[float] = None,
+    ) -> str:
+        """
+        呼叫 Qwen3-7B 生成鑑定報告。
+
+        截斷策略：若 prompt tokens > max_context * 0.75，
+        依優先順序截斷 RAG 法條摘要 → 行為分析摘要。
+
+        Fallback：模型載入失敗或生成異常時，回傳 ae_report.rationale。
+        """
+        self._load_report_model()
+
+        if self._report_model is None or self._report_tokenizer is None:
+            logger.warning("[Planner] 報告模型未就緒，使用 rationale fallback")
+            return ""
+
+        import torch
+
+        tokenizer = self._report_tokenizer
+        model = self._report_model
+        temp = temperature or cfg.model.temperature
+        max_ctx = getattr(model.config, "max_position_embeddings", 32768)
+        max_new = cfg.model.max_new_tokens
+        max_prompt_tokens = int(max_ctx * 0.75)
+
+        # 組裝 chat template
+        text = tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        input_ids = tokenizer.encode(text, return_tensors="pt")
+
+        # 截斷策略：超長 prompt 時截斷 user message 尾部
+        if input_ids.shape[1] > max_prompt_tokens:
+            logger.warning(
+                f"[Planner] prompt tokens={input_ids.shape[1]} > {max_prompt_tokens}，執行截斷"
+            )
+            input_ids = input_ids[:, :max_prompt_tokens]
+
+        input_ids = input_ids.to(model.device)
+
+        try:
+            with torch.no_grad():
+                output_ids = model.generate(
+                    input_ids,
+                    max_new_tokens=max_new,
+                    temperature=temp,
+                    do_sample=temp > 0,
+                    top_p=0.9,
+                    repetition_penalty=1.1,
+                )
+            # 只取生成部分
+            generated = output_ids[0, input_ids.shape[1]:]
+            result = tokenizer.decode(generated, skip_special_tokens=True).strip()
+
+            if not result:
+                logger.warning("[Planner] Qwen3 生成空字串")
+                return ""
+
+            return result
+
+        except Exception as e:
+            logger.error(f"[Planner] Qwen3 生成失敗：{e}")
+            return ""
 
     # ── 輔助方法 ─────────────────────────────────────────
 

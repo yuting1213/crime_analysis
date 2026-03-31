@@ -1,0 +1,352 @@
+{
+  "_description": "影片可觀察行為 → 台灣刑法構成要件對應表。供 Semantic Agent 做 visual grounding → legal element 映射。",
+  "_usage": "每個犯罪類別列出：(1) 影片中可觀察到的視覺線索 (2) 該線索對應的法律構成要件 (3) 證據力評估（直接證據/間接推論）",
+
+  "Assault": {
+    "applicable_articles": ["刑法第277條傷害罪", "刑法第278條重傷罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "單方揮拳、踢踹、推撞等肢體攻擊動作",
+        "legal_element": "傷害行為",
+        "evidence_type": "直接證據",
+        "notes": "攻擊動作明確可見即可認定"
+      },
+      {
+        "visual_cue": "被害人倒地、摀住身體部位、出現傷痕或流血",
+        "legal_element": "傷害結果",
+        "evidence_type": "直接證據",
+        "notes": "影片解析度不足時可能無法確認傷勢程度"
+      },
+      {
+        "visual_cue": "攻擊方主動接近被害人、預備攻擊姿態",
+        "legal_element": "故意",
+        "evidence_type": "間接推論",
+        "notes": "主觀故意需從客觀行為推論，主動接近+攻擊姿態可推定故意"
+      },
+      {
+        "visual_cue": "攻擊動作與被害人受傷反應在時序上連續",
+        "legal_element": "因果關係",
+        "evidence_type": "間接推論",
+        "notes": "需確認受傷非先前既有傷勢"
+      },
+      {
+        "visual_cue": "被害人無持械、無攻擊動作、無明顯挑釁",
+        "legal_element": "違法性",
+        "evidence_type": "間接推論",
+        "notes": "排除正當防衛。若雙方互有攻擊則可能改判 Fighting"
+      }
+    ]
+  },
+
+  "Fighting": {
+    "applicable_articles": ["刑法第277條傷害罪", "刑法第283條聚眾鬥毆罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "雙方均有揮拳、踢踹等攻擊動作",
+        "legal_element": "互毆事實",
+        "evidence_type": "直接證據",
+        "notes": "關鍵區分：雙方均為積極攻擊者，非單方施暴"
+      },
+      {
+        "visual_cue": "雙方均呈現攻擊意圖（握拳、衝向對方）",
+        "legal_element": "傷害故意",
+        "evidence_type": "間接推論",
+        "notes": "互毆情形下雙方均有傷害故意"
+      },
+      {
+        "visual_cue": "雙方交替攻防、均有主動出擊行為",
+        "legal_element": "雙方積極攻擊",
+        "evidence_type": "直接證據",
+        "notes": "若一方僅防禦則應歸類為 Assault 而非 Fighting"
+      }
+    ]
+  },
+
+  "Shooting": {
+    "applicable_articles": ["刑法第271條殺人罪", "刑法第187條加重危險物罪", "槍砲彈藥刀械管制條例第7條"],
+    "visual_mappings": [
+      {
+        "visual_cue": "手持槍械、開槍動作、槍口閃光",
+        "legal_element": "使用槍械或凶器",
+        "evidence_type": "直接證據",
+        "notes": "需區分真槍與模型槍，影片分析可能無法判斷"
+      },
+      {
+        "visual_cue": "瞄準人體、朝人群方向射擊",
+        "legal_element": "殺傷意圖",
+        "evidence_type": "間接推論",
+        "notes": "朝天開槍 vs 朝人開槍意圖不同"
+      },
+      {
+        "visual_cue": "公共場所開槍、人群驚慌逃散",
+        "legal_element": "危害公共安全",
+        "evidence_type": "直接證據",
+        "notes": "公共場所要件：商場、街道、學校等開放空間"
+      }
+    ]
+  },
+
+  "Robbery": {
+    "applicable_articles": ["刑法第328條強盜罪", "刑法第330條加重強盜罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "持刀/持械威脅、暴力推倒被害人",
+        "legal_element": "強暴或脅迫手段",
+        "evidence_type": "直接證據",
+        "notes": "強暴=物理力壓制；脅迫=以危害恐嚇使人不能抗拒"
+      },
+      {
+        "visual_cue": "翻找口袋、搶奪手提物品、拉扯包包",
+        "legal_element": "取得財物",
+        "evidence_type": "直接證據",
+        "notes": "需觀察到財物易手的動作"
+      },
+      {
+        "visual_cue": "取得財物後逃離現場",
+        "legal_element": "不法所有意圖",
+        "evidence_type": "間接推論",
+        "notes": "逃離行為可推定不法所有意圖"
+      },
+      {
+        "visual_cue": "暴力行為在先、取財行為在後，時序連續",
+        "legal_element": "因果關係",
+        "evidence_type": "間接推論",
+        "notes": "強盜罪要求暴力手段與取財有因果關聯"
+      }
+    ]
+  },
+
+  "Stealing": {
+    "applicable_articles": ["刑法第320條竊盜罪", "刑法第321條加重竊盜罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "趁人不注意時拿取物品、手伸入他人口袋/包包",
+        "legal_element": "竊取行為",
+        "evidence_type": "直接證據",
+        "notes": "核心：未經同意取走他人持有之物"
+      },
+      {
+        "visual_cue": "物品原屬他人所有或持有（桌上、車內、身上）",
+        "legal_element": "他人動產",
+        "evidence_type": "直接證據",
+        "notes": "影片需能辨識物品原屬他人"
+      },
+      {
+        "visual_cue": "藏匿贓物、快速離開、避開監視器",
+        "legal_element": "不法所有意圖",
+        "evidence_type": "間接推論",
+        "notes": "藏匿+逃離行為推定不法所有意圖"
+      },
+      {
+        "visual_cue": "趁被害人未注意或不在場時行竊",
+        "legal_element": "秘密竊取",
+        "evidence_type": "間接推論",
+        "notes": "竊盜以「和平秘密」方式取物，區別於搶奪/強盜"
+      }
+    ]
+  },
+
+  "Shoplifting": {
+    "applicable_articles": ["刑法第320條竊盜罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "從商店貨架取下商品藏入衣物/包包",
+        "legal_element": "竊取行為",
+        "evidence_type": "直接證據",
+        "notes": "商店內拿取+藏匿即構成竊取"
+      },
+      {
+        "visual_cue": "商品在店內貨架上（店家持有之動產）",
+        "legal_element": "他人動產",
+        "evidence_type": "直接證據",
+        "notes": "商品陳列於店內即屬店家持有"
+      },
+      {
+        "visual_cue": "未經結帳即攜帶商品離開、藏匿商品",
+        "legal_element": "不法所有意圖",
+        "evidence_type": "間接推論",
+        "notes": "未結帳即離開可推定不法所有意圖"
+      }
+    ]
+  },
+
+  "Burglary": {
+    "applicable_articles": ["刑法第321條第1項第1款加重竊盜罪（侵入住宅）"],
+    "visual_mappings": [
+      {
+        "visual_cue": "翻牆、破窗、撬門、從非正常入口進入建築物",
+        "legal_element": "侵入建築物",
+        "evidence_type": "直接證據",
+        "notes": "侵入=未經允許進入。使用鑰匙開門可能不構成侵入"
+      },
+      {
+        "visual_cue": "進入後翻找物品、開抽屜、搬運物品",
+        "legal_element": "竊取行為",
+        "evidence_type": "直接證據",
+        "notes": "侵入+竊取=加重竊盜"
+      },
+      {
+        "visual_cue": "攜帶物品從建築物離開、裝入車輛",
+        "legal_element": "不法所有意圖",
+        "evidence_type": "間接推論",
+        "notes": "攜帶非自有物品離開建築物可推定"
+      }
+    ]
+  },
+
+  "Vandalism": {
+    "applicable_articles": ["刑法第354條毀損罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "砸毀車窗、踢壞門、噴漆塗鴉、破壞公物",
+        "legal_element": "毀損行為",
+        "evidence_type": "直接證據",
+        "notes": "毀損=使物品喪失或減損效用"
+      },
+      {
+        "visual_cue": "被破壞物品明顯屬於他人（他人車輛、商店櫥窗、公共設施）",
+        "legal_element": "他人財物",
+        "evidence_type": "直接證據",
+        "notes": "毀損自己財物不構成本罪"
+      },
+      {
+        "visual_cue": "物品損壞前後狀態明顯不同（完整→破損）",
+        "legal_element": "毀損結果",
+        "evidence_type": "直接證據",
+        "notes": "需有毀損結果發生"
+      },
+      {
+        "visual_cue": "蓄意瞄準目標、重複破壞動作",
+        "legal_element": "故意",
+        "evidence_type": "間接推論",
+        "notes": "反覆/蓄意破壞可推定故意。意外碰撞不構成"
+      }
+    ]
+  },
+
+  "Arson": {
+    "applicable_articles": ["刑法第173條放火燒燬現供人使用之住宅罪", "刑法第174條放火燒燬現非供人使用之他人所有住宅罪", "刑法第175條放火燒燬住宅等以外之物罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "點火、使用打火機/火把、潑灑可燃物後點燃",
+        "legal_element": "放火行為",
+        "evidence_type": "直接證據",
+        "notes": "需觀察到主動點火動作，區別於意外起火"
+      },
+      {
+        "visual_cue": "火勢蔓延至建築物、車輛、或大量財物",
+        "legal_element": "燒燬建築物或財物",
+        "evidence_type": "直接證據",
+        "notes": "燒燬=喪失主要效用。未達燒燬程度可能僅構成未遂"
+      },
+      {
+        "visual_cue": "攜帶助燃物到場、事前準備動作",
+        "legal_element": "故意",
+        "evidence_type": "間接推論",
+        "notes": "攜帶助燃物可推定故意。自然起火或用火不慎=過失"
+      }
+    ]
+  },
+
+  "Explosion": {
+    "applicable_articles": ["刑法第176條準放火罪", "刑法第186條公共危險罪（爆裂物）"],
+    "visual_mappings": [
+      {
+        "visual_cue": "爆炸閃光、衝擊波、煙霧瀰漫",
+        "legal_element": "爆炸行為",
+        "evidence_type": "直接證據",
+        "notes": "爆炸的視覺特徵明確（閃光+煙霧+碎片飛散）"
+      },
+      {
+        "visual_cue": "公共場所發生、波及周圍人群或建築",
+        "legal_element": "公共危險",
+        "evidence_type": "直接證據",
+        "notes": "危及不特定多數人安全即構成公共危險"
+      },
+      {
+        "visual_cue": "人為放置爆裂物、引爆動作",
+        "legal_element": "故意或過失",
+        "evidence_type": "間接推論",
+        "notes": "人為放置=故意；工廠/工地爆炸可能為過失"
+      }
+    ]
+  },
+
+  "RoadAccidents": {
+    "applicable_articles": ["刑法第276條過失致死罪", "刑法第284條過失傷害罪", "刑法第185-3條不能安全駕駛罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "闖紅燈、逆向行駛、超速、蛇行、未保持車距",
+        "legal_element": "違規行為",
+        "evidence_type": "直接證據",
+        "notes": "交通違規為過失認定的客觀基礎"
+      },
+      {
+        "visual_cue": "車輛碰撞、行人被撞、翻車",
+        "legal_element": "傷亡結果",
+        "evidence_type": "直接證據",
+        "notes": "需有人身傷亡才構成過失傷害/致死罪"
+      },
+      {
+        "visual_cue": "應注意能注意而不注意（如視線良好仍碰撞）",
+        "legal_element": "過失",
+        "evidence_type": "間接推論",
+        "notes": "過失=違反注意義務。需排除不可抗力因素"
+      },
+      {
+        "visual_cue": "碰撞後傷亡發生（時序連續）",
+        "legal_element": "因果關係",
+        "evidence_type": "間接推論",
+        "notes": "需確認傷亡是交通事故直接導致"
+      }
+    ]
+  },
+
+  "Abuse": {
+    "applicable_articles": ["刑法第277條傷害罪", "刑法第286條妨害幼童發育罪", "家庭暴力防治法第2條"],
+    "visual_mappings": [
+      {
+        "visual_cue": "對明顯弱勢者（兒童、老人、身障者）施加暴力",
+        "legal_element": "傷害或遺棄行為",
+        "evidence_type": "直接證據",
+        "notes": "Abuse 的核心：施暴對象為弱勢/家庭成員"
+      },
+      {
+        "visual_cue": "被害人明顯為家庭成員（居家場景、稱謂互動）",
+        "legal_element": "被害人身分（家庭成員）",
+        "evidence_type": "間接推論",
+        "notes": "家暴法適用前提：家庭成員間的暴力。影片場景可輔助判斷"
+      },
+      {
+        "visual_cue": "反覆施暴動作、受害者無力反抗或哭泣",
+        "legal_element": "故意",
+        "evidence_type": "間接推論",
+        "notes": "反覆施暴+權力不對等可推定故意"
+      }
+    ]
+  },
+
+  "Arrest": {
+    "applicable_articles": ["刑法第304條強制罪", "刑法第302條妨害自由罪"],
+    "visual_mappings": [
+      {
+        "visual_cue": "強行抓住、綑綁、拖拉、限制行動",
+        "legal_element": "強制行為",
+        "evidence_type": "直接證據",
+        "notes": "以物理力限制他人行動自由"
+      },
+      {
+        "visual_cue": "被害人掙扎、試圖逃脫",
+        "legal_element": "被害人意願",
+        "evidence_type": "直接證據",
+        "notes": "掙扎行為證明非自願。若配合則可能為合法逮捕"
+      },
+      {
+        "visual_cue": "非執法人員實施拘束、無正當理由限制行動",
+        "legal_element": "妨害自由",
+        "evidence_type": "間接推論",
+        "notes": "需排除合法逮捕（員警依法執行職務）的情形"
+      }
+    ]
+  }
+}

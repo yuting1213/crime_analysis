@@ -46,3 +46,15 @@ desktop.ini
 # 日誌
 *.log
 logs/
+
+# UCF-Crime 影片（太大，不納入版控）
+UCA/UCF_Crimes/UCF_Crimes/Videos/
+
+# 特徵快取（動態產生）
+crime_analysis/outputs/feature_cache/
+crime_analysis/outputs/mil_weights/
+crime_analysis/outputs/pilot_*.json
+crime_analysis/outputs/pilot_*.txt
+
+# Claude Code local settings
+.claude/settings.local.json

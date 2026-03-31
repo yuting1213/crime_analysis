@@ -36,6 +36,7 @@ Backbone 說明：
 """
 import logging
 import warnings
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
@@ -260,10 +261,20 @@ class ActionEmotionAgent(BaseAgent):
         """
         self._load_models()
 
-        if not frames:
-            return self._empty_report("無影像幀，無法分析")
+        # 過濾 None 幀，確保有效幀存在
+        valid_frames = [f for f in frames if f is not None and hasattr(f, 'shape')]
+        if not valid_frames:
+            return self._empty_report("無有效影像幀，無法分析")
+        if len(valid_frames) < len(frames):
+            logger.info(f"有效幀：{len(valid_frames)}/{len(frames)}")
+        frames = valid_frames
 
         fps = float(video_metadata.get("fps", 25.0))
+
+        # ── UCA 時序標註：優先從犯罪時段抽幀 ────────────
+        uca_segments = video_metadata.get("uca_segments", [])
+        if uca_segments:
+            frames = self._targeted_sample(frames, uca_segments, len(frames))
 
         # ── 特徵提取 ─────────────────────────────────────
         r3d_feat    = self._extract_r3d_features(frames)    # (512,)
@@ -357,9 +368,13 @@ class ActionEmotionAgent(BaseAgent):
 
         # ViT-Base
         try:
-            from transformers import ViTFeatureExtractor, ViTModel
+            from transformers import ViTModel
+            try:
+                from transformers import ViTImageProcessor as _Proc
+            except ImportError:
+                from transformers import ViTFeatureExtractor as _Proc
             vit_name = "google/vit-base-patch16-224"
-            self._vit_extractor = ViTFeatureExtractor.from_pretrained(vit_name)
+            self._vit_extractor = _Proc.from_pretrained(vit_name)
             self._vit_model = ViTModel.from_pretrained(vit_name).to(self.device).eval()
             logger.info("ViT-Base 載入完成")
         except Exception as e:
@@ -409,8 +424,50 @@ class ActionEmotionAgent(BaseAgent):
             nn.Sigmoid(),
         ).to(self.device).eval()
 
+        # 載入訓練好的權重（如果有的話）
+        weights_dir = Path("./outputs/mil_weights")
+        if weights_dir.exists():
+            self._load_trained_weights(weights_dir)
+
         self._models_loaded = True
-        logger.info("所有模型初始化完成")
+
+        # 特徵可用性報告
+        avail = {
+            "R3D-18": self._r3d is not None,
+            "ViT-Base": self._vit_model is not None,
+            "MediaPipe": self._mp_pose is not None,
+            "DeepFace": self._deepface_available,
+        }
+        active = sum(avail.values())
+        dim_active = (512 if avail["R3D-18"] else 0) + (768 if avail["ViT-Base"] else 0) + \
+                     (99 if avail["MediaPipe"] else 0) + (7 if avail["DeepFace"] else 0)
+        if active < 4:
+            missing = [k for k, v in avail.items() if not v]
+            logger.warning(
+                f"特徵降級模式：{active}/4 模態可用（{dim_active}/{FUSION_DIM}D）"
+                f"，缺少 {', '.join(missing)}"
+            )
+        else:
+            logger.info("所有模型初始化完成（4/4 模態）")
+
+    def _load_trained_weights(self, weights_dir: Path):
+        """載入 train_mil.py 訓練好的權重。"""
+        loaded = []
+        for name, module in [
+            ("fusion_encoder", self._fusion_encoder),
+            ("crime_head", self._crime_head),
+            ("escalation_head", self._escalation_head),
+        ]:
+            path = weights_dir / f"{name}.pt"
+            if path.exists() and module is not None:
+                try:
+                    state = torch.load(path, map_location=self.device, weights_only=True)
+                    module.load_state_dict(state, strict=False)
+                    loaded.append(name)
+                except Exception as e:
+                    logger.warning(f"權重載入失敗 {name}：{e}")
+        if loaded:
+            logger.info(f"已載入訓練權重：{', '.join(loaded)}")
 
     # ── 特徵提取 ────────────────────────────────────────────
 
@@ -678,12 +735,58 @@ class ActionEmotionAgent(BaseAgent):
             indicators.append("事後行為正常，需進一步觀察")
         return indicators
 
-    def _extract_key_frames(self, frames: List[np.ndarray]) -> List[int]:
-        """均勻取樣最多 16 個關鍵幀索引"""
+    def _targeted_sample(
+        self,
+        frames: List[np.ndarray],
+        uca_segments: List[Dict],
+        total_frames: int,
+    ) -> List[np.ndarray]:
+        """
+        利用 UCA 時序標註做 targeted sampling。
+        策略：70% 幀從犯罪時段抽取，30% 從全影片均勻抽取（保留背景脈絡）。
+        """
+        n_target = len(frames)
+        n_event = int(n_target * 0.7)
+        n_context = n_target - n_event
+
+        # 收集犯罪時段的幀索引
+        event_frame_indices = set()
+        for seg in uca_segments:
+            start_f = seg.get("start_frame", 0)
+            end_f = seg.get("end_frame", total_frames)
+            for i in range(start_f, min(end_f + 1, len(frames))):
+                event_frame_indices.add(i)
+
+        if not event_frame_indices:
+            return frames  # 無標註資訊，不改變
+
+        # 從犯罪時段均勻取 n_event 幀
+        event_indices = sorted(event_frame_indices)
+        if len(event_indices) >= n_event:
+            step = max(1, len(event_indices) // n_event)
+            sampled_event = [frames[event_indices[i]] for i in range(0, len(event_indices), step)][:n_event]
+        else:
+            sampled_event = [frames[i] for i in event_indices]
+
+        # 從全影片均勻取 n_context 幀（背景脈絡）
+        context_step = max(1, len(frames) // n_context) if n_context > 0 else len(frames)
+        sampled_context = frames[::context_step][:n_context]
+
+        result = sampled_event + sampled_context
+        # 補足到原始數量
+        while len(result) < n_target:
+            result.append(result[-1])
+
+        return result[:n_target]
+
+    def _extract_key_frames(
+        self, frames: List[np.ndarray], max_keys: int = 8
+    ) -> List[int]:
+        """均勻取樣關鍵幀索引（ViT/Pose/Emotion 共用）"""
         n = len(frames)
         if n == 0:
             return []
-        num_keys = min(16, n)
+        num_keys = min(max_keys, n)
         indices = [int(round(i * (n - 1) / (num_keys - 1))) for i in range(num_keys)] \
             if num_keys > 1 else [0]
         return sorted(set(indices))

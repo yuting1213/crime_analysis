@@ -7,7 +7,8 @@ from typing import List
 
 @dataclass
 class ModelConfig:
-    base_model: str = "Qwen/Qwen2.5-VL-7B-Instruct"  # 本地端 Qwen3-7B
+    base_model: str = "Qwen/Qwen2.5-VL-7B-Instruct"  # 本地端 VLM（Action/Environment）
+    report_model: str = "Qwen/Qwen2.5-7B-Instruct"     # Step 3b 報告生成（text-only）
     planner_model: str = "gpt-4o"                      # Planner 使用 GPT-4o
     embedding_model: str = "BAAI/bge-m3"               # BGE-M3 中文向量
     device: str = "cuda"
@@ -53,6 +54,13 @@ class DPOConfig:
     beta: float = 0.1             # KL 懲罰係數
     max_steps: int = 2000
     judge_model: str = "gpt-4o"  # Pairwise judge，避免 Self-Enhancement Bias
+    # ── 偏好對生成策略 ──
+    pairs_per_category: int = 15  # 每個犯罪類別的偏好對數量
+    generation_temperatures: List[float] = field(
+        default_factory=lambda: [0.3, 0.7, 1.0]
+    )  # 不同溫度產生報告多樣性，每對從中取兩個溫度組合
+    min_score_gap: float = 0.5    # Judge 分差 < 此值的對被丟棄（品質太接近無法區分）
+    position_bias_check: bool = True  # AB/BA 雙向比較校正
 
 
 @dataclass
@@ -65,7 +73,6 @@ class DebateConfig:
 @dataclass
 class DataConfig:
     ucf_crime_dir: str = "./data/ucf_crime"
-    xd_violence_dir: str = "./data/xd_violence"
     # UCF-Crime 13 類
     crime_categories: List[str] = field(default_factory=lambda: [
         "Normal", "Robbery", "RoadAccidents", "Stealing", "Burglary",

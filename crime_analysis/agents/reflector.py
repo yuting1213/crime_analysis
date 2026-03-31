@@ -727,6 +727,11 @@ class ReflectorAgent:
                 m_crime = report.confidence * (1.0 - u)
                 m_unc   = u
                 m_no    = max(0.0, 1.0 - m_crime - m_unc)
+            assert abs(m_crime + m_no + m_unc - 1.0) < 1e-6, (
+                f"信念值加總 ≠ 1.0: crime={m_crime:.4f} "
+                f"no_crime={m_no:.4f} uncertain={m_unc:.4f} "
+                f"(agent={report.agent_name})"
+            )
             return {
                 "crime":    m_crime,
                 "no_crime": m_no,
@@ -752,10 +757,21 @@ class ReflectorAgent:
             for ae_r in cat_reports:
                 mi = _mass(ae_r, is_env=False)
                 # m_env_default：假設環境可信度 = ae_conf（無獨立資訊，不增加衝突）
+                # m_env.no_crime 為衍生值，隨 ae_conf 浮動：
+                #   ae_conf=1.0 → no_crime=0.03（幾乎不衝突）
+                #   ae_conf=0.0 → no_crime=0.88（高度衝突）
+                ae_conf = ae_r.confidence
+                m_env_crime = ae_conf * 0.95
+                m_env_no_crime = 0.88 - 0.85 * ae_conf
+                m_env_uncertain = 1.0 - m_env_crime - m_env_no_crime
+                assert abs(m_env_crime + m_env_no_crime + m_env_uncertain - 1.0) < 1e-6, (
+                    f"m_env 信念值加總 ≠ 1.0: crime={m_env_crime:.4f} "
+                    f"no_crime={m_env_no_crime:.4f} uncertain={m_env_uncertain:.4f}"
+                )
                 m_env_default = {
-                    "crime":    ae_r.confidence * 0.95,
-                    "no_crime": 0.03,
-                    "uncertain": 0.02 + (1.0 - ae_r.confidence) * 0.1,
+                    "crime":    m_env_crime,
+                    "no_crime": m_env_no_crime,
+                    "uncertain": m_env_uncertain,
                     "category": ae_r.crime_category,
                 }
                 k_ij = mi["crime"] * m_env_default["no_crime"] + mi["no_crime"] * m_env_default["crime"]

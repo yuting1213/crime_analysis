@@ -91,6 +91,7 @@ class DPOTrainer:
         self.judge_model = judge_model or cfg.dpo.judge_model
         self.beta = cfg.dpo.beta
         self._preference_dataset: List[PreferencePair] = []
+        self._llm_judge = None  # 延遲載入 LLMJudge
 
     def collect_preference_pair(
         self,
@@ -179,32 +180,27 @@ class DPOTrainer:
         self, prompt: str, report_first: str, report_second: str, order: str
     ) -> Dict[str, Any]:
         """
-        呼叫 GPT-4o 進行 Pairwise 比較
-
-        Judge Prompt 設計原則：
-        - 明確指定「台灣刑事鑑識專家」角色（避免非台灣法律邏輯評判）
-        - 使用 Rubric 四個維度逐一評分
-        - 要求給出 winner 和分項分數
-
-        TODO:
-        from openai import OpenAI
-        client = OpenAI()
-        judge_prompt = self._build_judge_prompt(
-            prompt, report_first, report_second
-        )
-        response = client.chat.completions.create(
-            model=self.judge_model,
-            messages=[{"role": "user", "content": judge_prompt}],
-            response_format={"type": "json_object"},
-        )
-        return json.loads(response.choices[0].message.content)
+        透過 LLMJudge 進行 Pairwise 比較。
+        委派給 evaluation.llm_judge 避免重複實作。
         """
-        # placeholder：模擬 Judge 回傳
+        if self._llm_judge is None:
+            from evaluation.llm_judge import LLMJudge
+            self._llm_judge = LLMJudge(self.judge_model)
+
+        result = self._llm_judge._call_judge(
+            prompt, report_first, report_second,
+            first_label="A", second_label="B",
+        )
+
+        winner = result.get("winner", "A")
+        score_first = result.get("score_first", 0.0)
+        score_second = result.get("score_second", 0.0)
+
         return {
-            "winner": "A",
-            "score_winner": 4.2,
-            "score_loser": 3.1,
-            "rationale": "Report A provides clearer legal element coverage...",
+            "winner": winner,
+            "score_winner": score_first if winner == "A" else score_second,
+            "score_loser": score_second if winner == "A" else score_first,
+            "rationale": result.get("rationale", ""),
         }
 
     def _build_judge_prompt(

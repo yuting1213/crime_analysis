@@ -8,19 +8,9 @@ import logging
 
 from .base_agent import BaseAgent, AgentReport
 from config import cfg
+from rag.rag_module import LEGAL_ELEMENTS
 
 logger = logging.getLogger(__name__)
-
-
-# 台灣刑法構成要件模板（法律要件覆蓋率 Rlegal 的計算基準）
-LEGAL_ELEMENTS: Dict[str, List[str]] = {
-    "Assault": ["主觀故意", "傷害行為", "因果關係", "傷害結果", "違法性"],
-    "Robbery": ["強暴/脅迫手段", "取財意圖", "他人財物", "不法所有意圖"],
-    "Fighting": ["互毆事實", "傷害故意", "雙方積極攻擊行為"],
-    "Stealing": ["竊取行為", "他人財物", "不法所有意圖", "秘密竊取"],
-    "Shooting": ["使用槍械", "殺傷力", "故意/過失", "危害公共安全"],
-    # ... 其他類別
-}
 
 
 class SemanticAgent(BaseAgent):
