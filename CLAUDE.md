@@ -162,7 +162,7 @@ cfg.training.num_workers = 2             # CPU 核心少時降低
 
 ## Design Decisions
 
-- `action_agent.py` and `time_emotion_agent.py` are **deprecated**; use `action_emotion_agent.py` (early-fusion, 1386D → 512D). They are lazy-imported in `agents/__init__.py` to avoid pulling in unnecessary dependencies.
+- `action_agent.py`, `time_emotion_agent.py`, `semantic_agent.py` have been **removed**; use `action_emotion_agent.py` (early-fusion, 1386D → 512D)
 - Planner is intentionally **not** an LLM to avoid task-scheduling hallucinations
 - Primary training path is **DPO**, not GRPO; GRPO is optional
 - RAG uses **both** BM25 and dense retrieval — do not remove either layer; precision and recall are complementary
