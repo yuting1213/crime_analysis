@@ -55,7 +55,7 @@ WEIGHTS_DIR = Path("./outputs/mil_weights")
 # ── 特徵預提取 ───────────────────────────────────────────────
 
 # 特徵提取版本 — 改了取幀策略/模型時遞增此值，會自動使舊快取失效
-FEATURE_VERSION = "v3"  # v1=前16幀+4幀ViT, v2=均勻16幀+8幀ViT, v3=4/4模態(+Pose+Emotion)
+FEATURE_VERSION = "v4"  # v1=前16幀+4幀ViT, v2=均勻16幀+8幀ViT, v3=4/4模態, v4=去除R3D L2norm+StandardScaler
 
 
 def extract_and_cache_features(
@@ -226,7 +226,7 @@ def _extract_r3d_feature(
     _use_amp = (device == "cuda" and cfg.model.torch_dtype == "bfloat16")
     with torch.no_grad(), torch.amp.autocast("cuda", dtype=torch.bfloat16, enabled=_use_amp):
         feat = model(clip_tensor)  # (1, 512)
-        feat = F.normalize(feat.float(), p=2, dim=-1)
+        feat = feat.float()  # 不做 L2 normalize，保留幅度資訊供分類器區分
 
     return feat.cpu().numpy()[0]
 
@@ -368,10 +368,14 @@ class UCFCrimeDataset(Dataset):
     def __init__(
         self,
         cache_map: Dict[str, Path],
+        feat_mean: Optional[np.ndarray] = None,
+        feat_std: Optional[np.ndarray] = None,
         split: str = "Train",
     ):
         from scripts.pilot_experiment import video_id_to_category
 
+        self.feat_mean = feat_mean
+        self.feat_std = feat_std
         self.samples = []
         self.anomaly_ids = []
         self.normal_ids = []
@@ -413,7 +417,7 @@ class UCFCrimeDataset(Dataset):
         norm_sample = self.samples[norm_idx]
         norm_feat = np.load(norm_sample["npy_path"])
 
-        # 確保維度正確（相容舊的 512D 快取和新的 1386D 快取）
+        # 確保維度正確
         if len(anom_feat) < FUSION_DIM:
             padded = np.zeros(FUSION_DIM, dtype=np.float32)
             padded[:len(anom_feat)] = anom_feat
@@ -422,6 +426,11 @@ class UCFCrimeDataset(Dataset):
             padded = np.zeros(FUSION_DIM, dtype=np.float32)
             padded[:len(norm_feat)] = norm_feat
             norm_feat = padded
+
+        # StandardScaler: (x - mean) / std
+        if self.feat_mean is not None and self.feat_std is not None:
+            anom_feat = (anom_feat - self.feat_mean) / self.feat_std
+            norm_feat = (norm_feat - self.feat_mean) / self.feat_std
 
         return {
             "anom_feat": torch.from_numpy(anom_feat),
@@ -468,8 +477,27 @@ def train(
         logger.error("無特徵可用")
         return
 
-    # Step 2: 建立 Dataset
-    dataset = UCFCrimeDataset(cache_map, split=split)
+    # Step 2: StandardScaler — 消除模態間 scale 差異
+    # R3D ~10-30, ViT ~20, Pose ~1-4, Emotion ~0.14 → 全部 zero-mean, unit-var
+    logger.info("Step 2: 計算 StandardScaler（全特徵）...")
+    all_feats = np.stack([np.load(p) for p in cache_map.values()])
+    feat_mean = all_feats.mean(axis=0).astype(np.float32)
+    feat_std = all_feats.std(axis=0).astype(np.float32)
+    feat_std[feat_std < 1e-6] = 1.0  # 避免除零（常數維度）
+
+    # 保存 scaler 供推理時使用
+    scaler_path = WEIGHTS_DIR / "feature_scaler.npz"
+    WEIGHTS_DIR.mkdir(parents=True, exist_ok=True)
+    np.savez(scaler_path, mean=feat_mean, std=feat_std)
+    logger.info(f"  Scaler 儲存 → {scaler_path}")
+    logger.info(
+        f"  R3D norm: mean={np.linalg.norm(feat_mean[:512]):.2f}, "
+        f"ViT norm: mean={np.linalg.norm(feat_mean[512:1280]):.2f}, "
+        f"Pose norm: mean={np.linalg.norm(feat_mean[1280:1379]):.2f}"
+    )
+
+    # Step 3: 建立 Dataset
+    dataset = UCFCrimeDataset(cache_map, split=split, feat_mean=feat_mean, feat_std=feat_std)
     if len(dataset) == 0:
         logger.error("Dataset 為空")
         return

@@ -247,6 +247,7 @@ class ActionEmotionAgent(BaseAgent):
         # MediaPipe / DeepFace（可選）
         self._mp_pose = None
         self._deepface_available: bool = False
+        self._feat_scaler: Optional[dict] = None  # StandardScaler from train_mil
 
         logger.info(f"ActionEmotionAgent 初始化，裝置：{self.device}")
 
@@ -279,17 +280,21 @@ class ActionEmotionAgent(BaseAgent):
         if uca_segments:
             frames = self._targeted_sample(frames, uca_segments, len(frames))
 
-        # ── 特徵提取（RTX 5090: BF16 autocast 加速）─────
-        _use_amp = (self.device == "cuda" and cfg.model.torch_dtype == "bfloat16")
-        with torch.amp.autocast("cuda", dtype=_BF16_DTYPE, enabled=_use_amp):
-            r3d_feat    = self._extract_r3d_features(frames)    # (512,)
-            vit_feat    = self._extract_vit_features(frames)    # (768,)
+        # ── 特徵提取 ─────────────────────────────────────
+        # R3D / ViT 在 GPU 上推理（不用 autocast，避免輸出 BF16 與 numpy 衝突）
+        r3d_feat    = self._extract_r3d_features(frames)    # (512,) float32
+        vit_feat    = self._extract_vit_features(frames)    # (768,) float32
         pose_feat   = self._extract_pose_features(frames)   # (99,)  CPU-bound
         emo_feat    = self._extract_emotion_features(frames) # (7,)   CPU-bound
 
         fused = np.concatenate([r3d_feat, vit_feat, pose_feat, emo_feat])  # (1386,)
 
-        # ── 融合編碼（RTX 5090: BF16 autocast）─────────
+        # StandardScaler（與 train_mil.py 訓練時一致）
+        if self._feat_scaler is not None:
+            fused = (fused - self._feat_scaler["mean"]) / self._feat_scaler["std"]
+
+        # ── 融合編碼（RTX 5090: BF16 autocast 只在 encoder forward 用）─────
+        _use_amp = (self.device == "cuda" and cfg.model.torch_dtype == "bfloat16")
         with torch.no_grad(), torch.amp.autocast("cuda", dtype=_BF16_DTYPE, enabled=_use_amp):
             x = torch.tensor(fused, dtype=torch.float32).unsqueeze(0).to(self.device)  # (1, 1386)
             fusion_output = self._fusion_encoder(x)  # (1, 512)
@@ -507,6 +512,13 @@ class ActionEmotionAgent(BaseAgent):
         if loaded:
             logger.info(f"已載入訓練權重：{', '.join(loaded)}")
 
+        # 載入 StandardScaler（train_mil.py 訓練時產生）
+        scaler_path = weights_dir / "feature_scaler.npz"
+        if scaler_path.exists():
+            data = np.load(scaler_path)
+            self._feat_scaler = {"mean": data["mean"], "std": data["std"]}
+            logger.info("已載入 feature scaler")
+
     # ── 特徵提取 ────────────────────────────────────────────
 
     def _extract_r3d_features(self, frames: List[np.ndarray]) -> np.ndarray:
@@ -525,7 +537,6 @@ class ActionEmotionAgent(BaseAgent):
                 if clip is None:
                     continue
                 feat = self._r3d(clip.to(self.device))  # (1, 512)
-                feat = F.normalize(feat, p=2, dim=-1)
                 snippet_feats.append(feat.cpu().numpy()[0])
 
         if not snippet_feats:
