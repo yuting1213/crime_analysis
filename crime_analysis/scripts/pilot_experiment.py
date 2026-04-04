@@ -247,12 +247,143 @@ def run_pilot(samples: List[Dict], output_dir: str) -> Dict:
         }
         case_stats.append(stat)
 
+        # ── 輸出完整鑑定報告 ────────────────────────────
+        _save_case_report(result, video_id, gt, metadata, output_path)
+
     # ── 統計分析 ─────────────────────────────────────────
     if not case_stats:
         logger.warning("無有效結果")
         return {}
 
     return _compute_summary(case_stats, output_path)
+
+
+def _save_case_report(
+    result: Dict,
+    video_id: str,
+    ground_truth: str,
+    metadata: Dict,
+    output_dir: Path,
+):
+    """將單一案例的完整鑑定報告寫入 outputs/pilot_reports/{video_id}.txt"""
+    report_dir = output_dir / "pilot_reports"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    report_path = report_dir / f"{video_id}.txt"
+
+    predicted = result.get("final_category", "Normal")
+    correct = "✓" if predicted == ground_truth else "✗"
+    confidence = result.get("fact_finding", {}).get("confidence", 0.0)
+    report_text = result.get("fact_finding", {}).get("description", "（無報告）")
+    rationale = result.get("fact_finding", {}).get("rationale", "")
+
+    # 行為分析
+    behavior = result.get("behavior_analysis", {})
+    causal_chain = behavior.get("causal_chain", "")
+    escalation = behavior.get("escalation_score", 0.0)
+    pre_crime = behavior.get("pre_crime_indicators", [])
+    post_crime = behavior.get("post_crime_indicators", [])
+
+    # 法律分類
+    legal = result.get("legal_classification", {})
+    articles = legal.get("applicable_articles", [])
+    elements = legal.get("elements_covered", [])
+    rlegal = result.get("rlegal", 0.0)
+
+    # 不確定性
+    uncertainty = result.get("uncertainty_notes", {})
+
+    # UCA 標註
+    uca_segments = metadata.get("uca_segments", [])
+
+    lines = [
+        "=" * 70,
+        f"  鑑定報告：{video_id}",
+        "=" * 70,
+        "",
+        f"  正確答案：{ground_truth}",
+        f"  模型判定：{predicted}  {correct}",
+        f"  信心程度：{confidence:.2%}",
+        f"  報告生成：{result.get('report_generation_method', 'unknown')}",
+        "",
+        "─" * 70,
+        "  一、Qwen3-8B 鑑定報告",
+        "─" * 70,
+        "",
+        report_text,
+        "",
+        "─" * 70,
+        "  一-b、ActionEmotion Agent 行為摘要",
+        "─" * 70,
+        "",
+        rationale or "（無）",
+        "",
+        "─" * 70,
+        "  二、行為分析",
+        "─" * 70,
+        "",
+        f"  因果鏈：{causal_chain}",
+        f"  升溫分數：{escalation:.2f}",
+        f"  事前指標：{'; '.join(pre_crime) if pre_crime else '（無）'}",
+        f"  事後指標：{'; '.join(post_crime) if post_crime else '（無）'}",
+        "",
+        "─" * 70,
+        "  三、法律適用",
+        "─" * 70,
+        "",
+        f"  適用法條：{', '.join(articles) if articles else '（無）'}",
+        f"  構成要件：{', '.join(elements) if elements else '（無）'}",
+        f"  Rlegal：{rlegal:.3f}",
+        "",
+        "─" * 70,
+        "  四、系統指標",
+        "─" * 70,
+        "",
+        f"  Rcons：{result.get('rcons', 0.0):.3f}",
+        f"  Rcost：{result.get('rcost', 0.0):.3f}",
+        f"  對話輪次：{result.get('total_turns', 0)}",
+        f"  衝突類型：{result.get('conflict_type', 'NONE')}",
+        f"  是否收斂：{result.get('is_convergent', False)}",
+        "",
+        "─" * 70,
+        "  五、不確定性與限制",
+        "─" * 70,
+        "",
+    ]
+
+    for key, label in [
+        ("low_confidence_items", "低信心項目"),
+        ("conflicting_evidence", "衝突證據"),
+        ("insufficient_evidence", "證據不足"),
+    ]:
+        items = uncertainty.get(key, [])
+        if items:
+            lines.append(f"  【{label}】")
+            for item in items:
+                lines.append(f"    - {item}")
+        else:
+            lines.append(f"  【{label}】（無）")
+
+    if uca_segments:
+        lines.extend([
+            "",
+            "─" * 70,
+            "  附錄：UCA 時序標註（Ground Truth）",
+            "─" * 70,
+            "",
+        ])
+        for seg in uca_segments:
+            lines.append(
+                f"  [{seg.get('start', 0):.1f}s – {seg.get('end', 0):.1f}s] "
+                f"{seg.get('description', '')}"
+            )
+
+    lines.append("")
+    lines.append("=" * 70)
+
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+
+    logger.info(f"  報告 → {report_path}")
 
 
 def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:

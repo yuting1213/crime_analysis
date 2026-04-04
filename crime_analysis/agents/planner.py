@@ -311,6 +311,7 @@ class PlannerAgent:
         return self._synthesize_final_report(
             list(reports.values()), final_audit,
             case_id, rlegal, rag_results, low_reliability,
+            generated_report_text=generated_report_text,
         )
 
     # ── Step 1 ───────────────────────────────────────────
@@ -429,6 +430,7 @@ class PlannerAgent:
         rlegal: float,
         rag_results: Dict,
         low_reliability: bool,
+        generated_report_text: str = "",
     ) -> Dict[str, Any]:
         crime_type = final_audit.consensus_category
         weights = self._get_eval_weights(crime_type)
@@ -480,7 +482,8 @@ class PlannerAgent:
         final_report = {
             "case_id": case_id,
             "fact_finding": {
-                "description": rationale or (ae_report.reasoning if ae_report else "分析不完整"),
+                "description": generated_report_text or rationale or (ae_report.reasoning if ae_report else "分析不完整"),
+                "rationale": rationale,
                 "supporting_frames": self._collect_key_frames(reports),
                 "confidence": ae_report.confidence if ae_report else 0.0,
             },

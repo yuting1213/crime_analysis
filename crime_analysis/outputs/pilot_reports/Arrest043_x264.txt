@@ -1,0 +1,71 @@
+======================================================================
+  鑑定報告：Arrest043_x264
+======================================================================
+
+  正確答案：Arrest
+  模型判定：Shooting  ✗
+  信心程度：53.80%
+  報告生成：qwen3
+
+──────────────────────────────────────────────────────────────────────
+  一、事實認定 / Qwen3 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+【行為情緒分析】偵測到犯罪行為：Shooting（暴力 / 人身傷害）。嚴重程度：HIGH。情緒升溫分數：0.00。因果鏈：[低度升溫] 威脅態勢 → 武器顯現 → 開槍射擊。關鍵幀範圍：幀 0–31。語義問題提示：Do you see people confronting, attacking, or restraining each other? Is there evidence of weapons, force, or law enforcement presence?
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：[低度升溫] 威脅態勢 → 武器顯現 → 開槍射擊
+  升溫分數：0.00
+  事前指標：偵測到事前情緒：disgust（可能的衝突前兆）; 人員間肢體距離縮短，存在對峙跡象
+  事後指標：受害者出現防禦性姿態或倒地行為
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：（無）
+  構成要件：使用槍械或凶器, 殺傷意圖, 危害公共安全
+  Rlegal：1.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：0.860
+  Rcost：0.000
+  對話輪次：3
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】
+    - 行為情緒分析專家: conf=0.54
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [0.0s – 38.3s] A red small truck parked in the middle, a large white truck parked next to the wall, and several people standing in the distance
+  [38.2s – 47.2s] A man in black leaves.
+  [43.0s – 64.5s]  Several people in black police uniforms walked to the red car
+  [51.8s – 61.9s] A man in blue clothes leaves with something in his hand.
+  [66.7s – 79.0s] The three people next to the blue car lay on the ground.
+  [72.6s – 127.9s] A man wearing a yellow hat and a black police uniform walked up to a man lying on the ground and stepped on him with his feet to beat him.
+  [73.4s – 97.1s] The two people in the red vehicle got out of the car and left.
+  [77.1s – 88.0s]  Several people in black police uniforms rushed over.
+  [78.5s – 87.6s] The man in the yellow hat pressed on the man lying on the ground in the middle of the yard
+  [98.2s – 120.3s] The man wearing a yellow hat in the middle of the yard beats the man lying on the ground
+  [122.2s – 222.3s]  During this period, a man stood on the man lying on the ground and kept pulling something.
+  [224.7s – 236.5s] A man lying on the ground stood up and walked to the side of another man lying on the ground.
+  [238.2s – 342.3s] The man lying on the ground had his hands tied up and started doing it. People around him were walking around and saying something to him.
+  [348.4s – 359.9s] The man was surrounded by many people and taken away.
+
+======================================================================

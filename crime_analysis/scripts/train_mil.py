@@ -55,7 +55,7 @@ WEIGHTS_DIR = Path("./outputs/mil_weights")
 # ── 特徵預提取 ───────────────────────────────────────────────
 
 # 特徵提取版本 — 改了取幀策略/模型時遞增此值，會自動使舊快取失效
-FEATURE_VERSION = "v2"  # v1=前16幀+4幀ViT, v2=均勻16幀+8幀ViT
+FEATURE_VERSION = "v3"  # v1=前16幀+4幀ViT, v2=均勻16幀+8幀ViT, v3=4/4模態(+Pose+Emotion)
 
 
 def extract_and_cache_features(
@@ -63,7 +63,8 @@ def extract_and_cache_features(
     force: bool = False,
 ) -> Dict[str, Path]:
     """
-    用 R3D-18 + ViT 預提取所有影片的特徵並存為 .npy。
+    預提取所有影片的 4 模態融合特徵並存為 .npy。
+    R3D-18(512D) + ViT(768D) + MediaPipe Pose(99D) + DeepFace Emotion(7D) = 1386D
     快取檔名包含版本號，避免舊參數的快取被誤用。
     回傳 {video_id: npy_path} 映射。
     """
@@ -94,6 +95,26 @@ def extract_and_cache_features(
     except Exception as e:
         logger.warning(f"ViT 載入失敗，將只用 R3D-18：{e}")
 
+    # 初始化 MediaPipe Pose
+    mp_pose = None
+    try:
+        import mediapipe as mp
+        mp_pose = mp.solutions.pose.Pose(
+            static_image_mode=True, model_complexity=1, min_detection_confidence=0.5,
+        )
+        logger.info("MediaPipe Pose 初始化完成")
+    except Exception as e:
+        logger.warning(f"MediaPipe 不可用，Pose 特徵將為零：{e}")
+
+    # 初始化 DeepFace
+    deepface_ok = False
+    try:
+        from deepface import DeepFace as _df
+        deepface_ok = True
+        logger.info("DeepFace 可用")
+    except Exception as e:
+        logger.warning(f"DeepFace 不可用，Emotion 特徵將為零：{e}")
+
     cache_map = {}
     processed = 0
     skipped = 0
@@ -123,22 +144,24 @@ def extract_and_cache_features(
         if video_path is None or not video_path.exists():
             continue
 
-        # 抽幀 + 提取特徵（R3D-18 512D + ViT 768D + 零填充 106D = 1386D）
+        # 抽幀 + 提取 4 模態特徵
         try:
             frames = _load_video_frames(str(video_path))
             r3d_feat = _extract_r3d_feature(r3d, frames, device)
             vit_feat = _extract_vit_feature(vit_model, vit_proc, frames, device) if vit_model else np.zeros(768, dtype=np.float32)
+            pose_feat = _extract_pose_feature(mp_pose, frames) if mp_pose else np.zeros(99, dtype=np.float32)
+            emo_feat = _extract_emotion_feature(frames) if deepface_ok else np.zeros(7, dtype=np.float32)
+
             # 組裝 1386D = R3D(512) + ViT(768) + Pose(99) + Emotion(7)
-            fusion_feat = np.zeros(FUSION_DIM, dtype=np.float32)
-            fusion_feat[:R3D_DIM] = r3d_feat
-            fusion_feat[R3D_DIM:R3D_DIM+768] = vit_feat
-            # Pose + Emotion 留零（這兩個需要 MediaPipe/DeepFace）
+            fusion_feat = np.concatenate([r3d_feat, vit_feat, pose_feat, emo_feat])
+            assert fusion_feat.shape == (FUSION_DIM,), f"Expected {FUSION_DIM}D, got {fusion_feat.shape}"
+
             np.save(npy_path, fusion_feat)
             cache_map[video_id] = npy_path
             processed += 1
 
             if processed % 50 == 0:
-                logger.info(f"  已提取 {processed} 部影片特徵")
+                logger.info(f"  已提取 {processed} 部影片特徵（4/4 模態）")
         except Exception as e:
             logger.warning(f"  {video_id} 特徵提取失敗：{e}")
 
@@ -244,6 +267,94 @@ def _extract_vit_feature(
             feats.append(cls_feat.cpu().numpy()[0])
 
     return np.mean(feats, axis=0).astype(np.float32)
+
+
+def _extract_pose_feature(
+    mp_pose,
+    frames: List[np.ndarray],
+    n_keyframes: int = 8,
+) -> np.ndarray:
+    """MediaPipe Pose: 33 keypoints × 3(x,y,z) = 99D，均勻取 keyframes 後平均。"""
+    import cv2
+
+    if mp_pose is None or len(frames) < 1:
+        return np.zeros(99, dtype=np.float32)
+
+    n = len(frames)
+    if n >= n_keyframes:
+        indices = np.linspace(0, n - 1, n_keyframes, dtype=int)
+        selected = [frames[i] for i in indices]
+    else:
+        selected = frames
+
+    pose_feats = []
+    for frame in selected:
+        try:
+            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            result = mp_pose.process(rgb)
+            if result.pose_landmarks:
+                kpts = np.array(
+                    [[lm.x, lm.y, lm.z] for lm in result.pose_landmarks.landmark],
+                    dtype=np.float32,
+                ).flatten()  # (99,)
+                pose_feats.append(kpts)
+        except Exception:
+            pass
+
+    if not pose_feats:
+        return np.zeros(99, dtype=np.float32)
+    return np.mean(pose_feats, axis=0).astype(np.float32)
+
+
+def _extract_emotion_feature(
+    frames: List[np.ndarray],
+    n_keyframes: int = 8,
+) -> np.ndarray:
+    """DeepFace Emotion: 7D 情緒機率向量，均勻取 keyframes 後平均。"""
+    import cv2
+    from deepface import DeepFace
+
+    EMOTION_LABELS = ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
+
+    if len(frames) < 1:
+        neutral = np.zeros(7, dtype=np.float32)
+        neutral[-1] = 1.0
+        return neutral
+
+    n = len(frames)
+    if n >= n_keyframes:
+        indices = np.linspace(0, n - 1, n_keyframes, dtype=int)
+        selected = [frames[i] for i in indices]
+    else:
+        selected = frames
+
+    emo_feats = []
+    for frame in selected:
+        try:
+            result = DeepFace.analyze(
+                frame, actions=["emotion"], enforce_detection=False, silent=True,
+            )
+            if isinstance(result, list):
+                result = result[0]
+            emo_dict = result.get("emotion", {})
+            vec = np.array(
+                [emo_dict.get(label, 0.0) / 100.0 for label in EMOTION_LABELS],
+                dtype=np.float32,
+            )
+            emo_feats.append(vec)
+        except Exception:
+            pass
+
+    if not emo_feats:
+        neutral = np.zeros(7, dtype=np.float32)
+        neutral[-1] = 1.0
+        return neutral
+
+    avg = np.mean(emo_feats, axis=0).astype(np.float32)
+    total = avg.sum()
+    if total > 0:
+        avg /= total
+    return avg
 
 
 # ── Dataset ──────────────────────────────────────────────────
@@ -416,8 +527,25 @@ def train(
 
     scheduler = LambdaLR(optimizer, lr_lambda)
 
-    # Label smoothing CE loss（防止過度自信，緩解類別不平衡）
-    ce_loss_fn = nn.CrossEntropyLoss(label_smoothing=cfg.training.label_smoothing)
+    # Class weights：反比類別數量，緩解不平衡（Explosion 7 vs RoadAccidents 106）
+    cat_counts = {}
+    for s in dataset.samples:
+        if s["is_anomaly"]:
+            idx = s["category_idx"]
+            cat_counts[idx] = cat_counts.get(idx, 0) + 1
+    if cat_counts:
+        weights = torch.zeros(NUM_CLASSES, device=device)
+        total_samples = sum(cat_counts.values())
+        for idx, count in cat_counts.items():
+            weights[idx] = total_samples / (NUM_CLASSES * count)
+        logger.info(f"Class weights: {dict(zip(CRIME_CATEGORIES, weights.tolist()))}")
+    else:
+        weights = None
+
+    ce_loss_fn = nn.CrossEntropyLoss(
+        weight=weights,
+        label_smoothing=cfg.training.label_smoothing,
+    )
 
     # RTX 5090: BF16 混合精度訓練
     use_amp = (device == "cuda" and cfg.training.mixed_precision)
