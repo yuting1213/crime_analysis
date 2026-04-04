@@ -17,6 +17,8 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+import torch
+
 from config import cfg
 from agents import (
     EnvironmentAgent, ActionEmotionAgent,
@@ -28,6 +30,34 @@ from training import RewardCalculator, GRPOTrainer, DPOTrainer
 from evaluation import MetricsCalculator, LLMJudge
 
 logger = logging.getLogger(__name__)
+
+
+def _init_cuda_backends():
+    """
+    RTX 5090 Blackwell CUDA 後端初始化。
+    在任何模型載入之前呼叫，確保全域設定生效。
+    """
+    if not torch.cuda.is_available():
+        logger.warning("CUDA 不可用，將使用 CPU 模式")
+        return
+
+    gpu_name = torch.cuda.get_device_name(0)
+    props = torch.cuda.get_device_properties(0)
+    vram_gb = getattr(props, "total_memory", getattr(props, "total_mem", 0)) / (1024 ** 3)
+    logger.info(f"GPU: {gpu_name} ({vram_gb:.1f} GB)")
+
+    # cuDNN benchmark: 自動調優卷積核（R3D-18 3D conv 大幅受益）
+    if cfg.model.cudnn_benchmark:
+        torch.backends.cudnn.benchmark = True
+
+    # TF32: Blackwell 預設啟用，確保 matmul 精度
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
+
+    logger.info(
+        f"CUDA 後端初始化完成 | cuDNN benchmark={cfg.model.cudnn_benchmark} | "
+        f"TF32=True | dtype={cfg.model.torch_dtype}"
+    )
 
 
 class CrimeAnalysisPipeline:
@@ -48,6 +78,9 @@ class CrimeAnalysisPipeline:
     """
 
     def __init__(self):
+        # RTX 5090: 初始化 CUDA 後端（cuDNN benchmark, TF32）
+        _init_cuda_backends()
+
         # 建立 H-RAG 系統
         self.rag = HierarchicalRAG(cfg.rag)
         self.rag_module = RAGModule(self.rag)

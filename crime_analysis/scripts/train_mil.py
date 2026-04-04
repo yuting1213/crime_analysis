@@ -11,7 +11,7 @@ MIL Head 訓練腳本
 
 使用方式：
   cd crime_analysis
-  python -m scripts.train_mil --epochs 30 --lr 1e-4 --batch_size 16
+  python -m scripts.train_mil --epochs 30 --lr 1e-4 --batch_size 32  # 5090: 可用 32-64
 
 產出：
   outputs/mil_weights/
@@ -171,7 +171,7 @@ def _extract_r3d_feature(
     frames: List[np.ndarray],
     device: str,
 ) -> np.ndarray:
-    """從幀序列提取 R3D-18 512D 特徵。"""
+    """從幀序列提取 R3D-18 512D 特徵。RTX 5090: BF16 autocast 加速。"""
     import cv2
 
     if len(frames) < 2:
@@ -199,9 +199,11 @@ def _extract_r3d_feature(
     clip = clip.transpose(3, 0, 1, 2)  # (3, T, H, W)
     clip_tensor = torch.from_numpy(clip).float().unsqueeze(0).to(device)  # (1, 3, T, H, W)
 
-    with torch.no_grad():
+    # RTX 5090: BF16 autocast 加速特徵提取
+    _use_amp = (device == "cuda" and cfg.model.torch_dtype == "bfloat16")
+    with torch.no_grad(), torch.amp.autocast("cuda", dtype=torch.bfloat16, enabled=_use_amp):
         feat = model(clip_tensor)  # (1, 512)
-        feat = F.normalize(feat, p=2, dim=-1)
+        feat = F.normalize(feat.float(), p=2, dim=-1)
 
     return feat.cpu().numpy()[0]
 
@@ -212,7 +214,7 @@ def _extract_vit_feature(
     frames: List[np.ndarray],
     device: str,
 ) -> np.ndarray:
-    """從關鍵幀提取 ViT CLS token 768D 特徵（取平均）。"""
+    """從關鍵幀提取 ViT CLS token 768D 特徵（取平均）。RTX 5090: BF16 autocast 加速。"""
     import cv2
     from PIL import Image as PILImage
 
@@ -228,14 +230,17 @@ def _extract_vit_feature(
     else:
         selected = frames
 
+    # RTX 5090: BF16 autocast 加速特徵提取
+    _use_amp = (device == "cuda" and cfg.model.torch_dtype == "bfloat16")
+
     feats = []
     for frame in selected:
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         pil_img = PILImage.fromarray(rgb)
         inputs = processor(images=pil_img, return_tensors="pt").to(device)
-        with torch.no_grad():
+        with torch.no_grad(), torch.amp.autocast("cuda", dtype=torch.bfloat16, enabled=_use_amp):
             outputs = model(**inputs)
-            cls_feat = outputs.last_hidden_state[:, 0, :]  # (1, 768)
+            cls_feat = outputs.last_hidden_state[:, 0, :].float()  # (1, 768)
             feats.append(cls_feat.cpu().numpy()[0])
 
     return np.mean(feats, axis=0).astype(np.float32)
@@ -318,21 +323,35 @@ class UCFCrimeDataset(Dataset):
 # ── 訓練迴圈 ─────────────────────────────────────────────────
 
 def train(
-    epochs: int = 30,
-    lr: float = 1e-4,
-    batch_size: int = 16,
-    lambda_mil: float = 0.5,
+    epochs: int = None,
+    lr: float = None,
+    batch_size: int = None,
+    lambda_mil: float = None,
     split: str = "Train",
 ):
     """
     訓練 FusionEncoder + crime_head + escalation_head。
 
     損失 = CE_loss（分類）+ λ × MIL_ranking_loss（異常偵測）
+
+    所有超參數從 cfg.training 讀取，CLI 引數可覆蓋。
+    RTX 5090 優化：BF16 autocast / cuDNN benchmark / torch.compile / pin_memory
     """
+    # 從 config 讀取預設值，CLI 引數可覆蓋
+    epochs = epochs or cfg.training.epochs
+    lr = lr or cfg.training.learning_rate
+    batch_size = batch_size or cfg.training.batch_size
+    lambda_mil = lambda_mil or cfg.training.lambda_mil
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
+    # ── RTX 5090: cuDNN benchmark ──
+    if device == "cuda" and cfg.model.cudnn_benchmark:
+        torch.backends.cudnn.benchmark = True
+        logger.info("cuDNN benchmark 已啟用")
+
     # Step 1: 預提取特徵
-    logger.info("Step 1: 預提取 R3D-18 特徵...")
+    logger.info("Step 1: 預提取 R3D-18 + ViT 特徵...")
     cache_map = extract_and_cache_features(split=split)
     if not cache_map:
         logger.error("無特徵可用")
@@ -344,14 +363,19 @@ def train(
         logger.error("Dataset 為空")
         return
 
+    # RTX 5090: pin_memory 加速 Host→Device 傳輸, num_workers 並行載入
     dataloader = DataLoader(
         dataset, batch_size=batch_size, shuffle=True,
-        num_workers=0, drop_last=True,
+        num_workers=cfg.training.num_workers,
+        pin_memory=(device == "cuda" and cfg.training.pin_memory),
+        drop_last=True,
     )
 
-    # Step 3: 初始化模型
+    # Step 3: 初始化模型（使用 cfg.training.dropout）
+    dropout = cfg.training.dropout
     fusion_encoder = FusionEncoder(
         input_dim=FUSION_DIM, d_model=512, nhead=8, num_layers=4,
+        dropout=dropout,
     ).to(device)
     crime_head = nn.Sequential(
         nn.Linear(512, NUM_CLASSES),
@@ -361,23 +385,57 @@ def train(
         nn.Sigmoid(),
     ).to(device)
 
+    # RTX 5090: torch.compile 加速訓練（Blackwell inductor 後端）
+    if cfg.model.compile_models and device == "cuda":
+        try:
+            fusion_encoder = torch.compile(fusion_encoder)
+            crime_head = torch.compile(crime_head)
+            escalation_head = torch.compile(escalation_head)
+            logger.info("torch.compile 已啟用（訓練模式）")
+        except Exception as e:
+            logger.warning(f"torch.compile 失敗，使用 eager mode：{e}")
+
     # Optimizer
     params = (
         list(fusion_encoder.parameters())
         + list(crime_head.parameters())
         + list(escalation_head.parameters())
     )
-    optimizer = torch.optim.AdamW(params, lr=lr, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
+    optimizer = torch.optim.AdamW(params, lr=lr, weight_decay=cfg.training.weight_decay)
+    # Scheduler: CosineAnnealing + Linear Warmup
+    total_steps = len(dataloader) * epochs
+    warmup_steps = int(total_steps * cfg.training.warmup_ratio)
 
-    ce_loss_fn = nn.CrossEntropyLoss()
+    from torch.optim.lr_scheduler import LambdaLR
+    def lr_lambda(step):
+        if step < warmup_steps:
+            return step / max(warmup_steps, 1)
+        progress = (step - warmup_steps) / max(total_steps - warmup_steps, 1)
+        import math
+        return 0.5 * (1 + math.cos(math.pi * progress))
+
+    scheduler = LambdaLR(optimizer, lr_lambda)
+
+    # Label smoothing CE loss（防止過度自信，緩解類別不平衡）
+    ce_loss_fn = nn.CrossEntropyLoss(label_smoothing=cfg.training.label_smoothing)
+
+    # RTX 5090: BF16 混合精度訓練
+    use_amp = (device == "cuda" and cfg.training.mixed_precision)
+    amp_dtype = torch.bfloat16  # Blackwell 原生 BF16（不需要 GradScaler）
+    if use_amp:
+        logger.info("BF16 混合精度訓練已啟用（RTX 5090 Blackwell 原生）")
 
     # Step 4: 訓練
     WEIGHTS_DIR.mkdir(parents=True, exist_ok=True)
     training_log = []
     best_loss = float("inf")
 
-    logger.info(f"開始訓練：{epochs} epochs, lr={lr}, batch={batch_size}, λ_MIL={lambda_mil}")
+    logger.info(
+        f"開始訓練：{epochs} epochs, lr={lr}, batch={batch_size}, "
+        f"λ_MIL={lambda_mil}, wd={cfg.training.weight_decay}, "
+        f"dropout={dropout}, label_smooth={cfg.training.label_smoothing}, "
+        f"warmup={warmup_steps}/{total_steps} steps"
+    )
 
     for epoch in range(epochs):
         fusion_encoder.train()
@@ -389,61 +447,64 @@ def train(
         n_batches = 0
 
         for batch in dataloader:
-            anom_feat = batch["anom_feat"].to(device)   # (B, FUSION_DIM)
-            norm_feat = batch["norm_feat"].to(device)   # (B, FUSION_DIM)
-            labels = batch["category_idx"].to(device)   # (B,)
+            anom_feat = batch["anom_feat"].to(device, non_blocking=True)   # (B, FUSION_DIM)
+            norm_feat = batch["norm_feat"].to(device, non_blocking=True)   # (B, FUSION_DIM)
+            labels = batch["category_idx"].to(device, non_blocking=True)   # (B,)
 
-            # Forward: anomaly
-            anom_encoded = fusion_encoder(anom_feat)     # (B, 512)
-            logits = crime_head(anom_encoded)            # (B, NUM_CLASSES)
+            # RTX 5090: BF16 autocast（Blackwell 不需要 GradScaler）
+            with torch.amp.autocast("cuda", dtype=amp_dtype, enabled=use_amp):
+                # Forward: anomaly
+                anom_encoded = fusion_encoder(anom_feat)     # (B, 512)
+                logits = crime_head(anom_encoded)            # (B, NUM_CLASSES)
 
-            # CE loss（分類）
-            ce = ce_loss_fn(logits, labels)
+                # CE loss（分類）
+                ce = ce_loss_fn(logits, labels)
 
-            # MIL ranking loss（異常 vs 正常）
-            anom_scores = escalation_head(anom_encoded).squeeze(1)  # (B,)
-            norm_encoded = fusion_encoder(norm_feat)
-            norm_scores = escalation_head(norm_encoded).squeeze(1)  # (B,)
-            mil = _mil_ranking_loss(anom_scores, norm_scores)
+                # MIL ranking loss（異常 vs 正常）
+                anom_scores = escalation_head(anom_encoded).squeeze(1)  # (B,)
+                norm_encoded = fusion_encoder(norm_feat)
+                norm_scores = escalation_head(norm_encoded).squeeze(1)  # (B,)
+                mil = _mil_ranking_loss(anom_scores, norm_scores)
 
-            # 總損失
-            loss = ce + lambda_mil * mil
+                # 總損失
+                loss = ce + lambda_mil * mil
 
+            # BF16 不需要 GradScaler（Blackwell 原生支援 BF16 梯度）
             optimizer.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(params, max_norm=1.0)
+            torch.nn.utils.clip_grad_norm_(params, max_norm=cfg.training.gradient_clip_norm)
             optimizer.step()
+            scheduler.step()  # per-step（配合 warmup + cosine schedule）
 
             epoch_ce_loss += ce.item()
             epoch_mil_loss += mil.item()
             n_batches += 1
 
-        scheduler.step()
-
         avg_ce = epoch_ce_loss / max(n_batches, 1)
         avg_mil = epoch_mil_loss / max(n_batches, 1)
         avg_total = avg_ce + lambda_mil * avg_mil
+        current_lr = optimizer.param_groups[0]["lr"]
 
         log_entry = {
             "epoch": epoch + 1,
             "ce_loss": round(avg_ce, 4),
             "mil_loss": round(avg_mil, 4),
             "total_loss": round(avg_total, 4),
-            "lr": scheduler.get_last_lr()[0],
+            "lr": current_lr,
         }
         training_log.append(log_entry)
         logger.info(
             f"Epoch {epoch+1:>3}/{epochs} | "
             f"CE={avg_ce:.4f} MIL={avg_mil:.4f} Total={avg_total:.4f} | "
-            f"lr={log_entry['lr']:.2e}"
+            f"lr={current_lr:.2e}"
         )
 
-        # 存最佳權重
+        # 存最佳權重（torch.compile 包裝後需要取原始 state_dict）
         if avg_total < best_loss:
             best_loss = avg_total
-            torch.save(fusion_encoder.state_dict(), WEIGHTS_DIR / "fusion_encoder.pt")
-            torch.save(crime_head.state_dict(), WEIGHTS_DIR / "crime_head.pt")
-            torch.save(escalation_head.state_dict(), WEIGHTS_DIR / "escalation_head.pt")
+            _save_state_dict(fusion_encoder, WEIGHTS_DIR / "fusion_encoder.pt")
+            _save_state_dict(crime_head, WEIGHTS_DIR / "crime_head.pt")
+            _save_state_dict(escalation_head, WEIGHTS_DIR / "escalation_head.pt")
 
     # 存訓練 log
     with open(WEIGHTS_DIR / "training_log.json", "w") as f:
@@ -451,6 +512,84 @@ def train(
 
     logger.info(f"訓練完成！最佳 loss={best_loss:.4f}")
     logger.info(f"權重 → {WEIGHTS_DIR}")
+
+    # 訓練視覺化
+    _plot_training_curves(training_log, WEIGHTS_DIR)
+
+
+def _plot_training_curves(training_log: List[Dict], output_dir: Path):
+    """訓練過程視覺化：Loss curves + Learning Rate schedule."""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        logger.warning("matplotlib 未安裝，跳過訓練視覺化。pip install matplotlib")
+        return
+
+    epochs = [e["epoch"] for e in training_log]
+    ce_losses = [e["ce_loss"] for e in training_log]
+    mil_losses = [e["mil_loss"] for e in training_log]
+    total_losses = [e["total_loss"] for e in training_log]
+    lrs = [e["lr"] for e in training_log]
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig.suptitle("MIL Head Training Dashboard", fontsize=14, fontweight="bold")
+
+    # 1. Total Loss
+    ax = axes[0, 0]
+    ax.plot(epochs, total_losses, "b-", linewidth=1.5, label="Total Loss")
+    best_ep = epochs[total_losses.index(min(total_losses))]
+    ax.axvline(best_ep, color="r", linestyle="--", alpha=0.5, label=f"Best @ epoch {best_ep}")
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Loss")
+    ax.set_title("Total Loss (CE + λ·MIL)")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 2. CE vs MIL Loss
+    ax = axes[0, 1]
+    ax.plot(epochs, ce_losses, "g-", linewidth=1.5, label="CE Loss (classification)")
+    ax.plot(epochs, mil_losses, "orange", linewidth=1.5, label="MIL Loss (ranking)")
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Loss")
+    ax.set_title("CE Loss vs MIL Ranking Loss")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 3. Learning Rate Schedule
+    ax = axes[1, 0]
+    ax.plot(epochs, lrs, "m-", linewidth=1.5)
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Learning Rate")
+    ax.set_title("LR Schedule (Warmup + Cosine)")
+    ax.ticklabel_format(axis="y", style="sci", scilimits=(-4, -4))
+    ax.grid(True, alpha=0.3)
+
+    # 4. Loss Ratio (CE / Total)
+    ax = axes[1, 1]
+    ce_ratio = [c / max(t, 1e-8) for c, t in zip(ce_losses, total_losses)]
+    mil_ratio = [1 - r for r in ce_ratio]
+    ax.fill_between(epochs, 0, ce_ratio, alpha=0.4, label="CE portion", color="green")
+    ax.fill_between(epochs, ce_ratio, 1, alpha=0.4, label="MIL portion", color="orange")
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Ratio")
+    ax.set_title("Loss Composition (CE vs MIL)")
+    ax.set_ylim(0, 1)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plot_path = output_dir / "training_curves.png"
+    fig.savefig(plot_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"訓練曲線圖 → {plot_path}")
+
+
+def _save_state_dict(model: nn.Module, path: Path):
+    """儲存 state_dict，相容 torch.compile 包裝的模型。"""
+    m = model._orig_mod if hasattr(model, "_orig_mod") else model
+    torch.save(m.state_dict(), path)
 
 
 def _mil_ranking_loss(
@@ -471,10 +610,10 @@ def _mil_ranking_loss(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MIL Head 訓練")
-    parser.add_argument("--epochs", type=int, default=30)
-    parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--batch_size", type=int, default=16)
-    parser.add_argument("--lambda_mil", type=float, default=0.5)
+    parser.add_argument("--epochs", type=int, default=None, help="Override cfg.training.epochs")
+    parser.add_argument("--lr", type=float, default=None, help="Override cfg.training.learning_rate")
+    parser.add_argument("--batch_size", type=int, default=None, help="Override cfg.training.batch_size")
+    parser.add_argument("--lambda_mil", type=float, default=None, help="Override cfg.training.lambda_mil")
     parser.add_argument("--split", default="Train")
     args = parser.parse_args()
 

@@ -13,18 +13,28 @@ cd crime_analysis
 conda create -n crime python=3.11 -y
 conda activate crime
 
-# PyTorch CUDA（5090 用 CUDA 12.8+）
+# PyTorch CUDA（5090 Blackwell sm_120 需要 cu128）
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 
 # 核心依賴
-pip install transformers Pillow scikit-learn opencv-python
+pip install transformers accelerate Pillow scikit-learn opencv-python
 pip install rank-bm25 jieba chromadb sentence-transformers
-pip install google-genai  # LLM Judge (Gemini)
+pip install google-genai matplotlib  # LLM Judge (Gemini) + 訓練視覺化
 
-# 可選：DeepFace + MediaPipe（protobuf 衝突需注意）
-# pip install deepface tf-keras mediapipe==0.10.14
-# 注意：tensorflow 和 mediapipe 的 protobuf 版本衝突
-# 建議先不裝，確認核心功能後再處理
+# MediaPipe + DeepFace（4/4 模態特徵提取）
+# 安裝順序很重要：先裝 mediapipe，再裝 deepface + tensorflow
+pip install mediapipe==0.10.14
+pip install deepface tf-keras
+# protobuf 衝突修復：降回 tensorflow 2.16 + jax 0.4.30
+pip install "tensorflow==2.16.*" "tf-keras==2.16.*" protobuf==4.25.9
+pip install "jax==0.4.30" "jaxlib==0.4.30"
+
+# torch.compile 需要 C compiler（conda 環境需額外安裝）
+conda install -c conda-forge gcc_linux-64 gxx_linux-64 -y
+
+# Flash Attention 2（可選，目前 flash-attn 尚不支援 sm_120 Blackwell）
+# pip install flash-attn --no-build-isolation
+# 不裝也沒關係，planner.py 會自動 fallback 到預設注意力
 ```
 
 ## 3. SSL 修正（Anaconda 環境）
@@ -43,8 +53,8 @@ python -c "from transformers import ViTModel, ViTImageProcessor; ViTImageProcess
 # BGE-M3（RAG embedding，約 2.2GB）
 python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-m3')"
 
-# Qwen2.5-7B-Instruct（報告生成，約 15GB）— 5090 才跑得了
-python -c "from transformers import AutoModelForCausalLM, AutoTokenizer; AutoTokenizer.from_pretrained('Qwen/Qwen2.5-7B-Instruct'); AutoModelForCausalLM.from_pretrained('Qwen/Qwen2.5-7B-Instruct', torch_dtype='auto', device_map='auto')"
+# Qwen3-8B（報告生成，BF16 約 16GB）— 5090 才跑得了
+python -c "from transformers import AutoModelForCausalLM, AutoTokenizer; AutoTokenizer.from_pretrained('Qwen/Qwen3-8B'); AutoModelForCausalLM.from_pretrained('Qwen/Qwen3-8B', torch_dtype='auto', device_map='auto')"
 ```
 
 ## 5. 準備資料
@@ -61,9 +71,13 @@ python data/scripts/build_rag.py
 ## 6. 訓練 MIL Head
 
 ```bash
-# 如果從 3060 帶了 feature_cache/v2/ 過來，放到 outputs/ 下可跳過特徵提取
-# 否則會自動重新提取（約 20 分鐘）
-python -m scripts.train_mil --epochs 30 --lr 1e-4 --batch_size 16
+# 超參數已寫入 config.py TrainingConfig（bs=32, ep=60, lr=5e-4, λ_MIL=0.3）
+# 不帶引數會自動讀取 config 預設值
+# 首次會提取 R3D-18 + ViT 特徵 → outputs/feature_cache/v2/（之後自動快取）
+python -m scripts.train_mil --split Train
+
+# 產出：outputs/mil_weights/ (fusion_encoder.pt, crime_head.pt, escalation_head.pt)
+# 訓練曲線圖：outputs/mil_weights/training_curves.png
 ```
 
 ## 7. 驗證 Pipeline
@@ -76,23 +90,23 @@ python -m scripts.pilot_experiment --n_samples 3 --split Test
 python -m scripts.pilot_experiment --n_samples 30 --split Test
 ```
 
-## 8. 5090 專屬：Qwen2.5-7B 報告生成
+## 8. 5090 專屬：Qwen3-8B 報告生成
 
 3060 跑不了的功能，5090 可以：
 
 ```bash
-# 確認 Qwen2.5 能載入
+# 確認 Qwen3-8B 能載入
 python -c "
 from agents.planner import PlannerAgent
 p = PlannerAgent.__new__(PlannerAgent)
 p._report_model = None
 p._report_tokenizer = None
 p._load_report_model()
-print('Qwen2.5 loaded successfully')
+print('Qwen3-8B loaded successfully')
 "
 ```
 
-載入成功後，pipeline 的 Step 3b 會自動使用 Qwen2.5 生成報告（不再走 fallback）。
+載入成功後，pipeline 的 Step 3b 會自動使用 Qwen3-8B 生成報告（non-thinking 模式，不再走 fallback）。
 
 ## 9. 5090 專屬：DPO 訓練
 
@@ -114,20 +128,52 @@ pipeline = CrimeAnalysisPipeline()
 python -m scripts.run_ablation --n_samples 100 --split Test
 ```
 
-## 從 3060 帶過來的檔案（可選）
+## 已驗證環境
+
+以下為 2026-04-04 實際部署驗證通過的環境：
 
 ```
-outputs/
-├── feature_cache/v2/     # 1165 個 .npy（省 ~20 分鐘重新提取）
-├── mil_weights/          # 訓練好的權重（省 ~5 分鐘重新訓練）
-└── pilot_summary.json    # 之前的 pilot 結果（參考用）
+GPU:       NVIDIA GeForce RTX 5090 (32GB, sm_120 Blackwell)
+Driver:    576.88 (CUDA 12.9)
+PyTorch:   2.11.0+cu128
+Python:    3.11.15
+OS:        WSL2 (Ubuntu)
 ```
+
+## 訓練參數（已調優）
+
+| 參數 | 值 | 說明 |
+|------|------|------|
+| batch_size | 32 | 18 batch/epoch × 60 epoch = 1080 steps |
+| epochs | 60 | 配合 cosine schedule 完整衰減 |
+| lr | 5e-4 | + 5% warmup steps |
+| lambda_mil | 0.3 | 主任務分類，MIL 輔助 |
+| weight_decay | 1e-2 | 強正則化（13.3M params vs ~1K samples） |
+| dropout | 0.2 | FusionEncoder Transformer dropout |
+| label_smoothing | 0.1 | 緩解類別不平衡 |
+
+## 資料需求
+
+```
+UCA/
+├── UCFCrime_{Train|Test|Val}.json    # UCA 時序文字標註
+├── UCF_Crimes/UCF_Crimes/Videos/
+│   ├── {Abuse,Arrest,...,Vandalism}/  # 950 anomaly mp4
+│   ├── Training_Normal_Videos_Anomaly/  # 800 normal mp4（需另外下載）
+│   └── z_Normal_Videos_event/           # 50 normal mp4（UCF.zip 內含）
+```
+
+Normal 影片需從 UCF-Crime 官網另外下載：
+- `Training-Normal-Videos-Part-1.zip` (~36GB, 430 支)
+- `Training-Normal-Videos-Part-2.zip` (~32GB, 370 支)
 
 ## 環境差異注意
 
 | 項目 | 3060 (12GB) | 5090 (32GB) |
 |------|-------------|-------------|
-| Qwen2.5-7B | fallback | **fp16 可跑** |
-| batch_size (MIL) | 16 | 可加到 **32-64** |
+| Qwen3-8B 報告生成 | fallback | **BF16 可跑（~16GB）** |
+| batch_size (MIL) | 16 | **32**（更多 gradient steps） |
+| Flash Attention 2 | 不支援 | **sm_120 待支援**（自動 fallback） |
 | DPO 訓練 | 不可 | **可以** |
-| 特徵提取速度 | ~1165 影片/20min | 更快 |
+| 4/4 模態推理 | 可能 OOM | **充裕** |
+| 特徵提取速度 | ~1085 影片/20min | **~3 分鐘（BF16 autocast）** |

@@ -52,6 +52,9 @@ from config import cfg
 warnings.filterwarnings("ignore")
 logger = logging.getLogger(__name__)
 
+# ── RTX 5090 Blackwell 優化 ──────────────────────────────────
+_BF16_DTYPE = torch.bfloat16  # Blackwell 原生 BF16 吞吐量 >> FP32
+
 # ── 特徵維度常數 ───────────────────────────────────────────
 R3D_DIM     = 512   # R3D-18 輸出維度
 VIT_DIM     = 768   # ViT-Base CLS token 維度
@@ -276,16 +279,18 @@ class ActionEmotionAgent(BaseAgent):
         if uca_segments:
             frames = self._targeted_sample(frames, uca_segments, len(frames))
 
-        # ── 特徵提取 ─────────────────────────────────────
-        r3d_feat    = self._extract_r3d_features(frames)    # (512,)
-        vit_feat    = self._extract_vit_features(frames)    # (768,)
-        pose_feat   = self._extract_pose_features(frames)   # (99,)
-        emo_feat    = self._extract_emotion_features(frames) # (7,)
+        # ── 特徵提取（RTX 5090: BF16 autocast 加速）─────
+        _use_amp = (self.device == "cuda" and cfg.model.torch_dtype == "bfloat16")
+        with torch.amp.autocast("cuda", dtype=_BF16_DTYPE, enabled=_use_amp):
+            r3d_feat    = self._extract_r3d_features(frames)    # (512,)
+            vit_feat    = self._extract_vit_features(frames)    # (768,)
+        pose_feat   = self._extract_pose_features(frames)   # (99,)  CPU-bound
+        emo_feat    = self._extract_emotion_features(frames) # (7,)   CPU-bound
 
         fused = np.concatenate([r3d_feat, vit_feat, pose_feat, emo_feat])  # (1386,)
 
-        # ── 融合編碼 ─────────────────────────────────────
-        with torch.no_grad():
+        # ── 融合編碼（RTX 5090: BF16 autocast）─────────
+        with torch.no_grad(), torch.amp.autocast("cuda", dtype=_BF16_DTYPE, enabled=_use_amp):
             x = torch.tensor(fused, dtype=torch.float32).unsqueeze(0).to(self.device)  # (1, 1386)
             fusion_output = self._fusion_encoder(x)  # (1, 512)
 
@@ -355,13 +360,27 @@ class ActionEmotionAgent(BaseAgent):
 
         logger.info("開始載入 ActionEmotionAgent 模型…")
 
+        # ── RTX 5090: 啟用 cuDNN benchmark 自動調優卷積核 ──
+        if cfg.model.cudnn_benchmark and torch.cuda.is_available():
+            torch.backends.cudnn.benchmark = True
+            logger.info("cuDNN benchmark 已啟用（RTX 5090 卷積自動調優）")
+
         # R3D-18
         try:
             import torchvision.models.video as vm
-            self._r3d = vm.r3d_18(pretrained=True)
+            self._r3d = vm.r3d_18(weights="DEFAULT")
             self._r3d.fc = nn.Identity()  # 移除分類頭，取 512D 特徵
             self._r3d = self._r3d.to(self.device).eval()
-            logger.info("R3D-18 載入完成")
+            # RTX 5090: torch.compile 加速 R3D-18 推理
+            if cfg.model.compile_models:
+                try:
+                    self._r3d = torch.compile(self._r3d)
+                    logger.info("R3D-18 載入完成（torch.compile 已啟用）")
+                except Exception as e:
+                    logger.warning(f"R3D-18 torch.compile 失敗，使用 eager mode：{e}")
+                    logger.info("R3D-18 載入完成")
+            else:
+                logger.info("R3D-18 載入完成")
         except Exception as e:
             logger.warning(f"R3D-18 載入失敗，將使用零向量：{e}")
             self._r3d = None
@@ -376,7 +395,16 @@ class ActionEmotionAgent(BaseAgent):
             vit_name = "google/vit-base-patch16-224"
             self._vit_extractor = _Proc.from_pretrained(vit_name)
             self._vit_model = ViTModel.from_pretrained(vit_name).to(self.device).eval()
-            logger.info("ViT-Base 載入完成")
+            # RTX 5090: torch.compile 加速 ViT 推理
+            if cfg.model.compile_models:
+                try:
+                    self._vit_model = torch.compile(self._vit_model)
+                    logger.info("ViT-Base 載入完成（torch.compile 已啟用）")
+                except Exception as e:
+                    logger.warning(f"ViT-Base torch.compile 失敗，使用 eager mode：{e}")
+                    logger.info("ViT-Base 載入完成")
+            else:
+                logger.info("ViT-Base 載入完成")
         except Exception as e:
             logger.warning(f"ViT-Base 載入失敗，將使用零向量：{e}")
             self._vit_model = None
@@ -428,6 +456,16 @@ class ActionEmotionAgent(BaseAgent):
         weights_dir = Path("./outputs/mil_weights")
         if weights_dir.exists():
             self._load_trained_weights(weights_dir)
+
+        # RTX 5090: torch.compile 加速 FusionEncoder + heads
+        if cfg.model.compile_models:
+            try:
+                self._fusion_encoder = torch.compile(self._fusion_encoder)
+                self._crime_head = torch.compile(self._crime_head)
+                self._escalation_head = torch.compile(self._escalation_head)
+                logger.info("FusionEncoder + heads torch.compile 已啟用")
+            except Exception as e:
+                logger.warning(f"FusionEncoder torch.compile 失敗：{e}")
 
         self._models_loaded = True
 
@@ -651,7 +689,8 @@ class ActionEmotionAgent(BaseAgent):
         frames_per_snippet = max(1, total_frames // len(snippet_scores)) if snippet_scores else FRAMES_PER_CLIP
 
         for i, s in enumerate(snippet_scores):
-            if s > 0.5:
+            snippet_threshold = 0.5  # 此值为启发式设定，可从 config.inference.escalation_high_threshold 扩展
+            if s > snippet_threshold:
                 escalation_start_frame = i * frames_per_snippet
                 break
 
@@ -662,9 +701,11 @@ class ActionEmotionAgent(BaseAgent):
     def _build_causal_chain(self, crime_type: str, escalation_score: float) -> str:
         """根據犯罪類型返回三段式因果鏈描述"""
         base = CAUSAL_CHAIN_TEMPLATES.get(crime_type, "異常行為 → 犯罪實施 → 事後逃逸")
-        if escalation_score > 0.7:
+        high_threshold = cfg.inference.escalation_high_threshold  # 0.7
+        mid_threshold = cfg.inference.escalation_calm_threshold + 0.35  # ~0.7
+        if escalation_score > high_threshold:
             return f"[高度升溫] {base}"
-        elif escalation_score > 0.4:
+        elif escalation_score > mid_threshold:
             return f"[中度升溫] {base}"
         else:
             return f"[低度升溫] {base}"

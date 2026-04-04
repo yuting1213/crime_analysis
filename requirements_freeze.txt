@@ -138,8 +138,8 @@ termcolor==3.3.0
 tf_keras==2.21.0
 threadpoolctl==3.6.0
 tokenizers==0.22.2
-torch==2.6.0+cu124
-torchvision==0.21.0+cu124
+torch==2.7.0+cu128
+torchvision==0.22.0+cu128
 tqdm==4.67.3
 transformers==5.4.0
 typer==0.24.1

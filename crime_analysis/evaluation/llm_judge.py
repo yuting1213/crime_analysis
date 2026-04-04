@@ -71,27 +71,46 @@ class LLMJudge:
     """
     LLM-as-a-Judge
 
-    Judge Model：Gemini 2.0 Flash（高速 + 低成本）或 GPT-4o
+    可选 Judge Model：
+      - Claude 3.5 Sonnet（推薦）   → 推理強、無偏差、中文優秀
+      - Gemini 2.0 Flash（預設）    → 快速、便宜、Google Pro 可用
+      - GPT-4o                     → 穩定、推理強、需要 API key
+
     理由：避免使用 Qwen（訓練模型）作為 Judge，防止 Self-Enhancement Bias
     Judge Prompt 角色：「台灣刑事鑑識專家」（確保以台灣法律邏輯評判）
 
-    支援兩種 backend：
-      - "gemini" 開頭 → 使用 google-generativeai
-      - 其他 → 使用 OpenAI API
+    支援三種 backend：
+      - "claude-" 開頭     → 使用 Anthropic Claude API
+      - "gemini" 開頭      → 使用 google-generativeai
+      - 其他（openai 等）  → 使用 OpenAI API
     """
 
     def __init__(self, judge_model: str = None, api_key: str = None):
-        self.judge_model = judge_model or cfg.dpo.judge_model
+        self.judge_model = judge_model or cfg.dpo.judge_model  # 預設 gemini-2.0-flash
         self._api_key = api_key
         self._client = None
-        self._backend = "gemini" if "gemini" in self.judge_model.lower() else "openai"
+
+        # 判斷 backend 類型
+        if "claude-" in self.judge_model.lower():
+            self._backend = "claude"
+        elif "gemini" in self.judge_model.lower():
+            self._backend = "gemini"
+        else:
+            self._backend = "openai"
 
     def _get_client(self):
-        """延遲初始化 LLM client（支援 Gemini / OpenAI）。"""
+        """延遲初始化 LLM client（支援 Claude / Gemini / OpenAI）。"""
         if self._client is not None:
             return self._client
 
-        if self._backend == "gemini":
+        if self._backend == "claude":
+            try:
+                from anthropic import Anthropic
+                self._client = Anthropic(api_key=self._api_key) if self._api_key else Anthropic()
+                logger.info(f"[LLMJudge] 初始化 Claude client，模型：{self.judge_model}")
+            except ImportError:
+                raise ImportError("需要安裝 anthropic：pip install anthropic")
+        elif self._backend == "gemini":
             try:
                 from google import genai
                 self._client = genai.Client(api_key=self._api_key)

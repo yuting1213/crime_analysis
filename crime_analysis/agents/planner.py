@@ -15,7 +15,6 @@ Planner Agent - 中央規劃與協調代理（規則式）
 評估：R = w1·Racc + w2·Rcons + w3·Rlegal − w4·Rcost（評估指標，非訓練信號）
 """
 import logging
-from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
 
 from .base_agent import AgentReport
@@ -207,7 +206,7 @@ class PlannerAgent:
         env_confidence = 1.0
         reports, env_confidence = self._step1_environment(frames, video_metadata, reports)
 
-        low_reliability = env_confidence < 0.4
+        low_reliability = env_confidence < cfg.inference.confidence_low_threshold
         if low_reliability:
             logger.warning(f"[Planner] env_confidence={env_confidence:.2f} → LOW_RELIABILITY")
 
@@ -222,8 +221,10 @@ class PlannerAgent:
         ae_confidence = ae_report.confidence if ae_report else 0.0
 
         # 信心不足：嘗試 refine
-        if ae_report and 0.4 <= ae_confidence < 0.6:
-            logger.info(f"[Planner] conf={ae_confidence:.2f} < 0.6，嘗試 ActionEmotion refine")
+        confidence_ref_threshold = cfg.inference.confidence_mid_threshold
+        confidence_low = cfg.inference.confidence_low_threshold
+        if ae_report and confidence_low <= ae_confidence < confidence_ref_threshold:
+            logger.info(f"[Planner] conf={ae_confidence:.2f} < {confidence_ref_threshold}，嘗試 ActionEmotion refine")
             ae_agent = self.agents.get("action_emotion")
             if ae_agent:
                 ae_report = ae_agent.refine(list(reports.values()))
@@ -231,8 +232,8 @@ class PlannerAgent:
                 ae_confidence = ae_report.confidence
                 self._total_turns += 1
 
-        if ae_confidence < 0.4:
-            logger.info(f"[Planner] conf={ae_confidence:.2f} < 0.4 → 跳過 RAG 查詢")
+        if ae_confidence < confidence_low:
+            logger.info(f"[Planner] conf={ae_confidence:.2f} < {confidence_low} → 跳過 RAG 查詢")
 
         # ── Step 3：法律整合（3a RAG → 3b 報告生成 → 3c Rlegal）──
         # 職責邊界：RAGModule 是工具；Planner（Qwen3-7B）是推理引擎；兩者不混在一起。
@@ -241,7 +242,7 @@ class PlannerAgent:
         rlegal = 0.0
 
         # Step 3a：RAG 查詢取候選法條
-        if ae_confidence >= 0.4 and self.rag and crime_type != "Normal":
+        if ae_confidence >= cfg.inference.confidence_low_threshold and self.rag and crime_type != "Normal":
             rationale = ae_report.metadata.get("rationale", "") if ae_report else ""
             query_text = (
                 self.rag.generate_hypothetical_doc(rationale, crime_type)
@@ -322,9 +323,10 @@ class PlannerAgent:
     ) -> tuple:
         env_agent = self.agents.get("environment")
         quality = video_metadata.get("video_quality", 1.0)
+        quality_threshold = cfg.inference.video_quality_threshold
         occlusion = video_metadata.get("occlusion_detected", False)
 
-        if (quality < 0.6 or occlusion) and env_agent:
+        if (quality < quality_threshold or occlusion) and env_agent:
             logger.info(f"[Planner] Step 1: Environment Check (q={quality:.2f}, occ={occlusion})")
             env_report = env_agent.analyze(frames, video_metadata)
             reports["environment"] = env_report
@@ -611,23 +613,61 @@ class PlannerAgent:
     # ── Step 3b: Qwen3 報告生成 ─────────────────────────────
 
     def _load_report_model(self):
-        """延遲載入 Qwen3-7B 報告生成模型。"""
+        """
+        延遲載入 Qwen 報告生成模型（RTX 5090 Blackwell 優化）。
+        - BF16：Blackwell 原生支援，VRAM 用量減半（~7GB for 7B model）
+        - Flash Attention 2：KV-cache 記憶體降低 + 注意力計算加速
+        - device_map="auto"：32GB GDDR7 可完整載入 7B-BF16，無需 CPU offload
+        """
         if self._report_model is not None:
             return
         try:
+            import torch as _torch
             from transformers import AutoModelForCausalLM, AutoTokenizer
             model_name = cfg.model.report_model
             logger.info(f"[Planner] 載入報告生成模型：{model_name}")
             self._report_tokenizer = AutoTokenizer.from_pretrained(
                 model_name, trust_remote_code=True
             )
+
+            # ── RTX 5090 優化參數 ──
+            load_kwargs = {
+                "trust_remote_code": True,
+                "device_map": "auto",
+            }
+
+            # BF16：Blackwell 原生吞吐量 >> FP32，VRAM 減半
+            if cfg.model.torch_dtype == "bfloat16" and _torch.cuda.is_available():
+                load_kwargs["torch_dtype"] = _torch.bfloat16
+            else:
+                load_kwargs["torch_dtype"] = "auto"
+
+            # Flash Attention 2：降低 KV-cache 記憶體 + 加速注意力
+            # 先嘗試帶 FA2 載入；失敗時回退到預設注意力（不讓整個模型載入失敗）
+            if cfg.model.use_flash_attention:
+                try:
+                    load_kwargs["attn_implementation"] = "flash_attention_2"
+                    self._report_model = AutoModelForCausalLM.from_pretrained(
+                        model_name, **load_kwargs,
+                    )
+                    logger.info(
+                        f"[Planner] 模型載入完成：{model_name} "
+                        f"(dtype={load_kwargs.get('torch_dtype', 'auto')}, "
+                        f"attn=flash_attention_2)"
+                    )
+                    return
+                except Exception as fa_err:
+                    logger.info(f"[Planner] Flash Attention 2 不可用（{fa_err}），回退到預設注意力")
+                    load_kwargs.pop("attn_implementation", None)
+
             self._report_model = AutoModelForCausalLM.from_pretrained(
-                model_name,
-                torch_dtype="auto",
-                device_map="auto",
-                trust_remote_code=True,
+                model_name, **load_kwargs,
             )
-            logger.info(f"[Planner] 模型載入完成：{model_name}")
+            logger.info(
+                f"[Planner] 模型載入完成：{model_name} "
+                f"(dtype={load_kwargs.get('torch_dtype', 'auto')}, "
+                f"attn=default)"
+            )
         except Exception as e:
             logger.warning(f"[Planner] 無法載入報告生成模型：{e}，將使用 fallback")
             self._report_model = None
@@ -638,12 +678,14 @@ class PlannerAgent:
         temperature: Optional[float] = None,
     ) -> str:
         """
-        呼叫 Qwen3-7B 生成鑑定報告。
+        呼叫 Qwen3-8B 生成鑑定報告。
 
-        截斷策略：若 prompt tokens > max_context * 0.75，
-        依優先順序截斷 RAG 法條摘要 → 行為分析摘要。
+        Qwen3 特性：
+        - 預設 thinking mode（<think>...</think>），報告生成使用 non-thinking 模式加速
+        - 推薦參數：temperature=0.7, top_p=0.8, top_k=20
 
-        Fallback：模型載入失敗或生成異常時，回傳 ae_report.rationale。
+        截斷策略：若 prompt tokens > max_context * 0.75，截斷 user message 尾部。
+        Fallback：模型載入失敗或生成異常時，回傳空字串（由上層 fallback 處理）。
         """
         self._load_report_model()
 
@@ -651,6 +693,7 @@ class PlannerAgent:
             logger.warning("[Planner] 報告模型未就緒，使用 rationale fallback")
             return ""
 
+        import re
         import torch
 
         tokenizer = self._report_tokenizer
@@ -658,11 +701,13 @@ class PlannerAgent:
         temp = temperature or cfg.model.temperature
         max_ctx = getattr(model.config, "max_position_embeddings", 32768)
         max_new = cfg.model.max_new_tokens
-        max_prompt_tokens = int(max_ctx * 0.75)
+        max_prompt_ratio = cfg.inference.max_report_prompt_ratio
+        max_prompt_tokens = int(max_ctx * max_prompt_ratio)
 
-        # 組裝 chat template
+        # 組裝 chat template（Qwen3 non-thinking 模式：enable_thinking=False）
         text = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True,
+            enable_thinking=False,
         )
         input_ids = tokenizer.encode(text, return_tensors="pt")
 
@@ -682,12 +727,15 @@ class PlannerAgent:
                     max_new_tokens=max_new,
                     temperature=temp,
                     do_sample=temp > 0,
-                    top_p=0.9,
-                    repetition_penalty=1.1,
+                    top_p=0.8,
+                    top_k=20,
                 )
             # 只取生成部分
             generated = output_ids[0, input_ids.shape[1]:]
             result = tokenizer.decode(generated, skip_special_tokens=True).strip()
+
+            # 安全措施：若模型仍輸出 thinking block，移除之
+            result = re.sub(r"<think>.*?</think>\s*", "", result, flags=re.DOTALL).strip()
 
             if not result:
                 logger.warning("[Planner] Qwen3 生成空字串")

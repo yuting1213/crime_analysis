@@ -130,18 +130,34 @@ class EnvironmentAgent(BaseAgent):
 
     def _load_models(self):
         """Lazy-load DQN 與 R3D-18（避免 import 時占用 GPU）"""
+        # RTX 5090: cuDNN benchmark 自動調優
+        if cfg.model.cudnn_benchmark and torch.cuda.is_available():
+            torch.backends.cudnn.benchmark = True
+
         if self._dqn is None:
             self._dqn = DQNAnomalyDetector(input_dim=C3D_DIM).to(self.device)
             self._dqn.eval()
+            if cfg.model.compile_models:
+                try:
+                    self._dqn = torch.compile(self._dqn)
+                except Exception:
+                    pass
             logger.info("DQN Anomaly Detector 初始化（隨機權重；請載入訓練好的 checkpoint）")
 
         if self._r3d is None:
             import torchvision.models.video as vm
-            backbone = vm.r3d_18(weights=None)
+            backbone = vm.r3d_18(weights="DEFAULT")
             backbone.fc = nn.Identity()   # 移除分類頭，輸出 (B, 512)
             self._r3d = backbone.to(self.device)
             self._r3d.eval()
-            logger.info("R3D-18 backbone 載入（作為 C3D 替代）")
+            if cfg.model.compile_models:
+                try:
+                    self._r3d = torch.compile(self._r3d)
+                    logger.info("R3D-18 backbone 載入（torch.compile 已啟用）")
+                except Exception:
+                    logger.info("R3D-18 backbone 載入（作為 C3D 替代）")
+            else:
+                logger.info("R3D-18 backbone 載入（作為 C3D 替代）")
 
     # ── 主要分析流程 ─────────────────────────────────────
 
@@ -302,19 +318,22 @@ class EnvironmentAgent(BaseAgent):
         """
         用 R3D-18 avgpool 輸出（512D）代替論文中的 C3D FC6（4096D）。
         輸入：(1, 3, T, H, W)，112×112，ImageNet 視訊標準化
+        RTX 5090: BF16 autocast 加速推理
         """
         mean = torch.tensor([0.43216, 0.39467, 0.37645],
                             device=self.device).view(1, 3, 1, 1, 1)
         std  = torch.tensor([0.22803, 0.22145, 0.21699],
                             device=self.device).view(1, 3, 1, 1, 1)
 
+        _use_amp = (str(self.device) == "cuda" and cfg.model.torch_dtype == "bfloat16")
+
         for seg in segments:
             try:
                 clip = self._frames_to_tensor(seg.frames).unsqueeze(0).to(self.device)
                 clip = (clip - mean) / std
-                with torch.no_grad():
+                with torch.no_grad(), torch.amp.autocast("cuda", dtype=torch.bfloat16, enabled=_use_amp):
                     feat = self._r3d(clip)          # (1, 512)
-                seg.feature = feat.squeeze(0).cpu().numpy()
+                seg.feature = feat.float().squeeze(0).cpu().numpy()
             except Exception as e:
                 logger.warning(f"片段 {seg.segment_idx} 特徵提取失敗：{e}")
                 seg.feature = np.zeros(C3D_DIM, dtype=np.float32)

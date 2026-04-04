@@ -8,12 +8,17 @@ from typing import List
 @dataclass
 class ModelConfig:
     base_model: str = "Qwen/Qwen2.5-VL-7B-Instruct"  # 本地端 VLM（Action/Environment）
-    report_model: str = "Qwen/Qwen2.5-7B-Instruct"     # Step 3b 報告生成（text-only）
+    report_model: str = "Qwen/Qwen3-8B"                 # Step 3b 報告生成（text-only, Qwen3）
     planner_model: str = "gpt-4o"                      # Planner 使用 GPT-4o
     embedding_model: str = "BAAI/bge-m3"               # BGE-M3 中文向量
     device: str = "cuda"
     max_new_tokens: int = 1024
     temperature: float = 0.7
+    # ── RTX 5090 優化參數 ──
+    torch_dtype: str = "bfloat16"          # Blackwell 原生 BF16，吞吐量遠高於 FP32
+    use_flash_attention: bool = True       # Flash Attention 2（Qwen 推理加速）
+    compile_models: bool = True            # torch.compile（Blackwell inductor 後端）
+    cudnn_benchmark: bool = True           # 自動調優卷積核（R3D-18 / ViT 受益）
 
 
 @dataclass
@@ -64,6 +69,48 @@ class DPOConfig:
 
 
 @dataclass
+class TrainingConfig:
+    """MIL Head 訓練配置（針對 RTX 5090 優化）"""
+    batch_size: int = 32   # 降低以增加 gradient steps（576 anomaly / 32 = 18 batch/epoch）
+    epochs: int = 60       # 18 × 60 = 1080 steps，匹配 13.3M 參數量
+    learning_rate: float = 5e-4    # 配合較小 batch_size 稍微提高
+    weight_decay: float = 1e-2     # 強正則化防 overfitting（13.3M params, ~1K samples）
+    gradient_clip_norm: float = 1.0
+    lambda_mil: float = 0.3        # 主任務是分類（CE），MIL ranking 為輔助
+    label_smoothing: float = 0.1   # 防止分類頭過度自信
+    warmup_ratio: float = 0.05     # 前 5% steps warmup（~54 steps）
+    dropout: float = 0.2           # FusionEncoder dropout 加大
+    # MIL 排序損失常數
+    mil_mu1: float = 8e-5   # Smoothness 懲罰
+    mil_mu2: float = 8e-5   # Sparsity 懲罰
+    # ── RTX 5090 訓練優化 ──
+    num_workers: int = 4             # DataLoader 並行載入
+    pin_memory: bool = True          # 固定記憶體加速 Host→Device 傳輸
+    mixed_precision: bool = True     # AMP 混合精度訓練（BF16）
+
+
+@dataclass
+class InferenceConfig:
+    """推理配置"""
+    # 特徵提取
+    num_r3d_snippets: int = 32
+    frames_per_clip: int = 16
+    num_vit_keyframes: int = 8
+    # 信心度閾值
+    confidence_low_threshold: float = 0.4
+    confidence_mid_threshold: float = 0.6
+    video_quality_threshold: float = 0.6
+    # 升溫分析
+    escalation_calm_threshold: float = 0.35
+    escalation_high_threshold: float = 0.7
+    # 報告生成
+    max_report_prompt_ratio: float = 0.75  # 最大 prompt token 佔引擎容量的比例
+    # 正規化常數（ImageNet）
+    imagenet_mean: tuple = (0.43216, 0.394666, 0.37645)
+    imagenet_std: tuple = (0.22803, 0.22145, 0.216989)
+
+
+@dataclass
 class DebateConfig:
     max_rounds: int = 3           # 最大辯論輪次
     conflict_threshold: float = 0.5   # Reflector 判定衝突的門檻
@@ -87,6 +134,8 @@ class DataConfig:
 class Config:
     model: ModelConfig = field(default_factory=ModelConfig)
     rag: RAGConfig = field(default_factory=RAGConfig)
+    training: TrainingConfig = field(default_factory=TrainingConfig)
+    inference: InferenceConfig = field(default_factory=InferenceConfig)
     reward: RewardWeights = field(default_factory=RewardWeights)
     grpo: GRPOConfig = field(default_factory=GRPOConfig)
     dpo: DPOConfig = field(default_factory=DPOConfig)
