@@ -18,6 +18,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from .base_agent import AgentReport
+from .action_emotion_agent import UCF_CATEGORIES
 from .reflector import ReflectorAgent, ReflectorOutput
 from config import cfg
 from rag.rag_module import LEGAL_ELEMENTS, GROUP_LEGAL_CONTEXT
@@ -235,9 +236,31 @@ class PlannerAgent:
         if ae_confidence < confidence_low:
             logger.info(f"[Planner] conf={ae_confidence:.2f} < {confidence_low} → 跳過 RAG 查詢")
 
+        # ── Step 2b：VLM 分類（Qwen3-VL 覆核 MIL Head）──────
+        mil_crime_type = ae_report.crime_category if ae_report else "Normal"
+        mil_confidence = ae_confidence
+        crime_type = mil_crime_type
+
+        # 載入 Qwen3-VL（後續 Step 3b 報告生成也用同一個模型）
+        self._load_report_model()
+        if self._report_model is not None:
+            vlm_result = self._vlm_classify(frames)
+            if vlm_result:
+                crime_type, vlm_conf = vlm_result
+                ae_confidence = vlm_conf
+                if ae_report:
+                    ae_report.crime_category = crime_type
+                    ae_report.confidence = vlm_conf
+                    ae_report.metadata["mil_crime_type"] = mil_crime_type
+                    ae_report.metadata["mil_confidence"] = mil_confidence
+                    ae_report.metadata["vlm_used"] = True
+                logger.info(
+                    f"[Planner] Step 2b: VLM 分類 MIL={mil_crime_type}({mil_confidence:.2f}) "
+                    f"→ VLM={crime_type}({vlm_conf:.2f})"
+                )
+                self._total_turns += 1
+
         # ── Step 3：法律整合（3a RAG → 3b 報告生成 → 3c Rlegal）──
-        # 職責邊界：RAGModule 是工具；Planner（Qwen3-7B）是推理引擎；兩者不混在一起。
-        crime_type = ae_report.crime_category if ae_report else "Normal"
         rag_results: Dict = {"laws": [], "judgments": []}
         rlegal = 0.0
 
@@ -252,7 +275,7 @@ class PlannerAgent:
             self._total_turns += 1
             logger.info(f"[Planner] Step 3a: RAG 查詢 → {len(rag_results.get('laws', []))} 條法條")
 
-        # Step 3b：Planner（Qwen3-7B）整合所有資訊生成報告文字
+        # Step 3b：Qwen3-VL 帶影片幀生成鑑定報告
         conflict_detail = ""
         if hasattr(self, '_last_audit') and self._last_audit:
             conflict_detail = f"- 衝突層：{self._last_audit.conflict_layer}"
@@ -263,14 +286,16 @@ class PlannerAgent:
             confidence=ae_confidence,
             rationale=ae_report.metadata.get("rationale", "") if ae_report else "",
             rag_results=rag_results,
-            conflict_type="NONE",  # 首次生成，衝突解決在後面
+            conflict_type="NONE",
             rcons=0.0,
             conflict_detail=conflict_detail,
         )
         temperature = video_metadata.get("temperature", cfg.model.temperature)
-        generated_report_text = self._call_qwen3(report_messages, temperature=temperature)
+        generated_report_text = self._call_qwen3_vl(
+            report_messages, frames, temperature=temperature,
+        )
 
-        # Fallback：模型未載入或生成失敗時，用 RAG 結果 + 構成要件組裝基礎報告
+        # Fallback：VLM 未載入或生成失敗時，用 RAG + 構成要件組裝基礎報告
         if not generated_report_text:
             generated_report_text = self._build_fallback_report(
                 crime_type, ae_confidence,
@@ -280,8 +305,8 @@ class PlannerAgent:
             self._report_method = "fallback"
             logger.info(f"[Planner] Step 3b: 使用結構化 fallback（{len(generated_report_text)} chars）")
         else:
-            self._report_method = "qwen3"
-            logger.info(f"[Planner] Step 3b: Qwen3 生成完成（{len(generated_report_text)} chars）")
+            self._report_method = "qwen3-vl"
+            logger.info(f"[Planner] Step 3b: Qwen3-VL 生成完成（{len(generated_report_text)} chars）")
 
         # Step 3c：compute_rlegal 在報告文字生成後才呼叫
         # 重要：Rlegal 比對的是「Step 3b 生成的最終報告文字」，不是 AE 的 rationale
@@ -613,141 +638,188 @@ class PlannerAgent:
 
         return "\n".join(parts)
 
-    # ── Step 3b: Qwen3 報告生成 ─────────────────────────────
+    # ── Qwen3-VL 統一模型（分類 + 報告生成）─────────────────
 
     def _load_report_model(self):
         """
-        延遲載入 Qwen 報告生成模型（RTX 5090 Blackwell 優化）。
-        - BF16：Blackwell 原生支援，VRAM 用量減半（~7GB for 7B model）
-        - Flash Attention 2：KV-cache 記憶體降低 + 注意力計算加速
-        - device_map="auto"：32GB GDDR7 可完整載入 7B-BF16，無需 CPU offload
+        延遲載入 Qwen3-VL-8B-Instruct（統一 VLM）。
+        同一個模型負責 Step 2b 分類 + Step 3b 報告生成。
         """
         if self._report_model is not None:
             return
         try:
             import torch as _torch
-            from transformers import AutoModelForCausalLM, AutoTokenizer
+            from transformers import Qwen3VLForConditionalGeneration, AutoProcessor
             model_name = cfg.model.report_model
-            logger.info(f"[Planner] 載入報告生成模型：{model_name}")
-            self._report_tokenizer = AutoTokenizer.from_pretrained(
-                model_name, trust_remote_code=True
+            logger.info(f"[Planner] 載入 VLM：{model_name}")
+
+            self._report_tokenizer = AutoProcessor.from_pretrained(
+                model_name, trust_remote_code=True,
             )
 
-            # ── RTX 5090 優化參數 ──
             load_kwargs = {
                 "trust_remote_code": True,
                 "device_map": "auto",
             }
-
-            # BF16：Blackwell 原生吞吐量 >> FP32，VRAM 減半
             if cfg.model.torch_dtype == "bfloat16" and _torch.cuda.is_available():
                 load_kwargs["torch_dtype"] = _torch.bfloat16
             else:
                 load_kwargs["torch_dtype"] = "auto"
 
-            # Flash Attention 2：降低 KV-cache 記憶體 + 加速注意力
-            # 先嘗試帶 FA2 載入；失敗時回退到預設注意力（不讓整個模型載入失敗）
-            if cfg.model.use_flash_attention:
-                try:
-                    load_kwargs["attn_implementation"] = "flash_attention_2"
-                    self._report_model = AutoModelForCausalLM.from_pretrained(
-                        model_name, **load_kwargs,
-                    )
-                    logger.info(
-                        f"[Planner] 模型載入完成：{model_name} "
-                        f"(dtype={load_kwargs.get('torch_dtype', 'auto')}, "
-                        f"attn=flash_attention_2)"
-                    )
-                    return
-                except Exception as fa_err:
-                    logger.info(f"[Planner] Flash Attention 2 不可用（{fa_err}），回退到預設注意力")
-                    load_kwargs.pop("attn_implementation", None)
-
-            self._report_model = AutoModelForCausalLM.from_pretrained(
+            self._report_model = Qwen3VLForConditionalGeneration.from_pretrained(
                 model_name, **load_kwargs,
             )
-            logger.info(
-                f"[Planner] 模型載入完成：{model_name} "
-                f"(dtype={load_kwargs.get('torch_dtype', 'auto')}, "
-                f"attn=default)"
-            )
+            logger.info(f"[Planner] VLM 載入完成：{model_name} (dtype={load_kwargs.get('torch_dtype', 'auto')})")
         except Exception as e:
-            logger.warning(f"[Planner] 無法載入報告生成模型：{e}，將使用 fallback")
+            logger.warning(f"[Planner] 無法載入 VLM：{e}，將使用 fallback")
             self._report_model = None
 
-    def _call_qwen3(
+    def _vlm_classify(self, frames: List) -> Optional[tuple]:
+        """
+        Qwen3-VL zero-shot 犯罪分類。
+        取 4 張關鍵幀，讓 VLM 判斷犯罪類別。
+        """
+        if self._report_model is None or self._report_tokenizer is None:
+            return None
+
+        import torch, re, cv2
+        from PIL import Image as PILImage
+
+        # 均勻取 4 張關鍵幀
+        valid = [f for f in frames if f is not None and hasattr(f, "shape")]
+        if not valid:
+            return None
+        n = len(valid)
+        indices = [int(i * n / 4) for i in range(4)]
+        keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
+
+        categories_str = ", ".join(UCF_CATEGORIES)
+        prompt = (
+            "You are a forensic surveillance video analyst.\n"
+            "Look at these 4 frames from a CCTV video and determine what crime is occurring.\n\n"
+            f"Choose ONE category from: {categories_str}\n\n"
+            "Reply in this exact format:\n"
+            "CATEGORY: <name>\nCONFIDENCE: <0.0-1.0>"
+        )
+
+        messages = [{
+            "role": "user",
+            "content": [
+                *[{"type": "image", "image": img} for img in keyframes],
+                {"type": "text", "text": prompt},
+            ],
+        }]
+
+        try:
+            processor = self._report_tokenizer
+            inputs = processor.apply_chat_template(
+                messages, tokenize=True, add_generation_prompt=True,
+                return_dict=True, return_tensors="pt",
+            ).to(self._report_model.device)
+
+            with torch.no_grad():
+                output_ids = self._report_model.generate(
+                    **inputs, max_new_tokens=64, temperature=0.1, do_sample=False,
+                )
+            generated = output_ids[0, inputs["input_ids"].shape[1]:]
+            response = processor.decode(generated, skip_special_tokens=True).strip()
+            response = re.sub(r"<think>.*?</think>\s*", "", response, flags=re.DOTALL).strip()
+            logger.info(f"[VLM classify] {response}")
+
+            # 解析
+            cat_match = re.search(r"CATEGORY:\s*(\w+)", response, re.IGNORECASE)
+            conf_match = re.search(r"CONFIDENCE:\s*([\d.]+)", response, re.IGNORECASE)
+
+            if cat_match:
+                raw = cat_match.group(1)
+                for cat in UCF_CATEGORIES:
+                    if cat.lower() == raw.lower():
+                        conf = float(conf_match.group(1)) if conf_match else 0.7
+                        return cat, min(conf, 1.0)
+
+            # Fallback: 搜尋類別名稱
+            for cat in UCF_CATEGORIES:
+                if cat.lower() in response.lower():
+                    return cat, 0.6
+
+        except Exception as e:
+            logger.warning(f"[VLM classify] 失敗：{e}")
+
+        return None
+
+    def _call_qwen3_vl(
         self,
         messages: List[Dict[str, str]],
+        frames: List,
         temperature: Optional[float] = None,
     ) -> str:
         """
-        呼叫 Qwen3-8B 生成鑑定報告。
-
-        Qwen3 特性：
-        - 預設 thinking mode（<think>...</think>），報告生成使用 non-thinking 模式加速
-        - 推薦參數：temperature=0.7, top_p=0.8, top_k=20
-
-        截斷策略：若 prompt tokens > max_context * 0.75，截斷 user message 尾部。
-        Fallback：模型載入失敗或生成異常時，回傳空字串（由上層 fallback 處理）。
+        Qwen3-VL 帶影片幀生成鑑定報告。
+        將 4 張關鍵幀 + 文字 prompt 送入 VLM。
         """
-        self._load_report_model()
-
         if self._report_model is None or self._report_tokenizer is None:
-            logger.warning("[Planner] 報告模型未就緒，使用 rationale fallback")
+            logger.warning("[Planner] VLM 未就緒，使用 fallback")
             return ""
 
-        import re
-        import torch
+        import re, torch, cv2
+        from PIL import Image as PILImage
 
-        tokenizer = self._report_tokenizer
-        model = self._report_model
-        temp = temperature or cfg.model.temperature
-        max_ctx = getattr(model.config, "max_position_embeddings", 32768)
-        max_new = cfg.model.max_new_tokens
-        max_prompt_ratio = cfg.inference.max_report_prompt_ratio
-        max_prompt_tokens = int(max_ctx * max_prompt_ratio)
+        # 取 4 張關鍵幀
+        valid = [f for f in frames if f is not None and hasattr(f, "shape")]
+        keyframes = []
+        if valid:
+            n = len(valid)
+            indices = [int(i * n / 4) for i in range(4)]
+            keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
 
-        # 組裝 chat template（Qwen3 non-thinking 模式：enable_thinking=False）
-        text = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True,
-            enable_thinking=False,
-        )
-        input_ids = tokenizer.encode(text, return_tensors="pt")
+        # 組裝 VLM messages（圖片 + 文字 prompt）
+        user_text = messages[-1]["content"] if messages else ""
+        system_text = messages[0]["content"] if len(messages) > 1 else ""
 
-        # 截斷策略：超長 prompt 時截斷 user message 尾部
-        if input_ids.shape[1] > max_prompt_tokens:
-            logger.warning(
-                f"[Planner] prompt tokens={input_ids.shape[1]} > {max_prompt_tokens}，執行截斷"
-            )
-            input_ids = input_ids[:, :max_prompt_tokens]
+        vlm_messages = []
+        if system_text:
+            vlm_messages.append({"role": "system", "content": system_text})
 
-        input_ids = input_ids.to(model.device)
+        user_content = []
+        for img in keyframes:
+            user_content.append({"type": "image", "image": img})
+        user_content.append({
+            "type": "text",
+            "text": "以下是監視器影片的關鍵幀截圖。請根據影像內容與下方的分析資料撰寫鑑定報告。\n\n" + user_text,
+        })
+        vlm_messages.append({"role": "user", "content": user_content})
 
         try:
+            processor = self._report_tokenizer
+            temp = temperature or cfg.model.temperature
+            max_new = cfg.model.max_new_tokens
+
+            inputs = processor.apply_chat_template(
+                vlm_messages, tokenize=True, add_generation_prompt=True,
+                return_dict=True, return_tensors="pt",
+            ).to(self._report_model.device)
+
             with torch.no_grad():
-                output_ids = model.generate(
-                    input_ids,
+                output_ids = self._report_model.generate(
+                    **inputs,
                     max_new_tokens=max_new,
                     temperature=temp,
                     do_sample=temp > 0,
                     top_p=0.8,
                     top_k=20,
                 )
-            # 只取生成部分
-            generated = output_ids[0, input_ids.shape[1]:]
-            result = tokenizer.decode(generated, skip_special_tokens=True).strip()
 
-            # 安全措施：若模型仍輸出 thinking block，移除之
+            generated = output_ids[0, inputs["input_ids"].shape[1]:]
+            result = processor.decode(generated, skip_special_tokens=True).strip()
             result = re.sub(r"<think>.*?</think>\s*", "", result, flags=re.DOTALL).strip()
 
             if not result:
-                logger.warning("[Planner] Qwen3 生成空字串")
+                logger.warning("[Planner] Qwen3-VL 生成空字串")
                 return ""
-
             return result
 
         except Exception as e:
-            logger.error(f"[Planner] Qwen3 生成失敗：{e}")
+            logger.error(f"[Planner] Qwen3-VL 生成失敗：{e}")
             return ""
 
     # ── 輔助方法 ─────────────────────────────────────────

@@ -1,0 +1,149 @@
+======================================================================
+  鑑定報告：Shoplifting034_x264
+======================================================================
+
+  正確答案：Shoplifting
+  模型判定：Abuse  ✗
+  信心程度：61.41%
+  報告生成：qwen3
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-8B 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+### 一、事實認定
+
+根據影片分析結果，觀察到以下客觀事實：
+
+1. 本影片中，存在兩名個體（以下簡稱「施害者」與「受害者」）之間的互動。
+2. 施害者與受害者之間存在明顯的權力關係，施害者在互動中表現出控制與壓制的行為。
+3. 在關鍵幀範圍（幀 0–31）中，施害者對受害者施以持續的身體接觸與控制行為，且受害者在互動中表現出無力反抗的狀態。
+4. 没有觀察到明顯的武器、法 enforcement 人員或外部介入。
+5. 情緒升溫分數為 0.00，顯示情緒變化不顯著，但行為模式顯示出持續的壓制與控制。
+
+### 二、構成要件分析
+
+#### 1. 故意
+
+根據影片觀察，施害者在關鍵幀範圍內持續對受害者施以身體接觸與控制行為，並未顯示出明顯的停頓或中止。此行為模式顯示出施害者有意圖地對受害者施加影響，符合「故意」的要件。
+
+**推論**：施害者具有明確的意圖對受害者施加控制與壓制，符合刑法上「故意」的要件。
+
+#### 2. 傷害或遺棄行為
+
+影片中觀察到施害者對受害者施以持續的身體接觸與控制，但未觀察到明顯的身體傷害或身體衝突。因此，目前尚無法確認是否存在具體的「傷害」行為。
+
+**推論**：目前尚無法確認是否存在具體的「傷害」行為，但施害者對受害者施加持續的身體控制，可能符合「家庭暴力防治法」中所定義的「身體虐待」。
+
+#### 3. 被害人身分（家庭成員）
+
+影片中未明確顯示受害者與施害者之間的關係，因此無法確認是否為家庭成員。然而，根據行為模式（權力壓制、持續施害、受害者無力反抗）與互動模式，推測二者可能具有家庭關係。
+
+**推論**：目前尚無法確認受害者是否為施害者的家庭成員，但行為模式符合家庭暴力的特徵。
+
+### 三、法律適用
+
+#### 1. 刑法第277條傷害罪
+
+根據刑法第277條，「故意傷害他人身體者，處五年以下有期徒刑、拘役或鞭刑。」  
+本影片中，施害者對受害者施以持續的身體接觸與控制，雖然未觀察到具體的傷害行為，但此種行為可能構成「身體虐待」，符合「傷害」的擴張解釋。因此，若進一步確認施害者具有故意，可能構成傷害罪。
+
+#### 2. 家庭暴力防治法第2條
+
+根據家庭暴力防治法第2條，「家庭暴力，指家庭成員間，一方以言語、文字、圖像、行為或其他方法，對他方為身體或精神上的不法侵害行為。」  
+本影片中，施害者對受害者施以持續的身體控制與壓制，且受害者表現出無力反抗，符合家庭暴力防治法中所定義的「身體虐待」。若能確認受害者為施害者的家庭成員，則可能構成家庭暴力。
+
+### 四、不確定性與限制
+
+1. **行為與傷害的關聯性不確定**：影片中未觀察到具體的傷害行為，因此無法確認是否符合刑法第277條中「傷害」的要件。
+2. **受害者與施害者關係不確定**：影片中未明確顯示二者是否為家庭成員，因此無法確認是否符合家庭暴力防治法第2條的適用條件。
+3. **情緒分析結果有限**：情緒升溫分數為 0.00，顯示情緒變化不顯著，可能影響對行為動機的判斷。
+4. **行為持續性與意圖性需進一步確認**：施害者行為的持續性與意圖性需結合更多證據進行判斷。
+
+### 五、初步結論
+
+根據影片分析結果，施害者對受害者施以持續的身體控制與壓制，行為模式符合家庭暴力防治法中所定義的「身體虐待」，且可能構成刑法第277條的傷害罪。然而，目前尚無法確認是否存在具體的傷害行為，亦無法確認受害者是否為施害者的家庭成員。因此，本報告建議進一步取得相關
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+【行為情緒分析】偵測到犯罪行為：Abuse（暴力 / 人身傷害）。嚴重程度：MEDIUM。情緒升溫分數：0.00。因果鏈：[低度升溫] 權力壓制 → 持續施害 → 受害者無力反抗。關鍵幀範圍：幀 0–31。語義問題提示：Do you see people confronting, attacking, or restraining each other? Is there evidence of weapons, force, or law enforcement presence?
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：[低度升溫] 權力壓制 → 持續施害 → 受害者無力反抗
+  升溫分數：0.00
+  事前指標：偵測到事前情緒：disgust（可能的衝突前兆）; 人員間肢體距離縮短，存在對峙跡象
+  事後指標：事後行為正常，需進一步觀察
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：（無）
+  構成要件：故意, 傷害或遺棄行為, 被害人身分（家庭成員）
+  Rlegal：1.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：0.877
+  Rcost：0.000
+  對話輪次：2
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [23.7s – 32.8s] The door opened and a woman in a floral skirt walked forward, followed by an old man closing the door.
+  [33.3s – 40.9s] The woman walked to the door, the old man went out, and the woman looked outside the door
+  [42.4s – 50.1s] The woman kept talking to the door, then closed the door and turned around
+  [53.0s – 59.2s] The woman walked in, and a bald man came in behind. He put on sunglasses after entering.
+  [59.9s – 67.9s] The man and the woman looked at the things on the wall, and then walked to the side of the man
+  [68.5s – 74.1s] The man took a few steps and passed the woman. The woman pointed to something on the wall, and the two continued to watch.
+  [74.7s – 84.2s] The man wearing a peaked cap entered and walked to the back of the counter
+  [77.0s – 85.5s] The woman waved her hand, the waiter at the counter came over, and the two started talking.
+  [88.1s – 99.3s] The woman looked back and continued talking to the waiter, and the waiter pointed.
+  [93.3s – 101.9s] The bald man turned his head and looked at it and then walked to the counter
+  [104.2s – 117.4s] The woman approached the counter and touched something on the table, then put her hand on the counter. The bald man looked closer and touched it.
+  [123.4s – 132.4s] The bald man pointed at the goods on the counter. The woman took a look, then touched the pink thing, and the man pointed.
+  [133.2s – 142.1s] The man put his hands on the glass counter, and the woman stood sideways with one hand on it; then the man pointed in the direction of the wall
+  [144.8s – 161.7s] The man picked up the pink cylindrical thing on the glass counter and held it in front of him, sprayed it on his wrist, and then sniffed it
+  [162.5s – 172.8s] The man took down a white cylindrical object from the glass counter, tried to put it into his clothes, and then put it back again
+  [172.5s – 175.8s] After looking around, the man put the white cylinder into his pants
+  [166.9s – 174.0s] The woman walked around the man and walked to the end
+  [176.5s – 183.9s] The man touched a white standing object on the glass counter, and then put it down again
+  [186.9s – 192.2s] The man put the white standing object on the counter into his pants
+  [193.7s – 201.3s] The man turned around, made a call and walked inside
+  [201.9s – 207.5s] The man walked out while talking on the phone, and the woman followed him
+  [207.9s – 209.9s] Woman holds her hands on the glass counter
+  [209.9s – 220.9s] The man also walked aside and showed the woman what he took from the glass counter while talking on the phone
+  [216.9s – 221.3s] The man handed the thing to the woman, and the woman put it in the bag
+  [221.7s – 223.7s] The man took something from the counter and put it in his pocket
+  [225.7s – 229.7s] Woman walks to the door
+  [229.7s – 234.7s] Both of them faced the door, and the man hung up the phone
+  [236.5s – 240.0s] The woman walked out, and the man turned around and went inside to continue answering the phone.
+  [240.5s – 245.6s] The man turns back to face the woman
+  [245.5s – 249.6s] The woman puts a box between her legs behind her back
+  [249.7s – 265.2s] The woman pulled a box of things on the glass counter, then flipped through the things on the right, folded it, and touched the things next to it.
+  [266.6s – 281.3s] The woman took a large bag to the right, then took off the bag she was carrying and put them together, and put the two bags on her shoulders.
+  [281.1s – 283.2s] The woman pointed at the counter
+  [282.1s – 287.2s] The man looked around while talking on the phone
+  [287.1s – 302.2s] The two said a few words, then opened the door and went out
+  [357.5s – 367.3s] The man in the house came out, opened the door and left
+
+======================================================================

@@ -7,8 +7,8 @@ from typing import List
 
 @dataclass
 class ModelConfig:
-    base_model: str = "Qwen/Qwen2.5-VL-7B-Instruct"  # 本地端 VLM（Action/Environment）
-    report_model: str = "Qwen/Qwen3-8B"                 # Step 3b 報告生成（text-only, Qwen3）
+    base_model: str = "Qwen/Qwen3-VL-8B-Instruct"    # 統一 VLM：分類 + 報告生成
+    report_model: str = "Qwen/Qwen3-VL-8B-Instruct"  # 與 base_model 相同（向後相容）
     planner_model: str = "gpt-4o"                      # Planner 使用 GPT-4o
     embedding_model: str = "BAAI/bge-m3"               # BGE-M3 中文向量
     device: str = "cuda"

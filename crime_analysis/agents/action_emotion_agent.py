@@ -299,8 +299,9 @@ class ActionEmotionAgent(BaseAgent):
             x = torch.tensor(fused, dtype=torch.float32).unsqueeze(0).to(self.device)  # (1, 1386)
             fusion_output = self._fusion_encoder(x)  # (1, 512)
 
-        # ── 分類 ─────────────────────────────────────────
+        # ── 分類（MIL Head 初篩，VLM 覆核由 Planner Step 2b 負責）──
         crime_type, confidence = self._classify_crime(fusion_output)
+        mil_crime_type, mil_confidence = crime_type, confidence
 
         # ── snippet 分數（使用 R3D snippets 的異常分數）──
         snippet_scores = self._compute_snippet_anomaly_scores(frames)
@@ -344,6 +345,9 @@ class ActionEmotionAgent(BaseAgent):
                 "causal_chain":           causal_chain,
                 "ask_hint_group":         ask_hint_group,
                 "snippet_scores":         snippet_scores,
+                "mil_crime_type":         mil_crime_type,
+                "mil_confidence":         mil_confidence,
+                "vlm_used":              crime_type != mil_crime_type,
             },
         )
         self._position = report
@@ -647,6 +651,150 @@ class ActionEmotionAgent(BaseAgent):
         return avg
 
     # ── 分類與升溫計算 ─────────────────────────────────────
+    # VLM 分類已移至 Planner Step 2b（Qwen3-VL 統一模型）
+
+    def _REMOVED_vlm_classify(
+        self,
+        frames: List[np.ndarray],
+        mil_prediction: str,
+        mil_confidence: float,
+    ) -> Optional[Tuple[str, float]]:
+        """
+        使用 Qwen2.5-VL-7B-Instruct 對關鍵幀做 zero-shot 犯罪分類。
+        當 MIL Head 信心不足時作為 refinement。
+
+        流程：
+        1. 均勻取 4 張關鍵幀
+        2. 組裝 VLM prompt（含 ASK-HINT 問題引導）
+        3. Qwen2.5-VL 生成分類結果
+        4. 解析回應，提取類別和信心
+
+        VRAM 管理：用完即卸載，避免與 Qwen3-8B 衝突。
+        """
+        try:
+            import torch as _torch
+            from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
+            from PIL import Image as PILImage
+        except ImportError as e:
+            logger.warning(f"[VLM] 依賴不足：{e}")
+            return None
+
+        model_name = cfg.model.base_model  # "Qwen/Qwen2.5-VL-7B-Instruct"
+        logger.info(f"[VLM] 載入 {model_name} 進行視覺分類...")
+
+        try:
+            processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
+
+            load_kwargs = {
+                "trust_remote_code": True,
+                "device_map": "auto",
+                "torch_dtype": _torch.bfloat16,
+            }
+            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                model_name, **load_kwargs,
+            )
+
+            # 均勻取 4 張關鍵幀
+            n_frames = len(frames)
+            indices = [int(i * n_frames / 4) for i in range(4)]
+            keyframes = []
+            for idx in indices:
+                frame_rgb = cv2.cvtColor(frames[idx], cv2.COLOR_BGR2RGB)
+                keyframes.append(PILImage.fromarray(frame_rgb))
+
+            # 組裝 prompt
+            categories_str = ", ".join(UCF_CATEGORIES)
+            prompt_text = (
+                f"You are a forensic video analyst. Analyze these 4 frames from a surveillance video.\n\n"
+                f"The MIL classifier suggests '{mil_prediction}' with {mil_confidence:.0%} confidence, "
+                f"but this may be incorrect.\n\n"
+                f"Choose the SINGLE most likely crime category from this list:\n"
+                f"{categories_str}\n\n"
+                f"Consider:\n"
+                f"- What actions are people performing?\n"
+                f"- Are there weapons, fire, vehicles, or stolen goods visible?\n"
+                f"- Is this a violent confrontation, property crime, or public safety incident?\n\n"
+                f"Reply with ONLY the category name (e.g., 'Robbery') and a confidence "
+                f"score from 0.0 to 1.0 in this format:\n"
+                f"CATEGORY: <name>\nCONFIDENCE: <score>"
+            )
+
+            # Qwen2.5-VL message format
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        *[{"type": "image", "image": img} for img in keyframes],
+                        {"type": "text", "text": prompt_text},
+                    ],
+                }
+            ]
+
+            text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            inputs = processor(
+                text=[text],
+                images=keyframes,
+                return_tensors="pt",
+                padding=True,
+            ).to(model.device)
+
+            with _torch.no_grad():
+                output_ids = model.generate(
+                    **inputs,
+                    max_new_tokens=64,
+                    temperature=0.1,
+                    do_sample=False,
+                )
+
+            generated = output_ids[0, inputs["input_ids"].shape[1]:]
+            response = processor.decode(generated, skip_special_tokens=True).strip()
+            logger.info(f"[VLM] 回應：{response}")
+
+            # 解析回應
+            vlm_category, vlm_confidence = self._parse_vlm_response(response)
+
+            # 卸載 VLM 釋放 VRAM
+            del model, processor
+            if _torch.cuda.is_available():
+                _torch.cuda.empty_cache()
+            logger.info("[VLM] 模型已卸載，VRAM 已釋放")
+
+            if vlm_category:
+                return vlm_category, vlm_confidence
+            return None
+
+        except Exception as e:
+            logger.warning(f"[VLM] 分類失敗：{e}")
+            # 確保清理
+            import gc
+            gc.collect()
+            if _torch.cuda.is_available():
+                _torch.cuda.empty_cache()
+            return None
+
+    def _parse_vlm_response(self, response: str) -> Tuple[Optional[str], float]:
+        """解析 VLM 回應，提取類別和信心分數。"""
+        import re
+
+        # 嘗試格式化回應 "CATEGORY: X\nCONFIDENCE: 0.8"
+        cat_match = re.search(r"CATEGORY:\s*(\w+)", response, re.IGNORECASE)
+        conf_match = re.search(r"CONFIDENCE:\s*([\d.]+)", response, re.IGNORECASE)
+
+        if cat_match:
+            raw_cat = cat_match.group(1)
+            # 模糊匹配到 UCF_CATEGORIES
+            for cat in UCF_CATEGORIES:
+                if cat.lower() == raw_cat.lower():
+                    conf = float(conf_match.group(1)) if conf_match else 0.7
+                    return cat, min(conf, 1.0)
+
+        # Fallback: 直接在回應中搜尋類別名稱
+        for cat in UCF_CATEGORIES:
+            if cat.lower() in response.lower():
+                return cat, 0.6
+
+        logger.warning(f"[VLM] 無法解析分類結果：{response[:100]}")
+        return None, 0.0
 
     def _classify_crime(self, fusion_output: torch.Tensor) -> Tuple[str, float]:
         """
