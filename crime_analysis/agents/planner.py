@@ -772,13 +772,19 @@ class PlannerAgent:
             indices = [int(i * n / 4) for i in range(4)]
             keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
 
-        # 組裝 VLM messages（圖片 + 文字 prompt）
-        user_text = messages[-1]["content"] if messages else ""
-        system_text = messages[0]["content"] if len(messages) > 1 else ""
+        # 從 build_report_prompt 的 messages 提取文字
+        system_text = ""
+        user_text = ""
+        for msg in messages:
+            if msg["role"] == "system":
+                system_text = msg["content"]
+            elif msg["role"] == "user":
+                user_text = msg["content"]
 
+        # 組裝 VLM messages（Qwen3-VL 要求所有 content 為 list 格式）
         vlm_messages = []
         if system_text:
-            vlm_messages.append({"role": "system", "content": system_text})
+            vlm_messages.append({"role": "system", "content": [{"type": "text", "text": system_text}]})
 
         user_content = []
         for img in keyframes:
