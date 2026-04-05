@@ -695,11 +695,29 @@ class PlannerAgent:
 
         categories_str = ", ".join(UCF_CATEGORIES)
         prompt = (
-            "You are a forensic surveillance video analyst.\n"
-            "Look at these 4 frames from a CCTV video and determine what crime is occurring.\n\n"
+            "You are a forensic surveillance video analyst specializing in UCF-Crime dataset.\n"
+            "Look at these 4 sequential frames from a CCTV video and determine what crime is occurring.\n\n"
             f"Choose ONE category from: {categories_str}\n\n"
+            "Here is what each category looks like in surveillance footage:\n\n"
+            "- Assault: One person attacking another — punching, kicking, pushing. Victim may fall or shield themselves. Usually 1-on-1.\n"
+            "- Robbery: Threatening someone with weapon or force to take their belongings. Victim hands over items under duress.\n"
+            "- Stealing: Secretly taking items when owner is not looking. No confrontation. Thief acts casually.\n"
+            "- Shoplifting: Person in a store concealing merchandise in bag/clothing, then leaving without paying.\n"
+            "- Burglary: Breaking into a building/house/car. Forced entry visible — breaking windows, prying doors.\n"
+            "- Fighting: Two or more people in mutual physical combat — both sides throwing punches/kicks.\n"
+            "- Arson: Deliberately setting fire. Flames, smoke, person with lighter/matches near flammable material.\n"
+            "- Explosion: Sudden blast with smoke, debris, shockwave. People flee. Building damage visible.\n"
+            "- RoadAccidents: Vehicle collision, car hitting pedestrian, motorcycle crash. Aftermath with damaged vehicles.\n"
+            "- Vandalism: Deliberately damaging property — smashing windows, spray painting, breaking objects.\n"
+            "- Abuse: Sustained physical harm to a vulnerable person (child, elderly). Repeated hitting, dragging.\n"
+            "- Shooting: Gunfire — person pointing weapon, muzzle flash, victim collapsing, bystanders running.\n"
+            "- Arrest: Law enforcement restraining a suspect — handcuffing, tackling, police vehicles present.\n\n"
+            "IMPORTANT: Focus on WHAT IS ACTUALLY VISIBLE in the frames, not assumptions.\n"
+            "If the scene shows a car hitting an animal or traffic incident → RoadAccidents\n"
+            "If the scene shows someone smashing or destroying objects → Vandalism\n"
+            "If the scene shows a person beating another repeatedly → Abuse or Assault\n\n"
             "Reply in this exact format:\n"
-            "CATEGORY: <name>\nCONFIDENCE: <0.0-1.0>"
+            "CATEGORY: <name>\nCONFIDENCE: <0.0-1.0>\nREASON: <one sentence explaining what you see>"
         )
 
         messages = [{
@@ -719,12 +737,19 @@ class PlannerAgent:
 
             with torch.no_grad():
                 output_ids = self._report_model.generate(
-                    **inputs, max_new_tokens=64, temperature=0.1, do_sample=False,
+                    **inputs, max_new_tokens=128, temperature=0.1, do_sample=False,
                 )
             generated = output_ids[0, inputs["input_ids"].shape[1]:]
             response = processor.decode(generated, skip_special_tokens=True).strip()
             response = re.sub(r"<think>.*?</think>\s*", "", response, flags=re.DOTALL).strip()
             logger.info(f"[VLM classify] {response}")
+
+            # 提取 REASON 供報告使用
+            reason_match = re.search(r"REASON:\s*(.+)", response, re.IGNORECASE)
+            if reason_match:
+                self._vlm_reason = reason_match.group(1).strip()
+            else:
+                self._vlm_reason = ""
 
             # 解析
             cat_match = re.search(r"CATEGORY:\s*(\w+)", response, re.IGNORECASE)
