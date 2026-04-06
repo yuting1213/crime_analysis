@@ -1,0 +1,117 @@
+======================================================================
+  鑑定報告：Shoplifting036_x264
+======================================================================
+
+  正確答案：Shoplifting
+  模型判定：Abuse  ✗
+  信心程度：95.00%
+  報告生成：qwen3-vl
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+### 一、事實認定
+
+根據監視器影片（時間戳記：07-10-2015 09:53:59AM 至 09:55:46AM）所呈現之客觀影像，可觀察到以下事實：
+
+1.  **場所與環境**：事件發生於一間堆滿衣物的商店內，空間狹小，貨品密集，包含堆疊的布料與掛衣架。
+2.  **人物行為序列**：
+    *   **09:53:59**：一名穿著白色上衣者蹲在貨架旁，似乎在翻找物品。
+    *   **09:54:15**：一名穿著綠格紋上衣者進入畫面，隨即與穿白衣者互動，後者站起。
+    *   **09:54:45**：多名穿著白色上衣者與穿格紋上衣者聚集於中央，其中一人（穿格紋上衣者）伸手觸碰或拉扯穿紫色上衣者。
+    *   **09:55:16**：穿紫色上衣者被多人圍住，身體前傾，似遭控制或推擠。
+    *   **09:55:31**：穿紫色上衣者被多人圍繞，部分人伸手拉扯其衣物或身體，動作顯得強硬。
+    *   **09:55:46**：穿紫色上衣者被多人控制在地，或身體被壓制，呈現被制服狀態。
+3.  **行為特徵**：整體行為具有「多人圍攻」、「身體接觸與拉扯」、「控制與壓制」之特徵，符合「施加暴力或強制力」之表現。影片中未見明顯武器或警力介入。
+
+### 二、構成要件分析
+
+根據刑法強盜罪之構成要件，逐一檢核如下：
+
+1.  **不法所有意圖**：
+    *   **該當性**：**該當**。
+    *   **理由**：影片中多人（特別是穿格紋上衣者）圍住穿紫色上衣者，並施以身體控制與拉扯，其行為目的明顯非單純爭執或尋常交易，而是以暴力手段迫使對方交出財物或控制其人身自由。行為人之行為模式（多人包圍、強制控制）顯示其具有「不法取得他人財物」之故意。
+
+2.  **強暴或脅迫手段**：
+    *   **該當性**：**該當**。
+    *   **理由**：影片中穿格紋上衣者與其他穿白色上衣者多次伸手拉扯、推擠穿紫色上衣者，使其身體前傾、被壓制於地，顯示施加了「身體上的暴力」或「強制力」。行為人以多人合力施壓，使被害人處於無力反抗之狀態，符合「強暴」或「脅迫」之手段要件。
+
+3.  **取得財物**：
+    *   **該當性**：**待證**。
+    *   **理由**：影片中雖有「取得財物」之行為（如穿白衣者蹲下翻找），但未見任何財物被明確奪取或交給行為人之畫面。穿紫色上衣者被控制時，其身上的財物（如錢包、手機）是否被奪取，影片未提供足夠證據。因此，此要件目前**無法確定該當**，需依其他證據補強。
+
+4.  **因果關係**：
+    *   **該當性**：**該當**。
+    *   **理由**：行為人之暴力行為（拉扯、推擠、壓制）直接導致穿紫色上衣者被控制於地，其身體自由受限，且該行為與「取得財物」之目的具有直接關聯。暴力行為與被害人之處境變化之間具有明顯之因果關係。
+
+### 三、法律適用
+
+依據刑法第328條「強盜罪」之規定：
+> 第328條：「以強暴、脅迫、恐嚇或其他違背被害人之意志之方法，使被害人交付財物或強行取財物者，處五年以上有期徒刑，得併科新台幣一百萬元以下罰金。」
+
+本案中，行為人以多人合力施加暴力（拉扯、推擠、壓制），使被害人處於無力反抗之狀態，符合「強暴」之手段
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+【行為情緒分析】偵測到犯罪行為：Abuse（暴力 / 人身傷害）。嚴重程度：MEDIUM。情緒升溫分數：0.00。因果鏈：[低度升溫] 權力壓制 → 持續施害 → 受害者無力反抗。關鍵幀範圍：幀 0–31。語義問題提示：Do you see people confronting, attacking, or restraining each other? Is there evidence of weapons, force, or law enforcement presence?
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：[低度升溫] 權力壓制 → 持續施害 → 受害者無力反抗
+  升溫分數：0.00
+  事前指標：偵測到事前情緒：disgust（可能的衝突前兆）; 人員間肢體距離縮短，存在對峙跡象
+  事後指標：事後行為正常，需進一步觀察
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：elements-Burglary, 150, elements-Robbery, 173, elements-Abuse
+  構成要件：故意, 傷害或遺棄行為, 被害人身分（家庭成員）
+  Rlegal：0.700
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：0.993
+  Rcost：0.571
+  對話輪次：7
+  衝突類型：HARD
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [2.7s – 16.5s] In a room full of clothes, a man in a white shirt squatted in a corner to sort out the goods.
+  [23.8s – 31.6s] The man in the green plaid shirt holds the clothes on the shelf and introduces them to the customer
+  [32.5s – 39.0s] The white short-sleeved man put the clothes on the round shelf and put the stool aside
+  [39.6s – 50.4s] A customer with white long sleeves walked to the side of the man in the green plaid shirt, listened to their introduction and walked to the shelf.
+  [51.8s – 59.8s] Two customers in white shirts look at the shelves
+  [51.8s – 59.8s] The man in the green plaid shirt walked out
+  [57.8s – 60.8s] A female customer came in, followed by a customer in a white top.
+  [60.6s – 68.0s] The female customer walked to a corner with the man behind her, and the waiter in a white shirt followed behind her
+  [68.0s – 72.2s] A man walked out in front of the shelf
+  [68.0s – 72.2s] Man looking at clothes in front of round shelves
+  [72.2s – 83.1s] A woman came in holding a child. She arranged the clothes covering the child, and the child moved a little.
+  [76.3s – 87.8s] The woman in a long skirt took out a piece of clothing and walked to the side of the stool
+  [88.8s – 97.6s] The woman holding the child put down the child
+  [88.8s – 98.6s] The woman in a long skirt pulled out many pieces of clothing in a row, and the woman in a purple skirt was helping
+  [98.7s – 116.2s] The woman in the striped skirt pulled out another black dress. The woman in the purple skirt next to her put the pile of clothes she pulled out into her skirt, picked up the child and went out.
+  [110.2s – 121.7s] The woman in the striped skirt continued to pull out her clothes and put them aside. The man behind her also stepped forward and started to pull out her clothes.
+
+======================================================================

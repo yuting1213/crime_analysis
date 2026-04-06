@@ -248,6 +248,7 @@ def run_pilot(samples: List[Dict], output_dir: str, ablation_flags: Dict = None)
 
         frames = extract_frames(sample["video_path"])
         metadata = sample["metadata"]
+        metadata["video_path"] = sample["video_path"]  # VLM 原生影片輸入用
 
         try:
             result = pipeline.analyze(frames, metadata)

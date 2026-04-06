@@ -1,0 +1,168 @@
+======================================================================
+  鑑定報告：Fighting041_x264
+======================================================================
+
+  正確答案：Fighting
+  模型判定：Burglary  ✗
+  信心程度：95.00%
+  報告生成：qwen3-vl
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+### 一、事實認定
+
+根據監視器影片（CAM-3）所記錄之影像，可觀察到以下客觀事實：
+
+1.  **時間與場所**：事件發生於2019年1月1日清晨（時間戳記顯示為01:17至01:24 AM），地點為一家超市或便利店內部，場內貨架陳列商品，環境為商業營業場所。
+2.  **人物與行為**：
+    *   一名穿著深色外套、戴著帽子的男子（疑為嫌犯）於01:17 AM左右進入店內，其後在店內走動。
+    *   於01:20 AM左右，該男子與另一名穿著深色外套的男子（疑為同夥）在店內某處（疑似收銀台附近）發生互動，並有動作（疑似翻找或拿取物品）。
+    *   於01:23 AM左右，該男子突然蹲下，並有動作疑似在地面或收銀台附近搜尋或拿取物品。
+    *   於01:24 AM左右，該男子被數名穿著制服或反光背心的店員或警員（疑似店員或保安）圍住並控制，其中一名穿著綠色反光背心的男子（疑似店員或保安）正對其進行控制。
+    *   於01:24 AM左右，另一名穿著深色外套的男子（疑似同夥）亦被店員或警員控制。
+    *   於01:24 AM左右，該男子被店員或警員控制後，被帶離現場。
+3.  **現場狀況**：店內環境無明顯破壞或火災跡象，亦無明顯強行入侵（如破窗、撬門）的跡象。店內貨架基本完整，僅有收銀台附近有疑似搜尋或拿取物品的動作。
+4.  **影片時間軸**：關鍵行為發生於01:17 AM至01:24 AM之間，持續約7分鐘。
+
+### 二、構成要件分析
+
+根據刑法關於強盜罪之構成要件，逐一檢核如下：
+
+1.  **不法所有意圖**：
+    *   **該當性**：**該當**。
+    *   **理由**：影片中，疑犯進入店內後，有明顯的搜尋、翻找、蹲下拿取物品的動作（01:20-01:23 AM），此行為符合「意圖不法取得他人財物」之要件。其後被店員或警員控制，亦佐證其行為具有非法性。行為人之行為目的明顯非為合法消費或借用，而是意圖非法取得店內財物。
+
+2.  **強暴或脅迫手段**：
+    *   **該當性**：**不該當**。
+    *   **理由**：影片中未觀察到任何暴力行為（如推搡、打鬥、使用武器）、脅迫手段（如口頭威脅、恐嚇）或任何可被合理推論為「強暴或脅迫」之行為。疑犯被控制時，其動作為被制服，而非主動施加暴力或脅迫。行為人僅是「非法取得財物」，並未使用強暴或脅迫手段。
+
+3.  **取得財物**：
+    *   **該當性**：**該當**。
+    *   **理由**：影片中，疑犯有明顯的翻找、拿取物品之動作（01:20-01:23 AM），並在被控制前已從收銀台附近取得物品。此行為符合「取得他人財物」之要件。雖未見其將財物帶離現場之完整過程，但其被控制時仍持有物品，足以推論其已取得財物。
+
+4.  **因果關係**：
+    *   **該當性**：**該當**。
+    *   **理由**：影片中，疑犯之行為（非法入侵、搜尋、拿取財物）直接導致其取得財物，並最終被店員或警員控制。其行為與取得財物之間具有直接因果關係。
+
+### 三、法律適用
+
+根據上述構成要件分析，該行為符合刑法第328條「強盜罪」之構成要件，即「意圖不法所有，以強暴或脅迫手段，強制他人交付財物或強
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+【行為情緒分析】偵測到犯罪行為：Burglary（財產犯罪）。嚴重程度：MEDIUM。情緒升溫分數：0.00。因果鏈：[低度升溫] 非法入侵 → 搜索財物 → 竊取離去。關鍵幀範圍：幀 0–31。語義問題提示：Do you see someone unlawfully taking, concealing, or destroying property? Do you see forced entry, vandalism, or deliberate fire on property?
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：[低度升溫] 非法入侵 → 搜索財物 → 竊取離去
+  升溫分數：0.00
+  事前指標：偵測到事前情緒：disgust（可能的衝突前兆）; 嫌疑人有環境偵察行為，鎖定目標物
+  事後指標：嫌疑人快速離開現場，攜帶隱匿物品
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：elements-Burglary, 150, elements-Robbery, 173, elements-Shoplifting
+  構成要件：侵入建築物, 不法所有意圖, 竊取行為
+  Rlegal：0.700
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：0.828
+  Rcost：0.286
+  對話輪次：5
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [4.0s – 9.7s] A man left with a drink in his hand
+  [10.7s – 23.1s] There are two figures in the distance of the screen
+  [20.1s – 32.6s] A man and a woman leave after shopping
+  [30.6s – 40.3s] Two men wandering on the shelf
+  [40.3s – 55.4s] The two of them continued to wander around the shelves
+  [62.4s – 68.8s] A man in green passes by
+  [68.8s – 73.9s] The man in green stood next to the shelf and suddenly disappeared
+  [87.9s – 98.5s] A man in green walked by
+  [98.0s – 105.3s] The man in red enters and passes by a woman in black
+  [105.3s – 114.6s] A man in gray clothes entered and walked to the shelf
+  [114.6s – 131.4s] Several people standing together
+  [131.4s – 142.6s] A man and a woman leave
+  [142.6s – 155.6s] The man in gray leaves
+  [163.6s – 169.3s] The man in red leaves
+  [170.3s – 180.1s] A man in a hat took something and left
+  [188.1s – 194.5s]  A person leaves with something
+  [192.1s – 202.5s] Three people then entered
+  [202.5s – 219.7s] Two more people followed in
+  [228.2s – 241.5s] Two women entered, and one woman opened the cabinet on the right shelf and took out something.
+  [241.5s – 255.4s] Two women followed a new man.
+  [255.4s – 273.1s] A man in black enters
+  [273.1s – 289.7s] Two men entered, a man collided with a man and had a conflict
+  [289.7s – 299.3s] Two people communicated, and a man observed next to them
+  [299.3s – 307.6s] Several women leave
+  [306.8s – 314.2s] Three men talking around a woman
+  [314.2s – 320.5s] A man left and two people talked with the woman
+  [320.5s – 332.2s] A man walks behind a woman
+  [341.7s – 350.4s] A man walks deep into the shelf, and a woman enters
+  [350.4s – 361.7s] Three men wandered to the door to check something.
+  [361.7s – 370.4s] Two men hugged each other under the watchers, and passers-by passed by
+  [370.4s – 384.4s] Two men communicate, one man stretches out his arm to hug the other
+  [384.4s – 400.1s] Several people gather around to communicate
+  [400.1s – 415.8s] A few people wandered away
+  [415.8s – 424.0s] The two men hugged each other and separated.
+  [424.0s – 435.7s]  Several men were standing and shaking in the store
+  [435.7s – 453.9s] A few more men came to greet several people in the store
+  [453.9s – 464.2s] The two men hugged and walked to the shelf
+  [464.2s – 482.7s]  Several people were communicating in the shelf
+  [482.7s – 494.9s] Everyone gathered in the upper left corner of the screen, which is the supermarket checkout area
+  [494.9s – 507.6s] The two of them walked to the shelf
+  [507.6s – 515.9s] Two women leave
+  [515.9s – 524.9s] A man leaves
+  [524.9s – 537.5s] Several men are wandering and communicating
+  [548.2s – 563.1s] A man in green enters and stands next to the shelf
+  [563.1s – 570.8s] A man stood at the door and clapped his hands
+  [570.8s – 582.4s] A man chatting with the man at the door
+  [582.4s – 593.0s] The man in the hat raised his arms and spoke to the man at the door
+  [593.0s – 607.6s] The three of them were not moving at the door, and the counter was crowded with people.
+  [608.4s – 618.8s] A man walked to the door and four people communicated together
+  [618.8s – 629.3s] Several people suddenly pointed in one direction.
+  [629.3s – 638.0s] Suddenly everyone ran away
+  [638.0s – 650.8s] People keep running out one after another
+  [650.8s – 662.3s] A man is wandering around a man lying on the ground
+  [662.3s – 679.0s] The man grabbed the man’s arm on the ground
+  [679.0s – 686.0s] A man held the shelf and went out
+  [686.0s – 697.7s] The man on the ground raised his head to check the situation and then lay down on the ground
+  [698.0s – 706.2s] The two people passed by and left, and the man lay down completely
+  [706.2s – 721.5s] After the two men went out, the man continued to fall to the ground and struggled.
+  [721.5s – 737.8s] The man was motionless and the light was turned off.
+  [737.8s – 756.9s] The door opened and a man came in with a phone call.
+  [756.9s – 785.1s] Two men passed by the door and then went out
+  [785.1s – 802.3s] Three police officers entered to check on the man who fell to the ground
+  [802.3s – 815.5s] The woman bent over to check the man's condition
+  [815.5s – 834.4s] Another man came in to check the environment and the man’s condition
+  [889.6s – 921.1s] The doctor enters for emergency treatment and removes the shelves
+  [921.1s – 940.5s] Doctors continue to rescue the fallen man
+  [940.5s – 957.6s] A man came in carrying a yellow shelf
+  [957.6s – 992.9s] A man pushed a cart through the door
+  [992.9s – 1054.0s] Everyone gathered around the injured man for treatment
+
+======================================================================

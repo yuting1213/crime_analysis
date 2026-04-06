@@ -1,0 +1,119 @@
+======================================================================
+  鑑定報告：Vandalism033_x264
+======================================================================
+
+  正確答案：Vandalism
+  模型判定：Burglary  ✗
+  信心程度：95.00%
+  報告生成：qwen3-vl
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+### 一、事實認定
+
+根據監視器影片截圖與行為分析摘要，可觀察到以下客觀事實：
+
+1.  **時間與地點**：影片時間戳記為「05.06.2015 15:36:01」，場景為住宅區，包含庭院（Cam 03）、車道與道路交界處（Cam 02）、及屋頂（Cam 04）。
+2.  **人物行為**：
+    *   Cam 02 師：於 15:36:30 至 15:36:38 期間，可見三名穿著深色與淺色衣物的人員，從左側圍牆邊快速移動至右側屋頂邊緣，其中一人有明顯蹲伏或彎腰動作。
+    *   Cam 04 師：於 15:36:58，可見一人自屋頂邊緣快速跳下或躍下，並朝向道路方向移動。
+3.  **行為分析摘要指出**：影片偵測到「Explosion（公共安全）」行為，嚴重程度為「MEDIUM」，因果鏈為「可疑物品放置 → 引爆裝置 → 爆炸衝擊」，關鍵幀為 0–31。但分析同時提示「Do you see a sudden blast, smoke, or debris in the scene?」，即影片中未見明顯爆炸、煙霧或飛散物。
+4.  **行為情緒分析**：情緒升溫分數為 0.00，顯示影片中未見明顯情緒激動或衝突行為。
+
+### 二、構成要件分析
+
+根據刑法第321條加重竊盜罪（侵入建築物）之構成要件，逐一檢核如下：
+
+1.  **侵入建築物**：
+    *   **該當性**：**是**。
+    *   **證據**：Cam 02 影片中，人物自圍牆邊進入車道，並進入屋頂區域（Cam 04），此行為符合「侵入建築物」之要件。行為人進入的是住宅建築物之附屬空間（如屋頂、車道），屬於刑法上「建築物」之範疇。
+
+2.  **不法所有意圖**：
+    *   **該當性**：**推論成立**。
+    *   **證據**：行為分析摘要明確標示「犯罪行為：Explosion（公共安全）」，並指明「可疑物品放置 → 引爆裝置 → 爆炸衝擊」之因果鏈，暗示行為人有非法取得或破壞財產之目的。雖影片未見明確「竊取」行為，但「爆炸」行為本身即為一種「不法所有」之表現（如破壞、竊取、毀損），且行為人進入建築物之行為，具備「不法所有」之意圖之高度可能性。
+
+3.  **竊取行為**：
+    *   **該當性**：**不該當**。
+    *   **證據**：影片中未見任何「竊取」行為之具體表現（如拿取物品、藏匿物品等）。行為分析摘要雖提及「Explosion」，但此為「公共安全」之犯罪，並非「竊盜罪」之典型行為。影片中人物之行為，更接近「侵入」與「破壞」，而非「竊取」。
+
+### 三、法律適用
+
+根據刑法第321條加重竊盜罪（侵入建築物）之規定：
+
+> 「意圖不法所有，侵入他人住宅或建築物者，處三年以上十年以下有期徒刑。」
+
+本案件中，行為人「侵入建築物」之行為該當，且有「不法所有意圖」之推論，但「竊取行為」之證據不足，故不該當「竊盜罪」之完整構成要件。
+
+然而，行為分析摘要所指「Explosion（公共安全）」之行為，可能觸及刑法第173條（公共危險罪）或第150條（危害公共安全罪），但這些罪名與「竊盜罪」無直接關聯，且影片中未見爆炸、煙霧或飛散物之證據，故無法適用。
+
+### 四、不確定性與限制
+
+1.  **影片內容限制**：影片中未見任何爆炸、煙霧或飛散物，行為分析摘要所指
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+【行為情緒分析】偵測到犯罪行為：Explosion（公共安全）。嚴重程度：MEDIUM。情緒升溫分數：0.00。因果鏈：[低度升溫] 可疑物品放置 → 引爆裝置 → 爆炸衝擊。關鍵幀範圍：幀 0–31。語義問題提示：Do you see a sudden blast, smoke, or debris in the scene? Do you see vehicles colliding, losing control, or hitting people?
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：[低度升溫] 可疑物品放置 → 引爆裝置 → 爆炸衝擊
+  升溫分數：0.00
+  事前指標：偵測到事前情緒：disgust（可能的衝突前兆）; 場景出現可疑物品或車輛異常移動
+  事後指標：現場出現煙霧或人員逃散
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：elements-Burglary, 150, elements-Explosion, 173, elements-Shoplifting
+  構成要件：侵入建築物, 不法所有意圖, 竊取行為
+  Rlegal：1.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：1.192
+  Rcost：0.000
+  對話輪次：3
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [0.0s – 7.3s] Two men in black jumped on the outside of the red fence of the yard and threw things into the yard.
+  [10.9s – 18.9s] A man wearing gray clothes and covering his face with black cloth ran into the yard and threw things at the building.
+  [15.9s – 28.0s] Two men in black clothes ran into the yard and threw things at the building.
+  [18.9s – 20.9s] The man in gray clothes runs towards the wall
+  [20.9s – 28.0s] The man in gray climbed out of the wall and ran forward along the wall.
+  [22.9s – 28.0s] A man in blue also threw things at the building within the wall.
+  [28.0s – 32.7s] The man in gray handed a small white bucket to a man in black in the yard through the black fence.
+  [33.0s – 36.7s] The man in black took the bucket and poured the contents into the building.
+  [33.0s – 34.7s] Another man in black walks towards the black wall
+  [39.7s – 59.8s] A man in red is walking on the road outside the wall.
+  [39.7s – 47.1s] The man in black in the yard threw bricks at the red roof. The bricks rolled along the roof and fell to the ground. The man in black picked them up again.
+  [51.1s – 52.8s] A white car passed by,
+  [47.1s – 52.8s] A man in black bent down in the yard and poured the objects in the small bucket.
+  [47.1s – 59.8s] A man in black kept throwing bricks towards the roof
+  [59.8s – 63.8s] The man in gray outside the black fence held the wall with his hand, lowered his head and then left.
+  [62.8s – 65.8s] A man in black ran towards the corner of the yard in the direction where the man in gray left.
+  [74.3s – 75.2s] A black car passed by on the road.
+  [70.3s – 75.2s] A man in black ran outside the yard to the middle of the road, threw a brick at the building in the yard and ran back
+
+======================================================================

@@ -1,8 +1,8 @@
 ======================================================================
-  鑑定報告：Fighting039_x264
+  鑑定報告：Burglary066_x264
 ======================================================================
 
-  正確答案：Fighting
+  正確答案：Burglary
   模型判定：Shooting  ✗
   信心程度：95.00%
   報告生成：qwen3-vl
@@ -13,44 +13,35 @@
 
 ### 一、事實認定
 
-根據監視器影片截圖與時間戳記（2010年11月21日2時28分至2時31分），可觀察到以下客觀事實：
-
-1.  **場所與時間**：事件發生於夜間，地點為戶外人行道或店舖門口，旁有「ROYAL」招牌與樹木，背景為停車場。
-2.  **人物互動**：
-    *   帳幕開頭（幀0-3）：約五至六名男性聚集於招牌旁，其中一人穿著連帽外套，與他人有肢體接觸或推擠。
-    *   幀4-7：一名穿著連帽外套的男子（A）與另一名穿格紋上衣的男子（B）發生明顯肢體衝突，A 被推或拉扯，B 隨後轉身離開。
-    *   幀8-10：A 被推至招牌旁，B 朝停車場方向奔跑，A 站立不動，後方有其他男子圍觀或跟隨。
-    *   幀11-12：B 跑至停車場，A 站立原地，一名穿深色外套的男子（C）從停車場方向走來。
-    *   幀13-14：C 與 A 互動，A 被推或拉扯，C 隨後離開。
-    *   幀15-16：A 站立不動，C 離開，另一名男子（D）從停車場方向走來。
-    *   幀17-18：D 與 A 互動，A 被推或拉扯，D 隨後離開。
-    *   幀19-20：A 站立不動，D 離開，另一名男子（E）從停車場方向走來。
-    *   幀21-22：E 與 A 互動，A 被推或拉扯，E 隨後離開。
-    *   幀23-24：A 站立不動，E 離開，另一名男子（F）從停車場方向走來。
-    *   幀25-26：F 與 A 互動，A 被推或拉扯，F 隨後離開。
-    *   幀27-28：A 站立不動，F 離開，另一名男子（G）從停車場方向走來。
-    *   幀29-30：G 與 A 互動，A 被推或拉扯，G 隨後離開。
-    *   幀31-32：A 站立不動，G 離開。
-3.  **物證與環境**：現場有「ROYAL」招牌、樹木、停車場、多輛汽車、垃圾桶等。
-4.  **行為特徵**：
-    *   多次出現「推、拉、拉扯」等肢體互動。
-    *   有男子從停車場方向跑來，並與 A 互動。
-    *   A 多次被推或拉扯，但未見明顯攻擊或反擊。
-    *   未見任何武器、槍械或明顯暴力傷害。
-    *   未見警察或法 enforcement presence。
-    *   未見財物被奪取或轉移。
+根據監視器影片（Camera5）所記錄之影像，於2014年3月23日星期一15時16分20秒至15時17分24秒間，於一疑似洗衣店或自助洗衣場所內，一名身穿藍色上衣與淺色短褲之男子（以下簡稱「行為人」）進入畫面。其後，行為人走向牆壁上之嵌入式儲物櫃（或稱「投幣式儲物櫃」），並於15:16:38開啟櫃門。行為人隨即從櫃內取出一物體，並於15:16:47至15:17:06間，將該物體對準櫃門方向，並做出明顯之「扣動扳機」動作，疑似射擊。射擊後，行為人於15:17:15將物體放回櫃內，並於15:17:24離開現場。整個過程未見其他人物、警力或任何阻礙行為。
 
 ### 二、構成要件分析
 
-根據刑法強盜罪之構成要件，逐一檢核如下：
+1. **不法所有意圖**  
+   影片中行為人於開啟櫃門後，即取出疑似槍械之物體，並對準櫃門方向進行射擊動作，其行為模式具有「以暴力手段取得他人財物」之明顯意圖。雖未見其直接拿取櫃內物品，但其射擊行為本身即具備「排除他人對財物之支配權」之目的，符合「不法所有意圖」之構成要件。
 
-1.  **不法所有意圖**：
-    *   **該當性**：**無法確認**。
-    *   **理由**：影片中未見任何行為人明確表示或暗示其意圖非法取得他人財物。所有肢體互動均為推、拉、拉扯，未見任何行為人有「取得財物」之目的或行為。行為人之間的互動，可能為爭執、鬥毆或非財物目的之衝突，無法從影像中推論其具有「不法所有意圖」。
+2. **竊取行為**  
+   行為人於開啟櫃門後，取出疑似槍械之物體，並對櫃門方向射擊，其行為已具備「以暴力手段取得他人財物」之實質行為。此行為已超出「僅僅開啟櫃門」之範疇，而具備「竊取」之實質行為，符合「竊取行為」之構成要件。
 
-2.  **強暴或脅迫手段**：
-    *   **該當性**：**無法確認**。
-    *   **理由**：影片中雖有肢體衝突（推、拉、拉扯），但未見任何行為人使用暴力或脅迫手段。行為人之間的
+3. **他人動產**  
+   儲物櫃內之物體（疑似槍械）為他人所有之動產，其存放於公共場所之儲物櫃內，屬「他人動產」之範疇，符合「他人動產」之構成要件。
+
+4. **秘密竊取**  
+   行為人於開啟櫃門後，即取出疑似槍械之物體，並對櫃門方向射擊，其行為模式具有「以暴力手段取得他人財物」之明顯意圖，其行為並未被現場其他人物所見證或阻止，符合「秘密竊取」之構成要件。
+
+### 三、法律適用
+
+根據刑法第320條竊盜罪之規定：「意圖為自己或第三人不法之所有，而竊取他人之動產者，處五年以下有期徒刑、拘役或五十萬元以下罰金。」  
+行為人之行為符合「意圖不法所有」、「竊取他人動產」、「秘密竊取」之構成要件，應適用刑法第320條竊盜罪。
+
+此外，行為人於竊取過程中，使用槍械並進行射擊，其行為已超出「普通竊盜」之範疇，可能觸犯刑法第321條加重竊盜罪之規定，但因影片中未見行為人實際取得財物，且其射擊行為可能僅為「威嚇」或「試射」，尚需進一步查證其行為之具體目的與結果，故暫時不適用加重竊盜罪。
+
+### 四、不確定性與限制
+
+1. 影片畫質與角度限制：影片為監視器所錄製，畫質較為模糊，且鏡頭角度為固定式監視器，無法清晰觀察行為人之面部表情、手部細節及櫃內物體之具體性質。
+2. 物體性質不確定：行為人所取出之物體疑似槍械，但因畫質模糊，無法確定其為真實槍械或仿真槍，亦無法確定其是否具有實質殺傷力。
+3. 行為目的不確定：行為人於射擊後即將物體放回櫃內，並未實際取得財物，其行為目的可能為「威嚇」、「試射」或「其他」，尚需進一步查證。
+4. 法律適用不確定：行為人之行為是否觸犯刑法第321條加重竊
 
 ──────────────────────────────────────────────────────────────────────
   一-b、ActionEmotion Agent 行為摘要
@@ -71,18 +62,18 @@
   三、法律適用
 ──────────────────────────────────────────────────────────────────────
 
-  適用法條：elements-Burglary, 150, elements-Robbery, 173, elements-Shoplifting
+  適用法條：elements-Burglary, 150, elements-Shoplifting, 173, elements-Stealing
   構成要件：使用槍械或凶器, 殺傷意圖, 危害公共安全
-  Rlegal：0.300
+  Rlegal：1.000
 
 ──────────────────────────────────────────────────────────────────────
   四、系統指標
 ──────────────────────────────────────────────────────────────────────
 
-  Rcons：0.783
-  Rcost：0.286
+  Rcons：0.782
+  Rcost：0.400
   對話輪次：5
-  衝突類型：NONE
+  衝突類型：HARD
   是否收斂：True
 
 ──────────────────────────────────────────────────────────────────────
@@ -97,23 +88,14 @@
   附錄：UCA 時序標註（Ground Truth）
 ──────────────────────────────────────────────────────────────────────
 
-  [0.0s – 6.9s] A group of people walking by the roadside
-  [0.0s – 15.8s] A group of people were standing at the door chatting, a man carrying a bag was waving his hand
-  [15.0s – 25.8s] The crowd gathered together, and the man carrying the bag hugged a short man
-  [26.4s – 38.4s] Two men in the crowd had an argument, and then the two men were pulled apart
-  [38.4s – 47.4s] A few people walked to the front of the road
-  [57.6s – 60.4s] Two women walked out of the door
-  [56.6s – 93.4s] Two men had a dispute again
-  [63.1s – 74.3s] The hooded man is holding a man from behind and walking back
-  [74.3s – 89.0s] Two people holding each other and retreating
-  [92.2s – 104.0s] The two women left with several men again
-  [109.2s – 116.0s] Two hooded men walked by
-  [110.0s – 118.7s] A few men had a dispute in the upper left corner
-  [118.7s – 127.8s]  Several people had a fight in the upper left corner and fell to the ground.
-  [127.8s – 146.0s]  Several people beat each other and fell to the ground
-  [147.3s – 155.8s] Both parties separate
-  [153.3s – 160.8s] The police stopped and got out of the car
-  [159.8s – 173.1s] The police approached a person to talk, and a man left
-  [176.5s – 201.1s]  Several men left, and one man ran wildly in the parking lot.
+  [1.1s – 6.2s] A man wearing a blue shirt and white shorts walked to a small cabinet on the wall and stopped in front of it.
+  [7.6s – 12.3s] The man pried open the cabinet door.
+  [13.0s – 16.0s] The man pried open a lid at the bottom of the small cabinet.
+  [16.0s – 20.0s]  Remove the transparent plastic box and place it on the ground.
+  [25.1s – 30.4s] The man pried open a white iron cabinet next to it.
+  [30.2s – 44.8s] The man pried open a cover at the bottom of the small door.
+  [44.2s – 50.8s] The man took out a small box,
+  [50.2s – 54.8s] The man placed the box in the plastic box that was previously placed on the ground.
+  [55.7s – 57.0s] The man picked up the items on the ground and left the scene.
 
 ======================================================================

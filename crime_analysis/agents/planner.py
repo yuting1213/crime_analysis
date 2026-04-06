@@ -15,6 +15,7 @@ Planner Agent - 中央規劃與協調代理（規則式）
 評估：R = w1·Racc + w2·Rcons + w3·Rlegal − w4·Rcost（評估指標，非訓練信號）
 """
 import logging
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .base_agent import AgentReport
@@ -251,7 +252,7 @@ class PlannerAgent:
             self._load_report_model()
 
         if self._report_model is not None and not self._skip_vlm_classify:
-            vlm_result = self._vlm_classify(frames)
+            vlm_result = self._vlm_classify(frames, video_metadata)
             if vlm_result:
                 crime_type, vlm_conf = vlm_result
                 ae_confidence = vlm_conf
@@ -301,6 +302,7 @@ class PlannerAgent:
         if not self._skip_vlm_report:
             generated_report_text = self._call_qwen3_vl(
                 report_messages, frames, temperature=temperature,
+                video_metadata=video_metadata,
             )
         else:
             generated_report_text = ""  # 消融⑤：強制 fallback
@@ -684,10 +686,10 @@ class PlannerAgent:
             logger.warning(f"[Planner] 無法載入 VLM：{e}，將使用 fallback")
             self._report_model = None
 
-    def _vlm_classify(self, frames: List) -> Optional[tuple]:
+    def _vlm_classify(self, frames: List, video_metadata: Dict = None) -> Optional[tuple]:
         """
-        Qwen3-VL zero-shot 犯罪分類。
-        取 4 張關鍵幀，讓 VLM 判斷犯罪類別。
+        Qwen3-VL 犯罪分類。
+        優先使用原生影片輸入（動態資訊），fallback 到 8 張靜態幀。
         """
         if self._report_model is None or self._report_tokenizer is None:
             return None
@@ -695,48 +697,58 @@ class PlannerAgent:
         import torch, re, cv2
         from PIL import Image as PILImage
 
-        # 均勻取 4 張關鍵幀
-        valid = [f for f in frames if f is not None and hasattr(f, "shape")]
-        if not valid:
-            return None
-        n = len(valid)
-        indices = [int(i * n / 8) for i in range(8)]
-        keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
-
         categories_str = ", ".join(UCF_CATEGORIES)
         prompt = (
             "You are a forensic surveillance video analyst specializing in UCF-Crime dataset.\n"
-            "Look at these 4 sequential frames from a CCTV video and determine what crime is occurring.\n\n"
+            "Watch this CCTV footage carefully and determine what crime is occurring.\n"
+            "Pay close attention to MOTION and ACTIONS, not just static scenes.\n\n"
             f"Choose ONE category from: {categories_str}\n\n"
-            "Here is what each category looks like in surveillance footage:\n\n"
-            "- Assault: One person attacking another — punching, kicking, pushing. Victim may fall or shield themselves. Usually 1-on-1.\n"
-            "- Robbery: Threatening someone with weapon or force to take their belongings. Victim hands over items under duress.\n"
-            "- Stealing: Secretly taking items when owner is not looking. No confrontation. Thief acts casually.\n"
-            "- Shoplifting: Person in a store concealing merchandise in bag/clothing, then leaving without paying.\n"
-            "- Burglary: Breaking into a building/house/car. Forced entry visible — breaking windows, prying doors.\n"
-            "- Fighting: Two or more people in mutual physical combat — both sides throwing punches/kicks.\n"
-            "- Arson: Deliberately setting fire. Flames, smoke, person with lighter/matches near flammable material.\n"
-            "- Explosion: Sudden blast with smoke, debris, shockwave. People flee. Building damage visible.\n"
-            "- RoadAccidents: Vehicle collision, car hitting pedestrian, motorcycle crash. Aftermath with damaged vehicles.\n"
-            "- Vandalism: Deliberately damaging property — smashing windows, spray painting, breaking objects.\n"
-            "- Abuse: Sustained physical harm to a vulnerable person (child, elderly). Repeated hitting, dragging.\n"
-            "- Shooting: Gunfire — person pointing weapon, muzzle flash, victim collapsing, bystanders running.\n"
-            "- Arrest: Law enforcement restraining a suspect — handcuffing, tackling, police vehicles present.\n\n"
-            "IMPORTANT: Focus on WHAT IS ACTUALLY VISIBLE in the frames, not assumptions.\n"
-            "If the scene shows a car hitting an animal or traffic incident → RoadAccidents\n"
-            "If the scene shows someone smashing or destroying objects → Vandalism\n"
-            "If the scene shows a person beating another repeatedly → Abuse or Assault\n\n"
+            "Category definitions with key motion cues:\n\n"
+            "- Assault: One person ATTACKING another — punching, kicking, pushing. One-sided aggression.\n"
+            "- Robbery: Threatening someone to FORCIBLY TAKE their belongings. Look for weapon or struggle over items.\n"
+            "- Stealing: SECRETLY taking items when owner is away. No confrontation, thief acts casually.\n"
+            "- Shoplifting: In a STORE, concealing merchandise, leaving without paying.\n"
+            "- Burglary: BREAKING INTO a building/house/car. Forced entry — smashing windows, prying doors.\n"
+            "- Fighting: TWO OR MORE people in MUTUAL combat — BOTH sides throwing punches/kicks.\n"
+            "- Arson: Deliberately SETTING FIRE. Flames growing, person near ignition point.\n"
+            "- Explosion: SUDDEN BLAST — smoke, debris, shockwave. Instant destruction.\n"
+            "- RoadAccidents: VEHICLE COLLISION or hitting pedestrian/animal. Damaged vehicles, skid marks.\n"
+            "- Vandalism: Deliberately DAMAGING PROPERTY — smashing, spray painting, breaking objects.\n"
+            "- Abuse: SUSTAINED harm to vulnerable person. REPEATED hitting over time, victim helpless.\n"
+            "- Shooting: GUNFIRE — weapon visible, muzzle flash, victim collapsing, people fleeing.\n"
+            "- Arrest: LAW ENFORCEMENT restraining suspect — handcuffs, police vehicles, uniforms.\n\n"
+            "KEY DISTINCTIONS:\n"
+            "- Fighting = MUTUAL combat (both fight) vs Assault = ONE-SIDED attack\n"
+            "- Robbery = FORCE + TAKING items vs Stealing = SECRET taking\n"
+            "- Burglary = BREAKING IN vs Stealing = already inside\n"
+            "- Abuse = REPEATED over time vs Assault = single incident\n\n"
             "Reply in this exact format:\n"
             "CATEGORY: <name>\nCONFIDENCE: <0.0-1.0>\nREASON: <one sentence explaining what you see>"
         )
 
-        messages = [{
-            "role": "user",
-            "content": [
-                *[{"type": "image", "image": img} for img in keyframes],
-                {"type": "text", "text": prompt},
-            ],
-        }]
+        # 優先使用原生影片輸入（保留動態資訊）
+        video_path = (video_metadata or {}).get("video_path", "")
+        if video_path and Path(video_path).exists():
+            video_content = {"type": "video", "video": f"file://{video_path}"}
+            logger.info(f"[VLM classify] 使用原生影片輸入：{Path(video_path).name}")
+        else:
+            # Fallback: 8 張靜態幀
+            valid = [f for f in frames if f is not None and hasattr(f, "shape")]
+            if not valid:
+                return None
+            n = len(valid)
+            indices = [int(i * n / 8) for i in range(8)]
+            keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
+            video_content = [{"type": "image", "image": img} for img in keyframes]
+            logger.info("[VLM classify] 使用 8 張靜態幀（無影片路徑）")
+
+        # 組裝 messages
+        if isinstance(video_content, dict):
+            user_content = [video_content, {"type": "text", "text": prompt}]
+        else:
+            user_content = [*video_content, {"type": "text", "text": prompt}]
+
+        messages = [{"role": "user", "content": user_content}]
 
         try:
             processor = self._report_tokenizer
@@ -787,10 +799,11 @@ class PlannerAgent:
         messages: List[Dict[str, str]],
         frames: List,
         temperature: Optional[float] = None,
+        video_metadata: Dict = None,
     ) -> str:
         """
-        Qwen3-VL 帶影片幀生成鑑定報告。
-        將 4 張關鍵幀 + 文字 prompt 送入 VLM。
+        Qwen3-VL 帶影片生成鑑定報告。
+        優先用原生影片輸入，fallback 到 8 張靜態幀。
         """
         if self._report_model is None or self._report_tokenizer is None:
             logger.warning("[Planner] VLM 未就緒，使用 fallback")
@@ -799,13 +812,21 @@ class PlannerAgent:
         import re, torch, cv2
         from PIL import Image as PILImage
 
-        # 取 4 張關鍵幀
-        valid = [f for f in frames if f is not None and hasattr(f, "shape")]
-        keyframes = []
-        if valid:
-            n = len(valid)
-            indices = [int(i * n / 8) for i in range(8)]
-            keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
+        # 優先用原生影片
+        video_path = (video_metadata or {}).get("video_path", "")
+        if video_path and Path(video_path).exists():
+            visual_content = [{"type": "video", "video": f"file://{video_path}"}]
+        else:
+            # Fallback: 8 張靜態幀
+            valid = [f for f in frames if f is not None and hasattr(f, "shape")]
+            visual_content = []
+            if valid:
+                n = len(valid)
+                indices = [int(i * n / 8) for i in range(8)]
+                visual_content = [
+                    {"type": "image", "image": PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB))}
+                    for idx in indices
+                ]
 
         # 從 build_report_prompt 的 messages 提取文字
         system_text = ""
@@ -821,12 +842,10 @@ class PlannerAgent:
         if system_text:
             vlm_messages.append({"role": "system", "content": [{"type": "text", "text": system_text}]})
 
-        user_content = []
-        for img in keyframes:
-            user_content.append({"type": "image", "image": img})
+        user_content = list(visual_content)  # video or images
         user_content.append({
             "type": "text",
-            "text": "以下是監視器影片的關鍵幀截圖。請根據影像內容與下方的分析資料撰寫鑑定報告。\n\n" + user_text,
+            "text": "以下是監視器影片。請根據影像內容與下方的分析資料撰寫鑑定報告。\n\n" + user_text,
         })
         vlm_messages.append({"role": "user", "content": user_content})
 

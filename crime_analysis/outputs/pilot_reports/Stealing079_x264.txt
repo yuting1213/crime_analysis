@@ -1,0 +1,124 @@
+======================================================================
+  鑑定報告：Stealing079_x264
+======================================================================
+
+  正確答案：Stealing
+  模型判定：Burglary  ✗
+  信心程度：95.00%
+  報告生成：qwen3-vl
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+### 一、事實認定
+
+根據監視器影片截圖與時間戳記（2013年10月11日 16:48:47 PM 至 16:52:26 PM），觀察到以下客觀事實：
+
+1.  影片拍攝地點為一住宅大門前，門為黑色鐵藝閘門，門外為道路，門內為庭院。
+2.  04:50:24 PM 後，一名穿著深色衣物、戴頭盔的人駕駛一輛黑色機車抵達閘門。
+3.  04:51:13 PM，該人將機車推入閘門內，並在閘門內側將機車停放。
+4.  04:52:02 PM，另一名穿著淺色上衣、深色長褲的男子從閘門內走出，走向機車，並在機車旁站立。
+5.  04:52:26 PM，穿淺色上衣的男子站在機車旁，雙手扶著機車，身體朝向機車方向。
+6.  整段影片中，未見任何爭執、推搡、攻擊或使用武器的行為。兩名男子之間無肢體接觸，亦無任何暴力或威脅行為。閘門在整個過程中保持開啟狀態，未見任何「侵入」或「防禦」動作。
+
+### 二、構成要件分析
+
+根據刑法第321條加重竊盜罪（侵入建築物）之構成要件，逐一檢核如下：
+
+1.  **侵入建築物**：
+    -   該要件要求行為人「侵入」建築物。影片中，駕駛機車者於閘門內側將機車停放，其行為並非「侵入」建築物，而是進入建築物的「庭院」或「門前空地」。此處是否構成「建築物」之範圍，需依建築法或慣例判斷。然而，影片中未見任何「侵入」行為，僅為「進入」門外區域。因此，**該要件不該當**。
+
+2.  **不法所有意圖**：
+    -   此要件要求行為人具有「不法所有」之故意。影片中，兩名男子均未表現出任何盜竊或非法佔有之意圖。駕駛機車者僅將機車停放，穿淺色上衣者僅站立於機車旁，無任何取物、翻找或盜竊行為。**該要件不該當**。
+
+3.  **竊取行為**：
+    -   此要件要求行為人實際執行「竊取」行為。影片中，無任何行為可被認定為「竊取」，例如未見任何物品被取走、未見任何破壞或翻找行為。**該要件不該當**。
+
+### 三、法律適用
+
+根據刑法第321條加重竊盜罪（侵入建築物）之構成要件，需同時滿足「侵入建築物」、「不法所有意圖」及「竊取行為」三要件。由於影片中無任何行為符合上述三要件，因此**刑法第321條加重竊盜罪不適用**。
+
+此外，行為分析摘要中提及「Fighting（暴力 / 人身傷害）」，但內部審查結果為「衝突類型：NONE」，且影片中無任何暴力或衝突行為，故**刑法第173條（傷害罪）亦不適用**。
+
+### 四、不確定性與限制
+
+1.  **影片解析度與時間戳記**：影片解析度較低，且時間戳記為「PM」，但實際時間為「16:48:47」，此為「下午」時間，與「深夜」或「凌晨」無關，可能影響行為定性。
+2.  **行為定性模糊**：行為分析摘要中提及「Fighting」，但影片中無任何衝突或暴力行為，與內部審查結果「衝突類型：NONE」及「一致性分數（Rcons）：0.00」矛盾，顯示分析模型可能存在誤判。
+3.  **「侵入」定義爭議**：影片中行為人僅將機車停放在閘門內側，是否構成「侵入建築物」，需依建築法或
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+【行為情緒分析】偵測到犯罪行為：Fighting（暴力 / 人身傷害）。嚴重程度：MEDIUM。情緒升溫分數：0.00。因果鏈：[低度升溫] 情緒對立 → 肢體接觸 → 互毆衝突。關鍵幀範圍：幀 0–31。語義問題提示：Do you see people confronting, attacking, or restraining each other? Is there evidence of weapons, force, or law enforcement presence?
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：[低度升溫] 情緒對立 → 肢體接觸 → 互毆衝突
+  升溫分數：0.00
+  事前指標：偵測到事前情緒：disgust（可能的衝突前兆）; 人員間肢體距離縮短，存在對峙跡象
+  事後指標：受害者出現防禦性姿態或倒地行為
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：elements-Burglary, 150, elements-Fighting, 173, elements-Shoplifting
+  構成要件：侵入建築物, 不法所有意圖, 竊取行為
+  Rlegal：1.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：1.192
+  Rcost：0.000
+  對話輪次：3
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [0.0s – 3.9s] A motorcycle passed by on the road at the entrance of the yard
+  [11.9s – 13.2s] A motorcycle passed by on the road at the entrance of the yard
+  [20.2s – 22.3s] A motorcycle passed by on the road at the entrance of the yard
+  [26.3s – 27.4s] A motorcycle passed by on the road at the entrance of the yard
+  [36.4s – 38.1s] An orange car passed by on the road outside the yard
+  [39.1s – 44.7s] A motorcycle and a white car passed by on the road outside the yard
+  [49.7s – 57.8s] A man wearing a helmet and striped clothes walked to the corner outside the yard and squatted down.
+  [53.7s – 56.8s] A motorcycle passed by on the road
+  [57.8s – 69.9s] The man in a striped shirt wearing a helmet squatted, looked left and right, and moved back.
+  [63.9s – 66.9s] A red car passed by on the road outside the yard
+  [69.9s – 81.4s] The man in the helmet-striped shirt from the corner stuck his head out, and then retracted.
+  [79.9s – 81.4s] A white car passed by on the road
+  [81.4s – 99.8s] The man in the striped shirt walked to the middle of the black iron gate of the yard and opened it.
+  [97.4s – 99.8s] A red car passed by on the road
+  [99.8s – 111.2s] The man in the striped shirt walked into the yard,
+  [101.8s – 108.2s] A car passes by on the road
+  [105.8s – 107.2s] A car passed by on the road
+  [108.8s – 111.2s] A motorcycle passed by on the road
+  [111.2s – 122.5s] The man in striped shirt pushed a motorcycle to the iron gate of the yard, but the motorcycle was stuck by the gate.
+  [122.5s – 143.6s] The man in the striped shirt moved the car hard,
+  [122.5s – 143.6s] A man riding a motorcycle looked at him on the road, then rode a few steps forward
+  [143.6s – 147.2s] A man in white rushed towards the man in striped shirt with a shovel, and the man in striped shirt ran away.
+  [147.2s – 151.2s] The man riding a motorcycle drove away on the road
+  [151.2s – 173.1s] The man in white dragged the shovel across the motorcycle and walked to the middle of the road and looked into the distance
+  [173.1s – 179.1s]  Two motorcycles passed by on the road, and one motorcycle drove next to the man in white.
+  [179.1s – 180.0s] A car passed by on the road,
+  [179.1s – 191.1s] The man in white holds a shovel and talks to the people in the yard.
+  [191.1s – 195.0s] A man in yellow pants walked to the motorcycle in the yard
+
+======================================================================
