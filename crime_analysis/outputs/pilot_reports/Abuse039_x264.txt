@@ -1,0 +1,141 @@
+======================================================================
+  鑑定報告：Abuse039_x264
+======================================================================
+
+  正確答案：Abuse
+  模型判定：Assault  ✗
+  信心程度：95.00%
+  報告生成：qwen3-vl
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+### 一、事實認定
+
+根據監視器影片截圖與行為分析摘要，可觀察到以下客觀事實：
+
+1.  **時間與地點**：事件發生於2014年12月19日19時34分43秒至19時40分38秒（UTC-05:00），地點為「Booking Scan room S-105」，疑似為監獄或司法機構的掃描室。
+2.  **參與者**：影片中出現三名主要人物，均穿著深色服裝，其中一人穿著類似警服或執勤制服，另兩人為平民或囚犯。
+3.  **行為序列**：
+    *   前段（幀0-10）：三人在房間內站立或移動，其中一名穿制服者與另一人互動，環境看似例行性活動。
+    *   中段（幀11-20）：穿制服者與另一人之間出現明顯肢體接觸與推搡，穿制服者將對方推向牆壁。
+    *   後段（幀21-31）：穿制服者與另一人發生激烈肢體衝突，穿制服者將對方按倒在地，並有明顯的壓制動作。
+    *   最終（幀31）：穿制服者與被壓制者均倒地，穿制服者仍保持壓制姿勢，現場有散落的鞋履。
+4.  **環境與證據**：現場有掃描機器、電腦螢幕等設備，地面散落鞋履，暗示事件發生時可能有爭執或衝突。
+
+### 二、構成要件分析
+
+根據刑法相關規定，針對「Assault」（暴力/人身傷害）之構成要件，逐一檢核如下：
+
+1.  **故意**：
+    *   **該當性**：**該當**。
+    *   **證據支持**：影片中穿制服者主動推搡、將對方推向牆壁、並最終壓制對方於地，其動作具有明顯的攻擊性與控制意圖，符合「故意」之構成要件。行為人非僅為防禦或意外碰撞，其行為目的顯為施加暴力於他人。
+
+2.  **傷害行為**：
+    *   **該當性**：**該當**。
+    *   **證據支持**：影片中穿制服者與另一人發生肢體衝突，穿制服者將對方按倒在地並施加壓制，此行為已構成「傷害行為」。行為人以身體力氣對他人施加暴力，符合刑法上「傷害行為」之定義。
+
+3.  **傷害結果**：
+    *   **該當性**：**待證**。
+    *   **證據支持**：影片僅顯示衝突過程與壓制狀態，未見明顯外傷（如出血、瘀青、骨折等）或他人受傷之證據。根據刑法第277條，「傷害罪」需有「傷害結果」，但若僅有「傷害行為」而無實際傷害結果，可能構成「未遂」或「未造成實際傷害之暴力行為」。本案因影片未顯示具體傷害結果，此要件尚待進一步證據佐證。
+
+4.  **因果關係**：
+    *   **該當性**：**該當**。
+    *   **證據支持**：行為人之暴力行為（推搡、壓制）直接導致對方被壓制於地，其行為與後果之間具有直接因果關係。即使無實際傷害結果，其行為仍與後果（如身體受壓、受制動）具有因果關係。
+
+5.  **違法性**：
+    *   **該當性**：**該當**。
+    *   **證據支持**：行為人穿著類似警服或執勤制服，其行為發生於司法場所，其暴力行為明顯違反職務規範與法律禁止之暴力行為，具備「違法性」。即使其為執勤人員，其暴力行為仍構成違法。
+
+### 三、法律適用
+
+根據刑法第277條及第278條：
+
+*   **刑法第277條**：「意圖非法傷害他人身體者，處五年以下有期徒刑、拘役或科或併科罰金。」
+*   **刑法第278條**：「意圖非法傷害他人身體而致成傷害者，處三年以上十年以下有期徒刑。」
+
+本案中
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+【行為情緒分析】偵測到犯罪行為：Assault（暴力 / 人身傷害）。嚴重程度：HIGH。情緒升溫分數：0.00。因果鏈：[低度升溫] 情緒激動 → 主動攻擊 → 傷害行為。關鍵幀範圍：幀 0–31。語義問題提示：Do you see people confronting, attacking, or restraining each other? Is there evidence of weapons, force, or law enforcement presence?
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：[低度升溫] 情緒激動 → 主動攻擊 → 傷害行為
+  升溫分數：0.00
+  事前指標：偵測到事前情緒：disgust（可能的衝突前兆）; 人員間肢體距離縮短，存在對峙跡象
+  事後指標：受害者出現防禦性姿態或倒地行為
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：elements-Assault, 150, elements-Fighting, 173, elements-Burglary
+  構成要件：故意, 傷害行為, 傷害結果, 因果關係, 違法性
+  Rlegal：1.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：0.758
+  Rcost：0.429
+  對話輪次：6
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [0.0s – 7.5s] A yellow-haired woman in black clothes walked into the room
+  [7.5s – 12.6s] A black-haired woman in black clothes walked into the room. She stood on the black footprints in the center of the room.
+  [12.6s – 39.3s] The yellow-haired woman walked to the black-haired woman. She stood next to the black-haired woman and took something from the black-haired woman.
+  [19.5s – 26.3s] The man in black standing at the door walked into the room and walked in front of the two women.
+  [39.3s – 46.8s] The yellow-haired woman walked behind the black-haired woman, and the man in black walked to the blue door
+  [49.3s – 55.2s] The yellow-haired woman and the man in black looked at the white paper on the silver table at the door
+  [55.2s – 76.1s] The yellow-haired woman walked to the side of the black-haired woman and handed the things in her hands to the man in black. The man in black was sorting the plastic bags on the silver table at the door.
+  [76.1s – 80.2s] The yellow-haired woman walked to the machine next to the room and took an item placed on the machine
+  [84.8s – 87.1s] The yellow-haired woman stood next to the black-haired woman, scanning the black-haired woman up and down with the machine in her hand, and the man in black stood behind the black-haired woman.
+  [97.5s – 103.5s] The black-haired woman walked forward and stood next to a machine. The yellow-haired woman and the man in black also took a few steps forward and stood next to the wall.
+  [104.5s – 126.7s] How many people maintain this posture
+  [128.2s – 142.5s] The black-haired woman turned around and then stood
+  [142.5s – 156.4s] The black-haired woman spins in circles and then stands
+  [156.4s – 174.6s] The black-haired woman turned around and then stood
+  [178.3s – 184.2s] The black-haired woman took a few steps towards the center of the room, and then the yellow-haired woman pushed the black-haired woman to the wall.
+  [184.2s – 194.5s] The black-haired woman is standing by the wall, and the yellow-haired woman is standing behind her
+  [194.5s – 217.1s] The man in black stands behind the black-haired woman, and the yellow-haired woman stands behind the black-haired woman
+  [217.1s – 223.3s] The yellow-haired woman took a step back, then walked to the side of the black-haired woman
+  [228.8s – 237.2s] The yellow-haired woman walked to the door, and then walked back to the man in black
+  [237.8s – 270.2s] The yellow-haired woman and the man in black have been gesturing to the black-haired woman and saying something.
+  [271.5s – 280.6s] The black-haired woman standing by the wall took off her shirt, and then the yellow-haired woman and the man in black put their clothes aside
+  [281.9s – 314.2s] The man in black is supporting the wall with one hand, and the yellow-haired woman is standing behind the black-haired woman. The two of them continue to talk.
+  [316.3s – 341.1s] The black-haired woman bent over the wall, and the yellow-haired woman was behind her, checking the black-haired woman's whole body.
+  [320.5s – 340.8s] The man in black stood next to the machine on the left side of the room. Then the man in black took the shoes from the conveyor belt of the machine and left the room.
+  [344.3s – 351.8s] The yellow-haired woman took something from the black-haired woman, then walked to the door and threw the thing in her hand into the plastic bag held by the man in black.
+  [351.2s – 363.2s] The black-haired woman walked to the door, then walked to the machine on the left side of the room
+  [363.2s – 379.8s] The black-haired woman picked up the clothes on the machine conveyor belt and tried to put them on her body
+  [379.8s – 392.1s] The yellow-haired woman rushed over and beat the black-haired woman, and then the man in black joined in, and the two pushed the black-haired woman to the ground.
+  [392.1s – 395.7s]  Several people walked into the room, and they walked to the person fighting in the center of the room.
+  [397.2s – 402.6s] A man in black walked into the room, walked to the blue door, opened the hanging box, and took out a piece of white paper
+  [402.6s – 408.1s] The man next to the blue door walked to the crowd in the center of the room.
+  [409.7s – 432.1s] A group of people continued to beat the black-haired lady, while the man holding the white paper stood aside and watched.
+  [433.7s – 438.2s] A group of men in black in the center of the room stood up. Among them was a man with a hood, who took a few steps forward.
+  [438.2s – 458.6s] The person wearing the hood fell to the ground, and several people in black were pressing on her.
+  [458.6s – 471.0s] The people in black left the room one after another
+
+======================================================================
