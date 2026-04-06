@@ -726,21 +726,41 @@ class PlannerAgent:
             "CATEGORY: <name>\nCONFIDENCE: <0.0-1.0>\nREASON: <one sentence explaining what you see>"
         )
 
-        # 優先使用原生影片輸入（保留動態資訊）
+        # 從影片直接抽取更多幀（16 張均勻取樣，模擬動態）
         video_path = (video_metadata or {}).get("video_path", "")
+        n_keyframes = 16  # 比之前的 8 張多一倍
+
         if video_path and Path(video_path).exists():
-            video_content = {"type": "video", "video": f"file://{video_path}"}
-            logger.info(f"[VLM classify] 使用原生影片輸入：{Path(video_path).name}")
+            # 直接從影片抽幀（不依賴 pipeline 預抽的 32 幀）
+            cap = cv2.VideoCapture(video_path)
+            total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            if total > 0:
+                sample_indices = [int(i * total / n_keyframes) for i in range(n_keyframes)]
+                keyframes = []
+                for idx in sample_indices:
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+                    ret, frame = cap.read()
+                    if ret:
+                        keyframes.append(PILImage.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
+                cap.release()
+                logger.info(f"[VLM classify] 從影片直接抽取 {len(keyframes)} 幀：{Path(video_path).name}")
+            else:
+                cap.release()
+                keyframes = []
         else:
-            # Fallback: 8 張靜態幀
+            keyframes = []
+
+        # Fallback: 從 pipeline 預抽的幀取樣
+        if not keyframes:
             valid = [f for f in frames if f is not None and hasattr(f, "shape")]
             if not valid:
                 return None
             n = len(valid)
-            indices = [int(i * n / 8) for i in range(8)]
+            indices = [int(i * n / min(n_keyframes, n)) for i in range(min(n_keyframes, n))]
             keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
-            video_content = [{"type": "image", "image": img} for img in keyframes]
-            logger.info("[VLM classify] 使用 8 張靜態幀（無影片路徑）")
+            logger.info(f"[VLM classify] 使用 {len(keyframes)} 張預抽幀")
+
+        video_content = [{"type": "image", "image": img} for img in keyframes]
 
         # 組裝 messages
         if isinstance(video_content, dict):
@@ -812,17 +832,31 @@ class PlannerAgent:
         import re, torch, cv2
         from PIL import Image as PILImage
 
-        # 優先用原生影片
+        # 從影片抽取 8 張關鍵幀（報告生成不需要太多幀，8 張夠用）
         video_path = (video_metadata or {}).get("video_path", "")
+        n_report_frames = 8
+
         if video_path and Path(video_path).exists():
-            visual_content = [{"type": "video", "video": f"file://{video_path}"}]
+            cap = cv2.VideoCapture(video_path)
+            total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            visual_content = []
+            if total > 0:
+                sample_indices = [int(i * total / n_report_frames) for i in range(n_report_frames)]
+                for idx in sample_indices:
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+                    ret, frame = cap.read()
+                    if ret:
+                        visual_content.append({
+                            "type": "image",
+                            "image": PILImage.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)),
+                        })
+            cap.release()
         else:
-            # Fallback: 8 張靜態幀
             valid = [f for f in frames if f is not None and hasattr(f, "shape")]
             visual_content = []
             if valid:
                 n = len(valid)
-                indices = [int(i * n / 8) for i in range(8)]
+                indices = [int(i * n / min(n_report_frames, n)) for i in range(min(n_report_frames, n))]
                 visual_content = [
                     {"type": "image", "image": PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB))}
                     for idx in indices
