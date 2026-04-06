@@ -1,0 +1,135 @@
+======================================================================
+  鑑定報告：Abuse039_x264
+======================================================================
+
+  正確答案：Abuse
+  模型判定：Assault  ✗
+  信心程度：95.00%
+  報告生成：qwen3-vl
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+### 一、事實認定
+
+根據監視器影片內容（幀 0–31），於 2014 年 12 月 19 日 19 時 34 分 43 秒至 19 時 40 分 38 秒間，於一疑似「Booking Scan room」（登記掃描室）之場所，觀察到以下客觀事實：
+
+1.  **場所與人物**：場所內設有掃描機、電腦螢幕及門禁設備，空間狹小。影片中出現三名穿著深色服裝之人物，其中一人穿著疑似警用或執勤制服（背對鏡頭者）。
+2.  **行為過程**：
+    -   幀 0–3：三名人物於場所中央站立，其中一名穿制服者與另一名穿深色外套者有語言互動。
+    -   幀 4–5：穿深色外套者轉身走向場所後方，穿制服者跟隨。
+    -   幀 6–7：穿深色外套者突然轉身，雙手舉起，並朝穿制服者方向前衝。
+    -   幀 8–10：穿深色外套者與穿制服者發生肢體接觸，穿制服者迅速將其壓制在地。
+    -   幀 11–13：穿制服者將穿深色外套者壓制在地，並持續施力控制其身體。
+    -   幀 14–15：穿制服者將穿深色外套者翻轉，並持續壓制。
+    -   幀 16–20：穿制服者持續壓制穿深色外套者，穿深色外套者雙手舉起，身體呈被壓制狀態。
+    -   幀 21–31：穿制服者持續壓制穿深色外套者，穿深色外套者雙手舉起，身體呈被壓制狀態。
+
+3.  **其他觀察**：場所地板上散落有黑色鞋履，場所內無明顯武器或危險物品。
+
+### 二、構成要件分析
+
+根據影片觀察，逐一檢核刑法第 277 條傷害罪與第 278 條重傷罪之構成要件：
+
+1.  **故意**：
+    -   **該當**。影片中穿深色外套者在與穿制服者互動後，突然轉身並主動前衝，其行為具攻擊性，顯示其具有加害他人身體之故意。穿制服者在接觸後立即壓制對方，亦顯示其具有控制或制止對方之故意。兩者行為均具「故意」之要件。
+
+2.  **傷害行為**：
+    -   **該當**。影片中穿深色外套者主動攻擊穿制服者，穿制服者則以肢體力量將其壓制在地，並持續施力控制其身體，此行為已構成「暴力」或「人身傷害行為」。影片中可觀察到穿制服者將穿深色外套者壓制在地，並持續施力控制其身體，此行為已構成「傷害行為」。
+
+3.  **傷害結果**：
+    -   **不該當**。影片中未顯示穿深色外套者或穿制服者有明顯外傷或身體受傷之情形，亦無醫療人員或醫療設備出現。影片中僅顯示穿制服者將穿深色外套者壓制在地，並持續施力控制其身體，未顯示有明顯傷害結果。
+
+4.  **因果關係**：
+    -   **該當**。穿深色外套者之攻擊行為，直接導致穿制服者採取壓制措施，穿制服者之壓制行為與穿深色外套者之攻擊行為具有直接因果關係。
+
+5.  **違法性**：
+    -   **該當**。影片中穿制服者為執勤人員，其壓制行為屬於執勤過程中的控制行為，但其壓制行為未經合法程序或授權，其行為具有違法性。
+
+### 三、法律適用
+
+根據影片觀察，穿深色外套者之行為符合刑法第 277 條「傷害罪」之構成要件，其行為構成「故意傷害他人身體」。穿制服者之行為亦符合刑法第 277 條「傷害罪」之構成要件，其行為構成「故意傷害他人身體」。穿制服者之行為亦符合刑法第 27
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+【行為情緒分析】偵測到犯罪行為：Assault（暴力 / 人身傷害）。嚴重程度：HIGH。情緒升溫分數：0.00。因果鏈：[低度升溫] 情緒激動 → 主動攻擊 → 傷害行為。關鍵幀範圍：幀 0–31。語義問題提示：Do you see people confronting, attacking, or restraining each other? Is there evidence of weapons, force, or law enforcement presence?
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：[低度升溫] 情緒激動 → 主動攻擊 → 傷害行為
+  升溫分數：0.00
+  事前指標：偵測到事前情緒：disgust（可能的衝突前兆）; 人員間肢體距離縮短，存在對峙跡象
+  事後指標：受害者出現防禦性姿態或倒地行為
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：elements-Assault, 150, elements-Fighting, 173, elements-Burglary
+  構成要件：故意, 傷害行為, 傷害結果, 因果關係, 違法性
+  Rlegal：1.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：0.758
+  Rcost：0.333
+  對話輪次：6
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [0.0s – 7.5s] A yellow-haired woman in black clothes walked into the room
+  [7.5s – 12.6s] A black-haired woman in black clothes walked into the room. She stood on the black footprints in the center of the room.
+  [12.6s – 39.3s] The yellow-haired woman walked to the black-haired woman. She stood next to the black-haired woman and took something from the black-haired woman.
+  [19.5s – 26.3s] The man in black standing at the door walked into the room and walked in front of the two women.
+  [39.3s – 46.8s] The yellow-haired woman walked behind the black-haired woman, and the man in black walked to the blue door
+  [49.3s – 55.2s] The yellow-haired woman and the man in black looked at the white paper on the silver table at the door
+  [55.2s – 76.1s] The yellow-haired woman walked to the side of the black-haired woman and handed the things in her hands to the man in black. The man in black was sorting the plastic bags on the silver table at the door.
+  [76.1s – 80.2s] The yellow-haired woman walked to the machine next to the room and took an item placed on the machine
+  [84.8s – 87.1s] The yellow-haired woman stood next to the black-haired woman, scanning the black-haired woman up and down with the machine in her hand, and the man in black stood behind the black-haired woman.
+  [97.5s – 103.5s] The black-haired woman walked forward and stood next to a machine. The yellow-haired woman and the man in black also took a few steps forward and stood next to the wall.
+  [104.5s – 126.7s] How many people maintain this posture
+  [128.2s – 142.5s] The black-haired woman turned around and then stood
+  [142.5s – 156.4s] The black-haired woman spins in circles and then stands
+  [156.4s – 174.6s] The black-haired woman turned around and then stood
+  [178.3s – 184.2s] The black-haired woman took a few steps towards the center of the room, and then the yellow-haired woman pushed the black-haired woman to the wall.
+  [184.2s – 194.5s] The black-haired woman is standing by the wall, and the yellow-haired woman is standing behind her
+  [194.5s – 217.1s] The man in black stands behind the black-haired woman, and the yellow-haired woman stands behind the black-haired woman
+  [217.1s – 223.3s] The yellow-haired woman took a step back, then walked to the side of the black-haired woman
+  [228.8s – 237.2s] The yellow-haired woman walked to the door, and then walked back to the man in black
+  [237.8s – 270.2s] The yellow-haired woman and the man in black have been gesturing to the black-haired woman and saying something.
+  [271.5s – 280.6s] The black-haired woman standing by the wall took off her shirt, and then the yellow-haired woman and the man in black put their clothes aside
+  [281.9s – 314.2s] The man in black is supporting the wall with one hand, and the yellow-haired woman is standing behind the black-haired woman. The two of them continue to talk.
+  [316.3s – 341.1s] The black-haired woman bent over the wall, and the yellow-haired woman was behind her, checking the black-haired woman's whole body.
+  [320.5s – 340.8s] The man in black stood next to the machine on the left side of the room. Then the man in black took the shoes from the conveyor belt of the machine and left the room.
+  [344.3s – 351.8s] The yellow-haired woman took something from the black-haired woman, then walked to the door and threw the thing in her hand into the plastic bag held by the man in black.
+  [351.2s – 363.2s] The black-haired woman walked to the door, then walked to the machine on the left side of the room
+  [363.2s – 379.8s] The black-haired woman picked up the clothes on the machine conveyor belt and tried to put them on her body
+  [379.8s – 392.1s] The yellow-haired woman rushed over and beat the black-haired woman, and then the man in black joined in, and the two pushed the black-haired woman to the ground.
+  [392.1s – 395.7s]  Several people walked into the room, and they walked to the person fighting in the center of the room.
+  [397.2s – 402.6s] A man in black walked into the room, walked to the blue door, opened the hanging box, and took out a piece of white paper
+  [402.6s – 408.1s] The man next to the blue door walked to the crowd in the center of the room.
+  [409.7s – 432.1s] A group of people continued to beat the black-haired lady, while the man holding the white paper stood aside and watched.
+  [433.7s – 438.2s] A group of men in black in the center of the room stood up. Among them was a man with a hood, who took a few steps forward.
+  [438.2s – 458.6s] The person wearing the hood fell to the ground, and several people in black were pressing on her.
+  [458.6s – 471.0s] The people in black left the room one after another
+
+======================================================================
