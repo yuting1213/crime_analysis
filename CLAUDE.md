@@ -37,10 +37,14 @@ python -m scripts.train_mil --split Train
 python pipeline.py
 
 # Pilot experiment (small-sample calibration)
-python -m scripts.pilot_experiment --n_samples 30 --split Test
+python -m scripts.pilot_experiment --n_samples 52 --split Test --seed 42
 
-# Ablation study (5 variants)
-python -m scripts.run_ablation --n_samples 100 --split Test
+# Ablation experiments (5 variants, same test set)
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-env
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-rag
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-vlm
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-reflector
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-vlm-report
 ```
 
 No formal test suite — testing is done via `pipeline.analyze(frames, metadata)` directly.
@@ -104,6 +108,7 @@ Dual-layer retrieval in `rag/h_rag.py`:
 ### Training
 
 - **MIL Head** (`scripts/train_mil.py`): trains FusionEncoder + crime_head + escalation_head using 4-modality features (R3D-18 + ViT + Pose + Emotion) with CE loss (class weights + label smoothing) + MIL ranking loss. Includes StandardScaler normalization. Weights + scaler saved to `outputs/mil_weights/` and auto-loaded by `ActionEmotionAgent`.
+- **Ablation**: `pilot_experiment.py` supports `--no-env`, `--no-rag`, `--no-vlm`, `--no-reflector`, `--no-vlm-report` flags for controlled experiments. `NullReflector` in `reflector.py` always returns NONE with Rcons=1.0.
 - **DPO** (`training/dpo_trainer.py`): primary alignment for report quality, using Gemini 2.0 Flash as pairwise judge (delegates to `evaluation/llm_judge.py`)
 - **GRPO** (`training/grpo_trainer.py`): optional Planner policy optimization
 
@@ -122,8 +127,8 @@ Dual-layer retrieval in `rag/h_rag.py`:
 | `crime_analysis/benchmark/gemini_baseline.py` | Gemini baseline for comparison |
 | `crime_analysis/evaluation/llm_judge.py` | Gemini 2.0 Flash LLM-as-Judge (rubric + pairwise, supports Claude/Gemini/OpenAI) |
 | `crime_analysis/scripts/train_mil.py` | MIL Head training (4-modality features, class weights, StandardScaler) |
-| `crime_analysis/scripts/pilot_experiment.py` | Small-sample calibration + full report output |
-| `crime_analysis/scripts/run_ablation.py` | Ablation study (5 variants) |
+| `crime_analysis/scripts/pilot_experiment.py` | Pilot calibration + ablation experiments + confusion matrix + full report output |
+| `crime_analysis/scripts/run_ablation.py` | Legacy ablation study (use pilot_experiment.py --no-* flags instead) |
 | `system_flow.html` | Mermaid diagram of full system flow |
 
 ## Data Layout
@@ -147,7 +152,8 @@ crime_analysis/outputs/
 ├── feature_cache/v4/              # Pre-extracted 4-modality features (.npy per video, 1386D)
 ├── pilot_reports/                  # Full forensic reports per case (.txt)
 ├── pilot_stats.json                # Per-case pilot results
-└── pilot_summary.{txt,json}        # Aggregated pilot statistics + threshold suggestions
+├── pilot_summary.{txt,json}        # Aggregated pilot statistics + threshold suggestions
+└── confusion_matrix.png            # Classification confusion matrix (auto-generated)
 ```
 
 UCA JSON format per video: `{duration, timestamps: [[start, end], ...], sentences: [...]}`
@@ -186,6 +192,7 @@ cfg.training.num_workers = 2             # CPU 核心少時降低
 - Primary training path is **DPO**, not GRPO; GRPO is optional
 - RAG uses **both** BM25 and dense retrieval — do not remove either layer; precision and recall are complementary
 - `LEGAL_ELEMENTS` is defined once in `rag/rag_module.py` — all other modules import from there
+- `compute_rlegal` uses two-tier scoring: 60% article number matching (e.g. "第277條") + 40% legal element substring matching (with negation detection). This ensures `no_rag` ablation shows meaningful Rlegal decrease.
 - DS m_env no_crime is a derived value: `0.88 − 0.85 × ae_conf` (not a fixed constant)
 - `evaluate()` supports optional `llm_judge` parameter for external semantic scoring alongside internal metrics
 - `pipeline.py` uses the new 2-agent architecture (`agents_dict` with `environment` + `action_emotion`), not the old 4-agent list

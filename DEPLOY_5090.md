@@ -87,16 +87,27 @@ python -m scripts.train_mil --split Train
 #   outputs/mil_weights/training_curves.png
 ```
 
-## 7. 驗證 Pipeline
+## 7. 驗證 Pipeline + 實驗
 
 ```bash
 # 快速測試 3 個樣本
 python -m scripts.pilot_experiment --n_samples 3 --split Test
 
-# 正式 Pilot（13 個樣本，每類一支）
-python -m scripts.pilot_experiment --n_samples 13 --split Test
+# 正式 Pilot（52 部，每類 4 部，seed 固定）
+python -m scripts.pilot_experiment --n_samples 52 --split Test --seed 42
 
-# 報告輸出位置：outputs/pilot_reports/{video_id}.txt
+# 消融實驗（5 個變體，各跑 154 部）
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-env
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-rag
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-vlm
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-reflector
+python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-vlm-report
+
+# 輸出：
+#   outputs/pilot_reports/{video_id}.txt  — 完整鑑定報告
+#   outputs/pilot_stats.json              — 逐案統計
+#   outputs/pilot_summary.txt             — 摘要 + 門檻建議
+#   outputs/confusion_matrix.png          — 分類混淆矩陣
 ```
 
 ## 8. 5090 專屬：Qwen3-VL 視覺分類+報告
@@ -133,11 +144,18 @@ pipeline = CrimeAnalysisPipeline()
 "
 ```
 
-## 10. 消融實驗
+## 10. 全實驗時程預估（RTX 5090）
 
-```bash
-python -m scripts.run_ablation --n_samples 100 --split Test
-```
+| 實驗 | 影片數 | 預估時間 |
+|------|--------|----------|
+| Pilot | 52 | ~45 min |
+| 實驗二 Ours | 154 | ~2.2 hr |
+| 消融① no_env | 154 | ~2.2 hr |
+| 消融② no_rag | 154 | ~2.2 hr |
+| 消融③ no_vlm | 154 | ~16 min |
+| 消融④ no_reflector | 154 | ~2.2 hr |
+| 消融⑤ no_vlm_report | 154 | ~55 min |
+| **全部** | | **~10.7 hr** |
 
 ## 已驗證環境
 
