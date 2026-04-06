@@ -336,7 +336,7 @@ def _save_case_report(
         f"  報告生成：{result.get('report_generation_method', 'unknown')}",
         "",
         "─" * 70,
-        "  一、Qwen3-VL 鑑定報告",
+        f"  一、鑑定報告（{result.get('report_generation_method', 'unknown')}）",
         "─" * 70,
         "",
         report_text,

@@ -92,7 +92,7 @@ def gemini_classify_and_report(
         response = client.models.generate_content(
             model=model_name,
             contents=contents,
-            config={"temperature": 0.7, "max_output_tokens": 2048},
+            config={"temperature": 0.7, "max_output_tokens": 4096},
         )
         text = response.text.strip()
     except Exception as e:

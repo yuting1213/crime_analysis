@@ -1,0 +1,83 @@
+======================================================================
+  鑑定報告：Abuse040_x264
+======================================================================
+
+  正確答案：Abuse
+  模型判定：Abuse  ✓
+  信心程度：95.00%
+  報告生成：gemini-baseline
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+CATEGORY: Abuse
+
+---
+
+### 初步刑事鑑定報告
+
+**案件/主題：** 監視器影像分析
+**鑑定專家：** 台灣刑事鑑定報告撰寫專家
+**日期：** 2023年10月27日
+
+---
+
+**1. 事實認定（影片可觀察事實）**
+
+本報告所分析之影像係來自一
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+（無）
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：
+  升溫分數：0.00
+  事前指標：（無）
+  事後指標：（無）
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：（無）
+  構成要件：（無）
+  Rlegal：0.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：1.000
+  Rcost：0.000
+  對話輪次：1
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [9.2s – 23.4s] A woman in a blue top walked into the room next to the desk lamp and turned off the light
+  [26.6s – 40.3s] The woman in blue clothes took the wheelchair and pushed it to the side of the sofa. Sitting on the sofa was a white-haired woman in pink clothes.
+  [40.3s – 44.4s] The woman on the sofa wanted to sit up, but the woman standing next to her hit her on the head.
+  [46.4s – 58.7s] The woman next to the sofa hit the person on the sofa on the head and pushed it again. The woman on the sofa moved and then touched her leg.
+  [58.7s – 69.1s] The woman in the blue top hit the white-haired woman on the head, then turned the wheelchair to her side and walked to the back
+  [70.1s – 85.8s] The white-haired woman on the sofa stood up with her wheelchair, then pushed the wheelchair towards the door, while the woman in blue top walked beside her
+  [84.8s – 103.3s] The woman in blue slapped the white-haired woman on the first two slaps, then followed her out and hit her again after going out.
+
+======================================================================

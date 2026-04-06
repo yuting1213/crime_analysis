@@ -1,0 +1,86 @@
+======================================================================
+  鑑定報告：Arrest046_x264
+======================================================================
+
+  正確答案：Arrest
+  模型判定：Arrest  ✓
+  信心程度：95.00%
+  報告生成：gemini-baseline
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+CATEGORY: Arrest
+
+---
+
+**監視器影片初步鑑定報告**
+
+**案件編號：** [若有，請填寫；無則留空]
+**報告日期：** 2023年10月27日
+**影片來源：** 監視器系統
+**影片時間戳記：** 2014年7月2
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+（無）
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：
+  升溫分數：0.00
+  事前指標：（無）
+  事後指標：（無）
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：（無）
+  構成要件：（無）
+  Rlegal：0.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：1.000
+  Rcost：0.000
+  對話輪次：1
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [6.2s – 11.1s] A man in black walked into the room holding a handcuffed man wearing a black vest and shorts.
+  [11.1s – 17.6s] The man in black pushed the handcuffed man to the wall
+  [17.6s – 39.0s] The man in black looked down at the thing in his hand. He was wearing a pair of purple gloves. The man in black vest was standing by the wall.
+  [39.0s – 44.2s] The man in black put the things in his hands on the table.
+  [50.8s – 119.7s] The man in black searched the handcuffed man and put the found items on the table many times.
+  [87.6s – 96.5s] A bald man in black came and walked next to the two men in the room.
+  [98.4s – 136.1s] The bald man in black stands next to the table and arranges the things on the table
+  [121.0s – 134.7s] The man in the vest took off his shoes.
+  [143.9s – 154.6s] The man in black knocked down the man in the vest and took off his socks.
+  [156.6s – 182.2s] Two people helped the man in the vest up. One of them checked the socks and shoes and took them aside.
+  [184.6s – 202.2s] A male police officer walked from the bottom of the screen to the top, talked to the person in the window and then walked away
+  [207.6s – 220.3s] A man in black opened the handcuffs of the man in a vest.
+  [222.3s – 262.8s] A man in black approached the room and stood watching the rest of the people in the room.
+  [239.8s – 252.6s] A man in police uniform put a piece of paper on the counter and left.
+  [249.8s – 262.8s] A man in black left with a man in a black vest and shorts.
+
+======================================================================

@@ -1,0 +1,86 @@
+======================================================================
+  鑑定報告：Arrest048_x264
+======================================================================
+
+  正確答案：Arrest
+  模型判定：Fighting  ✗
+  信心程度：95.00%
+  報告生成：gemini-baseline
+
+──────────────────────────────────────────────────────────────────────
+  一、Qwen3-VL 鑑定報告
+──────────────────────────────────────────────────────────────────────
+
+CATEGORY: Fighting
+
+### 台灣刑事鑑定初步報告
+
+**案件編號：** [待補]
+**報告日期：** 2023年10月27日
+**鑑定標的：** 監視器影片關鍵幀截圖（共16張）
+**鑑定目的：** 判斷影片中事件之犯罪類型並進行初步法律
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+（無）
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：
+  升溫分數：0.00
+  事前指標：（無）
+  事後指標：（無）
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：（無）
+  構成要件：（無）
+  Rlegal：0.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：1.000
+  Rcost：0.000
+  對話輪次：1
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [4.8s – 19.1s] The man in red was standing in the store, and a woman walked into the supermarket and pointed outside and said something.
+  [24.9s – 34.5s] The woman walked towards the man, but the woman stopped the man in red.
+  [25.0s – 35.2s] A man in gray clothes left the supermarket.
+  [25.0s – 34.7s] The man in red had a dispute with the woman, and they struggled together
+  [31.9s – 38.4s] Two men in police uniforms, a man in black and a man in red entered the supermarket.
+  [38.4s – 43.0s] A man in police uniform grabbed the man in red, the man in black pulled the man in police uniform, and another man in police uniform pulled the man in black away.
+  [43.4s – 50.0s] The police and the black man were talking, and there were people watching around them
+  [51.2s – 60.0s] The man in green enters the supermarket.
+  [57.0s – 75.4s] Two men in police uniforms struggled with two other men.
+  [70.2s – 73.3s] A man in police uniform rushed in and struggled with the man.
+  [74.9s – 78.0s] A woman in police uniform rushed in and joined the scuffle.
+  [75.6s – 102.4s] The man in red and the man in black were restrained and handcuffed by several police officers.
+  [77.0s – 86.6s] The man in green leaves.
+  [85.4s – 97.5s] A man in white leaves with a drink.
+  [105.9s – 113.6s] The man in red was taken away by two men in police uniforms.
+  [124.0s – 129.1s] A woman in red walked in from the door.
+  [126.5s – 135.9s] The man in black was taken away by two people in police uniforms.
+
+======================================================================
