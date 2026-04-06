@@ -1,0 +1,180 @@
+======================================================================
+  鑑定報告：Shoplifting034_x264
+======================================================================
+
+  正確答案：Shoplifting
+  模型判定：Shoplifting  ✓
+  信心程度：95.00%
+  報告生成：gemini-baseline
+
+──────────────────────────────────────────────────────────────────────
+  一、鑑定報告（gemini-baseline）
+──────────────────────────────────────────────────────────────────────
+
+CATEGORY: Shoplifting
+
+---
+
+**初步鑑定報告**
+
+**案件編號：** CCTV-20110716-商店竊盜案
+**報告日期：** 2023年10月27日
+**鑑定項目：** 監視器影像分析
+**影像來源：** 商店內部監視系統
+**影像日期與時間：** 2011年07月16日 13:54:15 至 14:00:27
+
+---
+
+**1. 事實認定（影片可觀察事實）**
+
+*   **13:54:15 - 13:54:38：** 畫面顯示商店內部走道最初無人。隨後，一名身著花紋洋裝、手提棕色包包之女性（以下稱「女性嫌疑人」）從畫面右下角進入店內，沿走道向店內深處移動。
+*   **13:55:04 - 13:55:28：** 女性嫌疑人行至右側展示櫃旁，停留並查看櫃內商品。同時，一名身著淺黃色上衣、戴眼鏡之男性（以下稱「男性嫌疑人」）從店內深處走來。
+*   **13:55:54 - 13:56:18：** 女性嫌疑人彎身靠近右側展示櫃，其右手伸入櫃內或非常靠近商品。男性嫌疑人則站於其後方，觀察店內動靜。
+*   **13:56:43：** 女性嫌疑人右手仍在展示櫃內，狀似取走某物品。男性嫌疑人此時轉頭向店門口方向觀望。
+*   **13:57:08 - 13:57:33：** 男性嫌疑人手持一白色物品（此物品此前未清晰可見）從女性嫌疑人所在位置離開，朝店門口方向走去。女性嫌疑人暫時離開畫面。
+*   **13:57:57 - 13:58:22：** 女性嫌疑人再次從店內深處出現，與男性嫌疑人在店內中間位置會合。男性嫌疑人此時手持手機貼近耳邊，狀似通話。女性嫌疑人則彎身查看左側展示櫃。
+*   **13:58:48：** 女性嫌疑人與男性嫌疑人面對面，女性嫌疑人手部似乎從包中取出或展示某物給男性嫌疑人看。
+*   **13:59:12 - 13:59:37：** 兩名嫌疑人一同朝店門口方向移動，並離開畫面。此時女性嫌疑人雙手看似已無持物。
+*   **14:00:02 - 14:00:27：** 商店內部走道再次無人。
+
+---
+
+**2. 構成要件分析（逐一論述是否該當）**
+
+根據上述事實認定，分析竊盜罪之構成要件：
+
+*   **客觀構成要件：**
+    *   **取走他人之物（竊取行為）：** 影像顯示女性嫌疑人彎身於右側展示櫃，右手伸入櫃內動作，隨後男性嫌疑人即手持一白色物品從該區域離去。此白色物品在嫌疑人進入店內時未見，且其後兩人未經結帳即離開，此行為符合「竊取」之表徵。
+    *   **財物：** 該物品為商店內陳列之商品，應屬具有經濟價值之動產。
+    *   **所有權人以外之人持有：** 商店內陳列之商品所有權歸屬商店，兩名嫌疑人並非所有權人。
+
+*   **主觀構成要件：**
+    *   **竊盜故意：** 兩名嫌疑人於店內停留、查看商品，女性嫌疑人實施取物動作，男性嫌疑人則掩護並接手物品。兩人隨後未經結帳即共同離開，此一系列行為足資推斷其明知所取為他人之物且未經同意，仍執意取走，具備竊盜之故意。
+    *   **意圖為自己或第三人不法所有：** 嫌疑人將商品取走而未支付對價，顯有將他人之物納為己有或使第三人保有之不法意圖。
+
+綜合判斷，本案之行為人（女性嫌疑人及男性嫌疑人）之行為，已初步該當竊盜罪之客觀及主觀構成要件。此外，兩名嫌疑人有明顯的行為分擔（一人取物，一人掩護並接手），可初步推斷有犯意聯絡。
+
+---
+
+**3. 法律適用（引用台灣刑法具體法條條號）**
+
+根據中華民國刑法，本案行為可能構成：
+
+*   **刑法第320條第1項 竊盜罪：**
+    「意圖為自己或第三人不法之所有，而竊取他人之動產者，為竊盜罪，處五年以下有期徒刑、拘役或五十萬元以下罰金。」
+
+若兩名嫌疑人有共同實施犯罪之犯意聯絡及行為分擔，則可能構成共同正犯：
+
+*   **刑法第28條 共同正犯：**
+    「二人以上共同實行犯罪之行為者，皆為正犯。」
+
+---
+
+**4. 不確定性與限制**
+
+本初步鑑定報告係基於有限的監視器截圖影像進行分析，存在以下不確定性與限制：
+
+*   **影像解析度與角度限制：** 影像解析度不高，且為固定式俯視角度，無法清晰辨識嫌疑人面部特徵、被取走物品之確切種類、數量及價值。尤其無法百分之百確認女性嫌疑人手部動作確實取走物品，以及男性嫌疑人手持之白色物品是否即為被竊物。
+*   **聲音資訊缺乏：** 影像無聲音，無法判斷現場是否有對話或爭執，或是否有店員與其互動。
+*   **單一視角：** 僅有單一監視器視角，無法觀察到嫌疑人於畫面死角或其他區域的行為，亦無法確認其在離開畫面後是否有至結帳櫃檯進行結帳等行為（儘管依常理判斷可能性極低）。
+*   **行為意圖推斷：** 嫌疑人主觀犯意係根據其客觀行為推斷，仍需更多直接證據佐證。
+*   **後續行為不明：** 無法確定嫌疑人離開商店後的去向。
+
+---
+
+**5. 初步結論**
+
+根據所提供之監視器截圖影像分析，可初步判斷女性嫌疑人與男性嫌疑人涉嫌於2011年07月16日下午，在該商店內共同實施竊盜行為。其行為初步該當中華民國刑法第320條第1項之竊盜罪，並可能涉及刑法第28條之共同正犯。
+
+然而，由於影像資料之限制，本報告僅為初步判斷。建議進一步調查，包括但不限於：
+
+*   調閱更高解析度或不同角度之監視器影像，以確認竊取行為與物品。
+*   比對商店庫存紀錄，以確認是否有物品短少。
+*   尋找目擊證人，以獲取更多現場資訊。
+*   追查嫌疑人身份，以利後續偵查。
+
+上述調查結果將有助於提供更確鑿之證據，利於後續偵查與司法程序。
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+（無）
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：
+  升溫分數：0.00
+  事前指標：（無）
+  事後指標：（無）
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：（無）
+  構成要件：（無）
+  Rlegal：0.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：1.000
+  Rcost：0.000
+  對話輪次：1
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [23.7s – 32.8s] The door opened and a woman in a floral skirt walked forward, followed by an old man closing the door.
+  [33.3s – 40.9s] The woman walked to the door, the old man went out, and the woman looked outside the door
+  [42.4s – 50.1s] The woman kept talking to the door, then closed the door and turned around
+  [53.0s – 59.2s] The woman walked in, and a bald man came in behind. He put on sunglasses after entering.
+  [59.9s – 67.9s] The man and the woman looked at the things on the wall, and then walked to the side of the man
+  [68.5s – 74.1s] The man took a few steps and passed the woman. The woman pointed to something on the wall, and the two continued to watch.
+  [74.7s – 84.2s] The man wearing a peaked cap entered and walked to the back of the counter
+  [77.0s – 85.5s] The woman waved her hand, the waiter at the counter came over, and the two started talking.
+  [88.1s – 99.3s] The woman looked back and continued talking to the waiter, and the waiter pointed.
+  [93.3s – 101.9s] The bald man turned his head and looked at it and then walked to the counter
+  [104.2s – 117.4s] The woman approached the counter and touched something on the table, then put her hand on the counter. The bald man looked closer and touched it.
+  [123.4s – 132.4s] The bald man pointed at the goods on the counter. The woman took a look, then touched the pink thing, and the man pointed.
+  [133.2s – 142.1s] The man put his hands on the glass counter, and the woman stood sideways with one hand on it; then the man pointed in the direction of the wall
+  [144.8s – 161.7s] The man picked up the pink cylindrical thing on the glass counter and held it in front of him, sprayed it on his wrist, and then sniffed it
+  [162.5s – 172.8s] The man took down a white cylindrical object from the glass counter, tried to put it into his clothes, and then put it back again
+  [172.5s – 175.8s] After looking around, the man put the white cylinder into his pants
+  [166.9s – 174.0s] The woman walked around the man and walked to the end
+  [176.5s – 183.9s] The man touched a white standing object on the glass counter, and then put it down again
+  [186.9s – 192.2s] The man put the white standing object on the counter into his pants
+  [193.7s – 201.3s] The man turned around, made a call and walked inside
+  [201.9s – 207.5s] The man walked out while talking on the phone, and the woman followed him
+  [207.9s – 209.9s] Woman holds her hands on the glass counter
+  [209.9s – 220.9s] The man also walked aside and showed the woman what he took from the glass counter while talking on the phone
+  [216.9s – 221.3s] The man handed the thing to the woman, and the woman put it in the bag
+  [221.7s – 223.7s] The man took something from the counter and put it in his pocket
+  [225.7s – 229.7s] Woman walks to the door
+  [229.7s – 234.7s] Both of them faced the door, and the man hung up the phone
+  [236.5s – 240.0s] The woman walked out, and the man turned around and went inside to continue answering the phone.
+  [240.5s – 245.6s] The man turns back to face the woman
+  [245.5s – 249.6s] The woman puts a box between her legs behind her back
+  [249.7s – 265.2s] The woman pulled a box of things on the glass counter, then flipped through the things on the right, folded it, and touched the things next to it.
+  [266.6s – 281.3s] The woman took a large bag to the right, then took off the bag she was carrying and put them together, and put the two bags on her shoulders.
+  [281.1s – 283.2s] The woman pointed at the counter
+  [282.1s – 287.2s] The man looked around while talking on the phone
+  [287.1s – 302.2s] The two said a few words, then opened the door and went out
+  [357.5s – 367.3s] The man in the house came out, opened the door and left
+
+======================================================================

@@ -1,0 +1,225 @@
+======================================================================
+  鑑定報告：Fighting041_x264
+======================================================================
+
+  正確答案：Fighting
+  模型判定：Assault  ✗
+  信心程度：95.00%
+  報告生成：gemini-baseline
+
+──────────────────────────────────────────────────────────────────────
+  一、鑑定報告（gemini-baseline）
+──────────────────────────────────────────────────────────────────────
+
+好的，作為一位台灣刑事鑑定報告撰寫專家，我將根據您提供的監視器畫面截圖，完成這兩項任務。
+
+---
+
+**CATEGORY: Assault**
+
+---
+
+**初步鑑定報告**
+
+**報告編號：** TFFR-20240520-001
+**鑑定日期：** 2024年5月20日
+**受託單位：** （假設為某執法機關）
+**鑑定標的：** 某便利商店監視器影片關鍵幀截圖
+
+---
+
+**1. 事實認定（影片可觀察事實）**
+
+本報告基於所提供之十五張監視器畫面截圖進行分析，時間範圍為2013年1月1日凌晨1時55分28秒至2時17分01秒。畫面顯示一間便利商店或雜貨店內部情況。
+
+*   **時間序與人員活動：**
+    *   **1:55:28 AM：** 畫面顯示店內環境正常，無特殊事件發生。
+    *   **1:57:01 AM - 1:59:30 AM：** 多名不明人士陸續進入店內，並逐漸聚集於收銀台附近區域。其中一人（戴鴨舌帽、穿深色外套）攜帶兩個白色桶子進入。
+    *   **2:01:11 AM - 2:04:42 AM：** 該群人士持續在收銀台附近活動，人數眾多，似有互動或交談。畫面中可見部分人員面向收銀台方向，但收銀台後方人員的具體樣貌與互動內容無法清晰辨識。
+    *   **2:05:52 AM：** 畫面顯示一名身穿綠色外套的人員倒臥於收銀台前方的地面上，一輛紅色手推車翻倒於其附近。此時，除了倒臥者，畫面中未見其他顧客或涉案人員。
+    *   **2:07:16 AM：** 倒臥者仍維持倒地狀態，現場無其他人。
+    *   **2:12:20 AM - 2:13:30 AM：** 數名身穿制服的警員抵達現場，開始處理倒臥者，並檢視周遭環境。
+    *   **2:14:41 AM - 2:17:01 AM：** 身穿反光背心及消防制服的緊急救護人員（Fire/EMS）攜帶擔架抵達，與警員一同對倒臥者進行急救處置。
+
+*   **現場物品狀態：**
+    *   在倒臥事件發生前，店內貨架與商品陳列大致正常。
+    *   在倒臥者倒地後，一輛紅色手推車翻倒於其附近，顯示可能曾發生推擠或碰撞。
+
+*   **人員狀態：**
+    *   一名身穿綠色外套的人員倒臥在地，經警消人員處理，顯示其可能受傷或失去意識，需要緊急醫療協助。
+
+---
+
+**2. 構成要件分析（逐一論述是否該當）**
+
+根據台灣刑法，針對此事件的初步構成要件分析如下：
+
+*   **行為主體：** 監視器畫面顯示在倒臥者倒地前，有多名不明人士聚集並活動於現場。目前無法明確指認導致倒臥者倒地的特定行為人。
+*   **行為客體：** 倒臥在地之綠色外套者，其身體或健康成為行為所針對的目標。
+*   **行為：** 畫面未能清晰捕捉倒地前之具體肢體衝突細節，但從多人聚集、隨後一人倒地、手推車翻覆等跡象判斷，現場極可能發生了肢體上的推擠、拉扯、毆打或其他形式的攻擊行為。此行為導致了倒臥者倒地。
+*   **結果：** 綠色外套者倒地，並引發警消救護，顯示其身體或健康已受到侵害，符合刑法上「傷害」的結果要件。具體傷勢程度（輕傷、重傷）需待醫療鑑定報告確認。
+*   **因果關係：** 該群人於收銀台前聚集，隨後發生一人倒地之情事，從時間與空間上的連續性判斷，兩者間存在相當因果關係，即倒地結果應與現場發生之事件有關。
+*   **故意/過失：** 畫面無法直接判斷行為人（若有）是出於故意（如蓄意攻擊）或過失（如意外推擠導致跌倒）。這需進一步偵查，包括行為人的供述、目擊者證詞等來釐清。
+
+---
+
+**3. 法律適用（引用台灣刑法具體法條條號）**
+
+根據上述事實認定與初步構成要件分析，本事件最可能涉及以下台灣刑法條文：
+
+*   **中華民國刑法 第277條 (普通傷害罪)**
+    *   「傷害人之身體或健康者，處五年以下有期徒刑、拘役或五十萬元以下罰金。」
+    *   若經調查確認行為人有傷害他人身體或健康之故意，且造成倒臥者受傷，則應適用此條。
+
+*   **中華民國刑法 第278條 (重傷害罪)**
+    *   「使人受重傷者，處三年以上十年以下有期徒刑。前項之未遂犯罰之。」
+    *   若倒臥者經醫療鑑定確認為重傷（如毀敗一目或一耳以上之機能、喪失言語或聽覺或嗅覺或味覺或生殖之機能、其他於身體或健康有重大不治或難治之傷害等），則可能適用此條。目前畫面無法判斷傷勢程度。
+
+*   **中華民國刑法 第283條 (聚眾鬥毆罪)**
+    *   「聚眾鬥毆致人於死或重傷者，在場助勢之人，處三年以上十年以下有期徒刑。致人於輕傷者，處一年以上七年以下有期徒刑。前二項之情形，正犯及下手實施傷害者，依傷害之規定處斷。」
+    *   畫面顯示有多人聚集，且發生肢體衝突導致一人受傷，若經調查確認為聚眾鬥毆行為，則可能適用此條。
+
+---
+
+**4. 不確定性與限制**
+
+本初步鑑定報告基於有限的監視器畫面截圖，存在以下不確定性與限制：
+
+*   **畫面品質與角度：** 監視器畫面解析度一般，且為固定廣角俯瞰角度，未能清晰捕捉倒地前所有涉案人員的面部特徵、具體肢體動作及衝突細節。
+*   **音訊資料缺失：** 缺乏現場音訊資料，無法判斷是否有口角爭執、呼喊聲或求救聲，難以完整還原事發經過。
+*   **事件完整性：** 僅為特定時間段的截圖，無法確認事件的完整前因後果，例如衝突的起因、是否早有預謀、或是否有其他未入鏡的行為。
+*   **人員身份與角色：** 無法明確辨識所有涉案人員的身份，亦無法明確區分其在事件中的具體角色（攻擊者、受害者、旁觀者、勸架者等）。
+*   **傷勢程度：** 畫面僅能顯示一人倒地並需醫療介入，但其具體傷勢程度（輕傷、重傷、甚至死亡）無法由畫面判斷，需仰賴醫療鑑定報告。
+*   **收銀台後方人員：** 收銀台後方人員的身份、是否為店員、以及其在事件中的參與程度不明確。
+
+---
+
+**5. 初步結論**
+
+根據現有監視器畫面截圖分析，本事件初步判斷為一宗涉及多人群聚並導致肢體衝突，造成一人倒地受傷的事件。最可能涉及的犯罪類型為**Assault (傷害罪)**。
+
+為求釐清案情全貌與法律責任，建議後續偵查工作應包含但不限於：
+1.  調閱該時段所有相關監視器（包括店內其他角度、店外）之完整錄影資料。
+2.  訪談現場目擊者及報案人。
+3.  對倒臥者進行詳細的醫療鑑定，以確認傷勢程度。
+4.  比對畫面中人員特徵，進行身份辨識與偵訊。
+5.  收集其他相關證據，以還原事件真相並確認行為人犯意與行為態樣。
+
+---
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+（無）
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：
+  升溫分數：0.00
+  事前指標：（無）
+  事後指標：（無）
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：（無）
+  構成要件：（無）
+  Rlegal：0.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：1.000
+  Rcost：0.000
+  對話輪次：1
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [4.0s – 9.7s] A man left with a drink in his hand
+  [10.7s – 23.1s] There are two figures in the distance of the screen
+  [20.1s – 32.6s] A man and a woman leave after shopping
+  [30.6s – 40.3s] Two men wandering on the shelf
+  [40.3s – 55.4s] The two of them continued to wander around the shelves
+  [62.4s – 68.8s] A man in green passes by
+  [68.8s – 73.9s] The man in green stood next to the shelf and suddenly disappeared
+  [87.9s – 98.5s] A man in green walked by
+  [98.0s – 105.3s] The man in red enters and passes by a woman in black
+  [105.3s – 114.6s] A man in gray clothes entered and walked to the shelf
+  [114.6s – 131.4s] Several people standing together
+  [131.4s – 142.6s] A man and a woman leave
+  [142.6s – 155.6s] The man in gray leaves
+  [163.6s – 169.3s] The man in red leaves
+  [170.3s – 180.1s] A man in a hat took something and left
+  [188.1s – 194.5s]  A person leaves with something
+  [192.1s – 202.5s] Three people then entered
+  [202.5s – 219.7s] Two more people followed in
+  [228.2s – 241.5s] Two women entered, and one woman opened the cabinet on the right shelf and took out something.
+  [241.5s – 255.4s] Two women followed a new man.
+  [255.4s – 273.1s] A man in black enters
+  [273.1s – 289.7s] Two men entered, a man collided with a man and had a conflict
+  [289.7s – 299.3s] Two people communicated, and a man observed next to them
+  [299.3s – 307.6s] Several women leave
+  [306.8s – 314.2s] Three men talking around a woman
+  [314.2s – 320.5s] A man left and two people talked with the woman
+  [320.5s – 332.2s] A man walks behind a woman
+  [341.7s – 350.4s] A man walks deep into the shelf, and a woman enters
+  [350.4s – 361.7s] Three men wandered to the door to check something.
+  [361.7s – 370.4s] Two men hugged each other under the watchers, and passers-by passed by
+  [370.4s – 384.4s] Two men communicate, one man stretches out his arm to hug the other
+  [384.4s – 400.1s] Several people gather around to communicate
+  [400.1s – 415.8s] A few people wandered away
+  [415.8s – 424.0s] The two men hugged each other and separated.
+  [424.0s – 435.7s]  Several men were standing and shaking in the store
+  [435.7s – 453.9s] A few more men came to greet several people in the store
+  [453.9s – 464.2s] The two men hugged and walked to the shelf
+  [464.2s – 482.7s]  Several people were communicating in the shelf
+  [482.7s – 494.9s] Everyone gathered in the upper left corner of the screen, which is the supermarket checkout area
+  [494.9s – 507.6s] The two of them walked to the shelf
+  [507.6s – 515.9s] Two women leave
+  [515.9s – 524.9s] A man leaves
+  [524.9s – 537.5s] Several men are wandering and communicating
+  [548.2s – 563.1s] A man in green enters and stands next to the shelf
+  [563.1s – 570.8s] A man stood at the door and clapped his hands
+  [570.8s – 582.4s] A man chatting with the man at the door
+  [582.4s – 593.0s] The man in the hat raised his arms and spoke to the man at the door
+  [593.0s – 607.6s] The three of them were not moving at the door, and the counter was crowded with people.
+  [608.4s – 618.8s] A man walked to the door and four people communicated together
+  [618.8s – 629.3s] Several people suddenly pointed in one direction.
+  [629.3s – 638.0s] Suddenly everyone ran away
+  [638.0s – 650.8s] People keep running out one after another
+  [650.8s – 662.3s] A man is wandering around a man lying on the ground
+  [662.3s – 679.0s] The man grabbed the man’s arm on the ground
+  [679.0s – 686.0s] A man held the shelf and went out
+  [686.0s – 697.7s] The man on the ground raised his head to check the situation and then lay down on the ground
+  [698.0s – 706.2s] The two people passed by and left, and the man lay down completely
+  [706.2s – 721.5s] After the two men went out, the man continued to fall to the ground and struggled.
+  [721.5s – 737.8s] The man was motionless and the light was turned off.
+  [737.8s – 756.9s] The door opened and a man came in with a phone call.
+  [756.9s – 785.1s] Two men passed by the door and then went out
+  [785.1s – 802.3s] Three police officers entered to check on the man who fell to the ground
+  [802.3s – 815.5s] The woman bent over to check the man's condition
+  [815.5s – 834.4s] Another man came in to check the environment and the man’s condition
+  [889.6s – 921.1s] The doctor enters for emergency treatment and removes the shelves
+  [921.1s – 940.5s] Doctors continue to rescue the fallen man
+  [940.5s – 957.6s] A man came in carrying a yellow shelf
+  [957.6s – 992.9s] A man pushed a cart through the door
+  [992.9s – 1054.0s] Everyone gathered around the injured man for treatment
+
+======================================================================

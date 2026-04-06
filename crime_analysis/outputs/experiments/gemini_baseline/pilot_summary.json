@@ -1,0 +1,55 @@
+{
+  "n_samples": 52,
+  "accuracy": 0.5192307692307693,
+  "per_category_accuracy": {
+    "Abuse": 0.75,
+    "Arrest": 0.25,
+    "Arson": 0.75,
+    "Assault": 0.25,
+    "Burglary": 0.0,
+    "Explosion": 1.0,
+    "Fighting": 0.25,
+    "RoadAccidents": 0.5,
+    "Robbery": 0.75,
+    "Shooting": 0.0,
+    "Shoplifting": 1.0,
+    "Stealing": 1.0,
+    "Vandalism": 0.25
+  },
+  "turns": {
+    "mean": 1,
+    "median": 1.0,
+    "stdev": 0.0,
+    "min": 1,
+    "max": 1,
+    "p25": 1,
+    "p75": 1
+  },
+  "confidence_correct": {
+    "mean": 0.95,
+    "p25": 0.95,
+    "p75": 0.95
+  },
+  "confidence_wrong": {
+    "mean": 0.9119999999999999
+  },
+  "rlegal": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0
+  },
+  "rcons": {
+    "mean": 1.0
+  },
+  "conflict_distribution": {
+    "NONE": 52,
+    "SOFT": 0,
+    "HARD": 0
+  },
+  "suggestions": [
+    "CONFIDENCE_HARD_THRESHOLD 建議值：0.95（正確分類 p75）（目前 0.75）",
+    "CONFIDENCE_SOFT_THRESHOLD 建議值：0.95（正確分類 p50）（目前 0.70）",
+    "Rcost threshold_low 建議值：1（turns median）（目前 3）",
+    "Rcost threshold_high 建議值：1（turns p75）（目前 8）"
+  ]
+}

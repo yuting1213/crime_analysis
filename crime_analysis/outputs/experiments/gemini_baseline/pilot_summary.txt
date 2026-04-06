@@ -1,0 +1,46 @@
+============================================================
+Pilot Experiment Summary
+============================================================
+
+樣本數：52
+整體準確率：51.9%
+
+── 各類別準確率 ──
+  Abuse             75.0% (3/4)
+  Arrest            25.0% (1/4)
+  Arson             75.0% (3/4)
+  Assault           25.0% (1/4)
+  Burglary           0.0% (0/4)
+  Explosion        100.0% (4/4)
+  Fighting          25.0% (1/4)
+  RoadAccidents     50.0% (2/4)
+  Robbery           75.0% (3/4)
+  Shooting           0.0% (0/4)
+  Shoplifting      100.0% (4/4)
+  Stealing         100.0% (4/4)
+  Vandalism         25.0% (1/4)
+
+── 對話輪次統計 ──
+  mean=1.0  median=1.0  stdev=0.0  range=[1, 1]
+  p25=1  p75=1
+
+── 信心分數統計 ──
+  正確分類：mean=0.950  p25=0.950  p75=0.950
+  錯誤分類：mean=0.912
+
+── Rlegal 統計 ──
+  mean=0.000  range=[0.000, 0.000]
+
+── Rcons 統計 ──
+  mean=1.000
+
+── 衝突分布 ──
+  NONE: 52
+  SOFT: 0
+  HARD: 0
+
+── 門檻建議 ──
+  • CONFIDENCE_HARD_THRESHOLD 建議值：0.95（正確分類 p75）（目前 0.75）
+  • CONFIDENCE_SOFT_THRESHOLD 建議值：0.95（正確分類 p50）（目前 0.70）
+  • Rcost threshold_low 建議值：1（turns median）（目前 3）
+  • Rcost threshold_high 建議值：1（turns p75）（目前 8）

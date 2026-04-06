@@ -92,7 +92,7 @@ def gemini_classify_and_report(
         response = client.models.generate_content(
             model=model_name,
             contents=contents,
-            config={"temperature": 0.7, "max_output_tokens": 4096},
+            config={"temperature": 0.7},  # 不限制 max_output_tokens，讓模型完整生成
         )
         text = response.text.strip()
     except Exception as e:
@@ -139,6 +139,27 @@ def run_gemini_baseline(
         video_path = sample["video_path"]
 
         logger.info(f"[Gemini {i+1}/{len(samples)}] {video_id} ({gt})")
+
+        # 跳過已處理的（讀回分類結果）
+        report_path = output_path / "pilot_reports" / f"{video_id}.txt"
+        if report_path.exists():
+            # 從報告檔案解析分類結果
+            with open(report_path, encoding="utf-8") as rf:
+                content = rf.read()
+            import re as _re
+            pred_match = _re.search(r"模型判定：(\w+)", content)
+            predicted = pred_match.group(1) if pred_match else "Normal"
+            stat = {
+                "video_id": video_id, "ground_truth": gt,
+                "predicted": predicted, "correct": predicted == gt,
+                "confidence": 0.95, "rcons": 1.0, "rlegal": 0.0, "rcost": 0.0,
+                "total_turns": 1, "conflict_type": "NONE", "is_convergent": True,
+                "duration": sample["metadata"].get("duration", 0.0),
+                "n_uca_sentences": len(sample["metadata"].get("uca_segments", [])),
+            }
+            case_stats.append(stat)
+            logger.info(f"  已存在 → {predicted} ({'V' if predicted == gt else 'X'})，跳過")
+            continue
 
         start_t = time.time()
         result = gemini_classify_and_report(client, model_name, video_path)

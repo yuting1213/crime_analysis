@@ -1,0 +1,6 @@
+{
+  "experiment": "gemini_baseline",
+  "model": "gemini-2.5-flash",
+  "n_samples": 52,
+  "accuracy": 0.5192307692307693
+}
