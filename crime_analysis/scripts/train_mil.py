@@ -55,7 +55,7 @@ WEIGHTS_DIR = Path("./outputs/mil_weights")
 # ── 特徵預提取 ───────────────────────────────────────────────
 
 # 特徵提取版本 — 改了取幀策略/模型時遞增此值，會自動使舊快取失效
-FEATURE_VERSION = "v4"  # v1=前16幀+4幀ViT, v2=均勻16幀+8幀ViT, v3=4/4模態, v4=去除R3D L2norm+StandardScaler
+FEATURE_VERSION = "v5"  # v4+UCA引導抽幀（70%犯罪時段+30%背景）
 
 
 def extract_and_cache_features(
@@ -144,9 +144,15 @@ def extract_and_cache_features(
         if video_path is None or not video_path.exists():
             continue
 
-        # 抽幀 + 提取 4 模態特徵
+        # 抽幀 + 提取 4 模態特徵（UCA 引導：70% 犯罪時段 + 30% 背景）
+        ann = annotations[video_id]
+        uca_segs = [
+            {"start": ts[0], "end": ts[1]}
+            for ts in ann.get("timestamps", [])
+        ] if cat != "Normal" else None  # Normal 影片不做引導
+
         try:
-            frames = _load_video_frames(str(video_path))
+            frames = _load_video_frames(str(video_path), uca_segments=uca_segs)
             r3d_feat = _extract_r3d_feature(r3d, frames, device)
             vit_feat = _extract_vit_feature(vit_model, vit_proc, frames, device) if vit_model else np.zeros(768, dtype=np.float32)
             pose_feat = _extract_pose_feature(mp_pose, frames) if mp_pose else np.zeros(99, dtype=np.float32)
@@ -169,16 +175,56 @@ def extract_and_cache_features(
     return cache_map
 
 
-def _load_video_frames(video_path: str, n_frames: int = 32) -> List[np.ndarray]:
-    """載入影片幀。"""
+def _load_video_frames(
+    video_path: str,
+    n_frames: int = 32,
+    uca_segments: Optional[List[Dict]] = None,
+    fps: float = 25.0,
+) -> List[np.ndarray]:
+    """
+    載入影片幀。支援 UCA 引導抽幀。
+
+    如果提供 uca_segments，70% 幀從犯罪時段抽取，30% 從全影片均勻抽取。
+    否則 fallback 到均勻抽幀。
+    """
     import cv2
     cap = cv2.VideoCapture(video_path)
     total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    video_fps = cap.get(cv2.CAP_PROP_FPS) or fps
     if total <= 0:
         cap.release()
         return []
 
-    indices = [int(i * total / n_frames) for i in range(n_frames)]
+    # UCA 引導：70% 犯罪時段 + 30% 背景
+    if uca_segments:
+        n_event = int(n_frames * 0.7)
+        n_context = n_frames - n_event
+
+        # 收集犯罪時段的幀索引
+        event_frame_indices = set()
+        for seg in uca_segments:
+            start_f = int(seg.get("start", seg.get("start_frame", 0)) * video_fps) if "start" in seg else seg.get("start_frame", 0)
+            end_f = int(seg.get("end", seg.get("end_frame", total)) * video_fps) if "end" in seg else seg.get("end_frame", total)
+            for i in range(max(0, start_f), min(end_f + 1, total)):
+                event_frame_indices.add(i)
+
+        if event_frame_indices:
+            event_list = sorted(event_frame_indices)
+            # 從犯罪時段均勻取 n_event 幀
+            if len(event_list) >= n_event:
+                event_indices = [event_list[int(i * len(event_list) / n_event)] for i in range(n_event)]
+            else:
+                event_indices = event_list
+
+            # 從全影片均勻取 n_context 幀（背景脈絡）
+            context_indices = [int(i * total / n_context) for i in range(n_context)]
+
+            indices = sorted(set(event_indices + context_indices))[:n_frames]
+        else:
+            indices = [int(i * total / n_frames) for i in range(n_frames)]
+    else:
+        indices = [int(i * total / n_frames) for i in range(n_frames)]
+
     frames = []
     for idx in indices:
         cap.set(cv2.CAP_PROP_POS_FRAMES, idx)

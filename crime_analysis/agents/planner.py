@@ -163,6 +163,33 @@ def build_report_prompt(
     ]
 
 
+def _extract_uca_guided_frames(video_path, uca_segments, n_frames, cv2_mod, pil_mod):
+    """從影片用 UCA 引導抽幀（70% 犯罪時段 + 30% 背景），回傳 PIL Image list。"""
+    if not video_path or not Path(video_path).exists():
+        return []
+
+    cap = cv2_mod.VideoCapture(video_path)
+    total = int(cap.get(cv2_mod.CAP_PROP_FRAME_COUNT))
+    fps = cap.get(cv2_mod.CAP_PROP_FPS) or 25.0
+    if total <= 0:
+        cap.release()
+        return []
+
+    if uca_segments:
+        indices = PlannerAgent._uca_guided_indices(total, uca_segments, fps, n_frames)
+    else:
+        indices = [int(i * total / n_frames) for i in range(n_frames)]
+
+    keyframes = []
+    for idx in indices:
+        cap.set(cv2_mod.CAP_PROP_POS_FRAMES, idx)
+        ret, frame = cap.read()
+        if ret:
+            keyframes.append(pil_mod.fromarray(cv2_mod.cvtColor(frame, cv2_mod.COLOR_BGR2RGB)))
+    cap.release()
+    return keyframes
+
+
 class PlannerAgent:
     """
     規則式 Planner（不繼承 BaseAgent，角色是協調者）
@@ -650,6 +677,33 @@ class PlannerAgent:
 
         return "\n".join(parts)
 
+    # ── UCA 引導抽幀 ──────────────────────────────────────
+
+    @staticmethod
+    def _uca_guided_indices(total_frames: int, uca_segments: list, fps: float, n: int) -> list:
+        """計算 UCA 引導的幀索引（70% 犯罪時段 + 30% 背景）。"""
+        n_event = int(n * 0.7)
+        n_context = n - n_event
+
+        event_indices = set()
+        for seg in uca_segments:
+            start_f = int(seg.get("start", seg.get("start_frame", 0)) * fps)
+            end_f = int(seg.get("end", seg.get("end_frame", total_frames)) * fps)
+            for i in range(max(0, start_f), min(end_f + 1, total_frames)):
+                event_indices.add(i)
+
+        if not event_indices:
+            return [int(i * total_frames / n) for i in range(n)]
+
+        event_list = sorted(event_indices)
+        if len(event_list) >= n_event:
+            selected_event = [event_list[int(i * len(event_list) / n_event)] for i in range(n_event)]
+        else:
+            selected_event = event_list
+
+        context = [int(i * total_frames / n_context) for i in range(n_context)]
+        return sorted(set(selected_event + context))[:n]
+
     # ── Qwen3-VL 統一模型（分類 + 報告生成）─────────────────
 
     def _load_report_model(self):
@@ -726,29 +780,13 @@ class PlannerAgent:
             "CATEGORY: <name>\nCONFIDENCE: <0.0-1.0>\nREASON: <one sentence explaining what you see>"
         )
 
-        # 從影片直接抽取更多幀（16 張均勻取樣，模擬動態）
+        # UCA 引導抽幀：70% 犯罪時段 + 30% 背景
         video_path = (video_metadata or {}).get("video_path", "")
-        n_keyframes = 16  # 比之前的 8 張多一倍
-
-        if video_path and Path(video_path).exists():
-            # 直接從影片抽幀（不依賴 pipeline 預抽的 32 幀）
-            cap = cv2.VideoCapture(video_path)
-            total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-            if total > 0:
-                sample_indices = [int(i * total / n_keyframes) for i in range(n_keyframes)]
-                keyframes = []
-                for idx in sample_indices:
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
-                    ret, frame = cap.read()
-                    if ret:
-                        keyframes.append(PILImage.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
-                cap.release()
-                logger.info(f"[VLM classify] 從影片直接抽取 {len(keyframes)} 幀：{Path(video_path).name}")
-            else:
-                cap.release()
-                keyframes = []
-        else:
-            keyframes = []
+        uca_segments = (video_metadata or {}).get("uca_segments", [])
+        n_keyframes = 16
+        keyframes = _extract_uca_guided_frames(video_path, uca_segments, n_keyframes, cv2, PILImage)
+        if keyframes:
+            logger.info(f"[VLM classify] UCA 引導抽取 {len(keyframes)} 幀：{Path(video_path).name}")
 
         # Fallback: 從 pipeline 預抽的幀取樣
         if not keyframes:
@@ -758,7 +796,7 @@ class PlannerAgent:
             n = len(valid)
             indices = [int(i * n / min(n_keyframes, n)) for i in range(min(n_keyframes, n))]
             keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
-            logger.info(f"[VLM classify] 使用 {len(keyframes)} 張預抽幀")
+            logger.info(f"[VLM classify] Fallback {len(keyframes)} 張預抽幀")
 
         video_content = [{"type": "image", "image": img} for img in keyframes]
 
@@ -832,25 +870,14 @@ class PlannerAgent:
         import re, torch, cv2
         from PIL import Image as PILImage
 
-        # 從影片抽取 8 張關鍵幀（報告生成不需要太多幀，8 張夠用）
+        # UCA 引導抽幀（報告生成用 8 張）
         video_path = (video_metadata or {}).get("video_path", "")
+        uca_segments = (video_metadata or {}).get("uca_segments", [])
         n_report_frames = 8
 
-        if video_path and Path(video_path).exists():
-            cap = cv2.VideoCapture(video_path)
-            total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-            visual_content = []
-            if total > 0:
-                sample_indices = [int(i * total / n_report_frames) for i in range(n_report_frames)]
-                for idx in sample_indices:
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
-                    ret, frame = cap.read()
-                    if ret:
-                        visual_content.append({
-                            "type": "image",
-                            "image": PILImage.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)),
-                        })
-            cap.release()
+        report_frames = _extract_uca_guided_frames(video_path, uca_segments, n_report_frames, cv2, PILImage)
+        if report_frames:
+            visual_content = [{"type": "image", "image": img} for img in report_frames]
         else:
             valid = [f for f in frames if f is not None and hasattr(f, "shape")]
             visual_content = []
