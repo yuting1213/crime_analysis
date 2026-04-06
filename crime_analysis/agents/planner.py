@@ -41,8 +41,8 @@ HIGH_SEVERITY_CRIMES = {"Shooting", "Robbery", "Assault"}
 
 def compute_rcost(
     total_turns: int,
-    threshold_low: int = 3,
-    threshold_high: int = 8,
+    threshold_low: int = 4,
+    threshold_high: int = 6,
 ) -> float:
     """
     Rcost 分段懲罰（評估用）：
@@ -185,7 +185,7 @@ class PlannerAgent:
         self.reflector = reflector
         self.rag = rag_module          # RAGModule（由 pipeline 注入）
         self._total_turns: int = 0
-        self._rcost_threshold_high: int = 8
+        self._rcost_threshold_high: int = 6  # Pilot P75
 
         # Step 3b 報告生成模型（延遲載入）
         self._report_tokenizer = None
@@ -490,7 +490,7 @@ class PlannerAgent:
 
         rcost = compute_rcost(
             self._total_turns,
-            threshold_low=3,
+            threshold_low=4,  # Pilot median
             threshold_high=self._rcost_threshold_high,
         )
         rcons = final_audit.rcons_score
