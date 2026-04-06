@@ -94,22 +94,30 @@ def load_pilot_samples(
     n_samples: int = 30,
     split: str = "Test",
     include_normal: bool = False,
+    exclude_ids: Optional[List[str]] = None,
 ) -> List[Dict]:
     """
-    從 UCA 標註 + UCF-Crime 影片目錄載入 pilot 樣本。
+    從 UCA 標註 + UCF-Crime 影片目錄載入樣本。
 
     策略：每個犯罪類別各取 ceil(n_samples / 13) 個，
     確保 violent / property / public_safety 都有覆蓋。
+
+    Args:
+        exclude_ids: 排除的 video_id 列表（用於正式實驗排除 Pilot 樣本）
     """
     annotations = load_uca_annotations(split)
     if not annotations:
         return []
 
+    exclude_set = set(exclude_ids or [])
     per_cat = max(1, -(-n_samples // len(CRIME_CATEGORIES)))
     category_counts: Dict[str, int] = {}
     samples = []
 
     for video_id, ann in annotations.items():
+        if video_id in exclude_set:
+            continue
+
         cat = video_id_to_category(video_id)
 
         if cat == "Normal" and not include_normal:
@@ -637,16 +645,28 @@ if __name__ == "__main__":
     parser.add_argument("--no-vlm", action="store_true", help="消融③：跳過 VLM 分類")
     parser.add_argument("--no-reflector", action="store_true", help="消融④：NullReflector")
     parser.add_argument("--no-vlm-report", action="store_true", help="消融⑤：用 fallback 模板報告")
+    parser.add_argument(
+        "--exclude-pilot", action="store_true",
+        help="排除 Pilot 的 52 個樣本（正式實驗用）",
+    )
     args = parser.parse_args()
 
     # 固定隨機種子
     import random
     random.seed(args.seed)
 
+    # 如果排除 pilot，先載入 pilot 的 52 個 ID
+    exclude_ids = []
+    if args.exclude_pilot:
+        pilot_samples = load_pilot_samples(n_samples=52, split=args.split)
+        exclude_ids = [s["video_id"] for s in pilot_samples]
+        logger.info(f"排除 Pilot 樣本：{len(exclude_ids)} 個")
+
     samples = load_pilot_samples(
         n_samples=args.n_samples,
         split=args.split,
         include_normal=args.include_normal,
+        exclude_ids=exclude_ids,
     )
     if not samples:
         logger.error("無法載入樣本，請確認 UCA 資料集路徑")
