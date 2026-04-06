@@ -122,6 +122,57 @@ class HierarchicalRAG:
         # Embedding 模型（BGE-M3）
         self._embedding_model = None
 
+        # 自動載入已建好的索引（build_rag.py 產生的 pickle + ChromaDB）
+        self._try_load_existing_index()
+
+    def _try_load_existing_index(self):
+        """自動載入 build_rag.py 產生的 BM25 pickle + ChromaDB 索引。"""
+        import pickle
+        from pathlib import Path
+
+        # BM25 pickle（相對於 crime_analysis/ 目錄）
+        bm25_dir = Path(self.cfg.chroma_persist_dir).parent  # rag_db/
+        loaded = []
+
+        for attr, filename in [
+            ("_bm25_law", "bm25_law.pkl"),
+            ("_bm25_law_docs", "bm25_law_docs.pkl"),
+            ("_bm25_judgment", "bm25_judgment.pkl"),
+            ("_bm25_judgment_docs", "bm25_judgment_docs.pkl"),
+        ]:
+            pkl_path = bm25_dir / filename
+            if pkl_path.exists():
+                try:
+                    with open(pkl_path, "rb") as f:
+                        setattr(self, attr, pickle.load(f))
+                    loaded.append(filename)
+                except Exception as e:
+                    logger.warning(f"BM25 載入失敗 {filename}：{e}")
+
+        # ChromaDB
+        chroma_dir = Path(self.cfg.chroma_persist_dir)
+        if chroma_dir.exists() and _HAS_CHROMA:
+            try:
+                self._chroma_client = chromadb.PersistentClient(path=str(chroma_dir))
+                # collection 名稱依 build_rag.py 的 _build_dense() 決定
+                self._law_collection = self._chroma_client.get_collection("laws")
+                try:
+                    self._judgment_collection = self._chroma_client.get_collection("judgments")
+                except Exception:
+                    pass  # judgment collection 可能不存在
+                loaded.append("ChromaDB")
+            except Exception as e:
+                logger.warning(f"ChromaDB 載入失敗：{e}")
+
+        # Embedding 模型（BGE-M3）— 延遲載入，只在 dense query 時才載
+        if loaded:
+            logger.info(f"H-RAG 索引自動載入：{', '.join(loaded)}")
+            if self._bm25_law is not None:
+                corpus_size = getattr(self._bm25_law, "corpus_size", "?")
+                logger.info(f"  BM25 法條 corpus: {corpus_size} 條")
+        else:
+            logger.info("H-RAG 索引未找到，需先執行 python data/scripts/build_rag.py")
+
     # ── 公開介面 ──────────────────────────────────────────
 
     def build_index(

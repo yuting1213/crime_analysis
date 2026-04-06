@@ -690,7 +690,7 @@ class PlannerAgent:
         if not valid:
             return None
         n = len(valid)
-        indices = [int(i * n / 4) for i in range(4)]
+        indices = [int(i * n / 8) for i in range(8)]
         keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
 
         categories_str = ", ".join(UCF_CATEGORIES)
@@ -794,7 +794,7 @@ class PlannerAgent:
         keyframes = []
         if valid:
             n = len(valid)
-            indices = [int(i * n / 4) for i in range(4)]
+            indices = [int(i * n / 8) for i in range(8)]
             keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
 
         # 從 build_report_prompt 的 messages 提取文字
