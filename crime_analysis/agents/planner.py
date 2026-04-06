@@ -190,6 +190,11 @@ class PlannerAgent:
         self._report_tokenizer = None
         self._report_model = None
 
+        # 消融實驗 flags（由 pilot_experiment.py 設定）
+        self._skip_vlm_classify: bool = False
+        self._skip_vlm_report: bool = False
+        self._vlm_reason: str = ""
+
     # ── 主要入口 ─────────────────────────────────────────
 
     def run(self, frames: List, video_metadata: Dict) -> Dict[str, Any]:
@@ -242,8 +247,10 @@ class PlannerAgent:
         crime_type = mil_crime_type
 
         # 載入 Qwen3-VL（後續 Step 3b 報告生成也用同一個模型）
-        self._load_report_model()
-        if self._report_model is not None:
+        if not self._skip_vlm_classify or not self._skip_vlm_report:
+            self._load_report_model()
+
+        if self._report_model is not None and not self._skip_vlm_classify:
             vlm_result = self._vlm_classify(frames)
             if vlm_result:
                 crime_type, vlm_conf = vlm_result
@@ -291,9 +298,12 @@ class PlannerAgent:
             conflict_detail=conflict_detail,
         )
         temperature = video_metadata.get("temperature", cfg.model.temperature)
-        generated_report_text = self._call_qwen3_vl(
-            report_messages, frames, temperature=temperature,
-        )
+        if not self._skip_vlm_report:
+            generated_report_text = self._call_qwen3_vl(
+                report_messages, frames, temperature=temperature,
+            )
+        else:
+            generated_report_text = ""  # 消融⑤：強制 fallback
 
         # Fallback：VLM 未載入或生成失敗時，用 RAG + 構成要件組裝基礎報告
         if not generated_report_text:

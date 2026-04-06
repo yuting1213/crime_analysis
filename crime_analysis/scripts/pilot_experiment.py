@@ -199,14 +199,43 @@ def extract_frames(video_path: str, n_frames: int = 32) -> List:
 
 # ── 執行實驗 ─────────────────────────────────────────────────
 
-def run_pilot(samples: List[Dict], output_dir: str) -> Dict:
+def run_pilot(samples: List[Dict], output_dir: str, ablation_flags: Dict = None) -> Dict:
     """對每個 pilot 樣本執行 pipeline.analyze()，收集統計數據。"""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
     from pipeline import CrimeAnalysisPipeline
+    from agents.reflector import NullReflector
 
+    ablation_flags = ablation_flags or {}
+
+    # 根據消融 flags 建構 pipeline
     pipeline = CrimeAnalysisPipeline()
+
+    # 消融④：NullReflector
+    if ablation_flags.get("no_reflector"):
+        pipeline.reflector = NullReflector()
+        pipeline.planner.reflector = NullReflector()
+        logger.info("[消融] NullReflector 已替換 ReflectorAgent")
+
+    # 消融②：移除 RAG
+    if ablation_flags.get("no_rag"):
+        pipeline.planner.rag = None
+        logger.info("[消融] RAG 已移除")
+
+    # 消融①：移除 EnvironmentAgent
+    if ablation_flags.get("no_env"):
+        pipeline.planner.agents.pop("environment", None)
+        logger.info("[消融] EnvironmentAgent 已移除")
+
+    # 消融③⑤：透過 planner 屬性控制
+    if ablation_flags.get("no_vlm"):
+        pipeline.planner._skip_vlm_classify = True
+        logger.info("[消融] VLM 分類已跳過")
+
+    if ablation_flags.get("no_vlm_report"):
+        pipeline.planner._skip_vlm_report = True
+        logger.info("[消融] VLM 報告生成已跳過，使用 fallback")
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
@@ -533,8 +562,54 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
 
 # ── Main ─────────────────────────────────────────────────────
 
+def _save_confusion_matrix(case_stats: List[Dict], output_dir: Path):
+    """輸出 confusion matrix 圖表。"""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import numpy as np
+    except ImportError:
+        logger.warning("matplotlib 未安裝，跳過 confusion matrix")
+        return
+
+    categories = sorted(set(s["ground_truth"] for s in case_stats))
+    n = len(categories)
+    cat_idx = {c: i for i, c in enumerate(categories)}
+    cm = np.zeros((n, n), dtype=int)
+
+    for s in case_stats:
+        gt = s["ground_truth"]
+        pred = s["predicted"]
+        if gt in cat_idx and pred in cat_idx:
+            cm[cat_idx[gt], cat_idx[pred]] += 1
+
+    fig, ax = plt.subplots(figsize=(12, 10))
+    im = ax.imshow(cm, cmap="Blues")
+    ax.set_xticks(range(n))
+    ax.set_yticks(range(n))
+    ax.set_xticklabels(categories, rotation=45, ha="right", fontsize=9)
+    ax.set_yticklabels(categories, fontsize=9)
+    ax.set_xlabel("Predicted")
+    ax.set_ylabel("Ground Truth")
+    ax.set_title("Classification Confusion Matrix")
+
+    for i in range(n):
+        for j in range(n):
+            if cm[i, j] > 0:
+                color = "white" if cm[i, j] > cm.max() / 2 else "black"
+                ax.text(j, i, str(cm[i, j]), ha="center", va="center", color=color, fontsize=10)
+
+    fig.colorbar(im)
+    plt.tight_layout()
+    cm_path = output_dir / "confusion_matrix.png"
+    fig.savefig(cm_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"Confusion matrix → {cm_path}")
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Pilot Experiment（小樣本校準）")
+    parser = argparse.ArgumentParser(description="Pilot / Ablation Experiment")
     parser.add_argument(
         "--n_samples", type=int, default=30,
         help="總樣本數（會均勻分配到各犯罪類別）",
@@ -551,14 +626,47 @@ if __name__ == "__main__":
         "--include_normal", action="store_true",
         help="是否包含 Normal 影片",
     )
+    parser.add_argument(
+        "--seed", type=int, default=42,
+        help="隨機種子（固定 Pilot/正式實驗的影片分割）",
+    )
+    # ── 消融實驗 flags ──
+    parser.add_argument("--no-env", action="store_true", help="消融①：跳過 EnvironmentAgent")
+    parser.add_argument("--no-rag", action="store_true", help="消融②：移除 RAG")
+    parser.add_argument("--no-vlm", action="store_true", help="消融③：跳過 VLM 分類")
+    parser.add_argument("--no-reflector", action="store_true", help="消融④：NullReflector")
+    parser.add_argument("--no-vlm-report", action="store_true", help="消融⑤：用 fallback 模板報告")
     args = parser.parse_args()
+
+    # 固定隨機種子
+    import random
+    random.seed(args.seed)
 
     samples = load_pilot_samples(
         n_samples=args.n_samples,
         split=args.split,
         include_normal=args.include_normal,
     )
-    if samples:
-        run_pilot(samples, args.output_dir)
-    else:
+    if not samples:
         logger.error("無法載入樣本，請確認 UCA 資料集路徑")
+        sys.exit(1)
+
+    # 消融配置傳入 run_pilot
+    ablation_flags = {
+        "no_env": args.no_env,
+        "no_rag": args.no_rag,
+        "no_vlm": args.no_vlm,
+        "no_reflector": args.no_reflector,
+        "no_vlm_report": args.no_vlm_report,
+    }
+    active = [k for k, v in ablation_flags.items() if v]
+    if active:
+        logger.info(f"消融模式：{', '.join(active)}")
+
+    result = run_pilot(samples, args.output_dir, ablation_flags=ablation_flags)
+
+    # 輸出 confusion matrix
+    stats_path = Path(args.output_dir) / "pilot_stats.json"
+    if stats_path.exists():
+        with open(stats_path) as f:
+            _save_confusion_matrix(json.load(f), Path(args.output_dir))

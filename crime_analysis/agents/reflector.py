@@ -111,6 +111,37 @@ class ReflectorOutput:
     audit_log: str = ""
 
 
+# ── NullReflector（消融實驗用）─────────────────────────────
+
+class NullReflector:
+    """
+    消融用 Reflector：永遠回傳 NONE（不做任何衝突稽核）。
+    用於 Baseline B 和消融 ④ no_reflector。
+    """
+
+    def reset(self):
+        pass
+
+    def audit(self, reports, retry_count=0):
+        consensus = "Normal"
+        for r in reports:
+            if hasattr(r, "crime_category") and r.crime_category != "ENVIRONMENTAL_ASSESSMENT":
+                consensus = r.crime_category
+                break
+        return ReflectorOutput(
+            conflict_type="NONE",
+            conflict_layer="NONE",
+            conflicts=[],
+            consensus_category=consensus,
+            is_convergent=True,
+            rcons_score=1.0,
+            audit_log="NullReflector: no audit performed",
+        )
+
+    def get_debate_log(self):
+        return []
+
+
 # ── ReflectorAgent ────────────────────────────────────────
 
 class ReflectorAgent:
