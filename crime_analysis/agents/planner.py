@@ -296,8 +296,9 @@ class PlannerAgent:
                 self._total_turns += 1
 
         # ── Step 2c-2d：RAG-guided Classification Verification ──
-        # 用法律構成要件反向驗證 VLM 的分類是否正確
-        if (self._report_model is not None
+        # 暫時關閉（測試顯示 VLM 對構成要件全報 0 matched，反而降低準確率）
+        # TODO: 改善 VLM 對法律要件的理解後重新啟用
+        if False and (self._report_model is not None
                 and not self._skip_vlm_classify
                 and crime_type != "Normal"
                 and self.rag):
@@ -727,6 +728,90 @@ class PlannerAgent:
 
         return "\n".join(parts)
 
+    # ── MIL-guided Frame Sampling ──────────────────────────
+
+    def _mil_guided_frames(self, frames, video_path, video_metadata, n, cv2_mod, pil_mod):
+        """
+        用 MIL Head 的 snippet anomaly scores 引導 VLM 抽幀。
+        取 50% 最可疑片段 + 30% UCA 犯罪時段 + 20% 均勻背景。
+        """
+        import numpy as np
+
+        ae_agent = self.agents.get("action_emotion")
+        ae_report = getattr(ae_agent, "_position", None) if ae_agent else None
+        snippet_scores = ae_report.metadata.get("snippet_scores", []) if ae_report else []
+
+        # 如果有 snippet scores → 用最可疑的片段抽幀
+        if snippet_scores and video_path and Path(video_path).exists():
+            cap = cv2_mod.VideoCapture(video_path)
+            total = int(cap.get(cv2_mod.CAP_PROP_FRAME_COUNT))
+            if total <= 0:
+                cap.release()
+                return self._fallback_frames(frames, n, cv2_mod, pil_mod)
+
+            # 分配：4 幀最可疑 + 2 幀 UCA + 2 幀均勻
+            n_suspicious = n // 2      # 4
+            n_uca = n // 4             # 2
+            n_context = n - n_suspicious - n_uca  # 2
+
+            # 最可疑的 snippet 對應的幀
+            frames_per_snippet = max(1, total // len(snippet_scores))
+            top_indices = sorted(range(len(snippet_scores)), key=lambda i: snippet_scores[i], reverse=True)
+            suspicious_frames = []
+            for si in top_indices[:n_suspicious]:
+                mid_frame = si * frames_per_snippet + frames_per_snippet // 2
+                suspicious_frames.append(min(mid_frame, total - 1))
+
+            # UCA 犯罪時段的幀
+            uca_segments = (video_metadata or {}).get("uca_segments", [])
+            fps = cap.get(cv2_mod.CAP_PROP_FPS) or 25.0
+            uca_frame_set = set()
+            for seg in uca_segments:
+                sf = int(seg.get("start", 0) * fps)
+                ef = int(seg.get("end", total / fps) * fps)
+                for i in range(max(0, sf), min(ef + 1, total)):
+                    uca_frame_set.add(i)
+            if uca_frame_set:
+                uca_list = sorted(uca_frame_set)
+                uca_indices = [uca_list[int(i * len(uca_list) / n_uca)] for i in range(n_uca)]
+            else:
+                uca_indices = []
+
+            # 均勻背景幀
+            context_indices = [int(i * total / n_context) for i in range(n_context)]
+
+            # 合併去重
+            all_indices = sorted(set(suspicious_frames + uca_indices + context_indices))[:n]
+
+            keyframes = []
+            for idx in all_indices:
+                cap.set(cv2_mod.CAP_PROP_POS_FRAMES, idx)
+                ret, frame = cap.read()
+                if ret:
+                    keyframes.append(pil_mod.fromarray(cv2_mod.cvtColor(frame, cv2_mod.COLOR_BGR2RGB)))
+            cap.release()
+
+            if keyframes:
+                logger.info(
+                    f"[VLM classify] MIL-guided {len(keyframes)} 幀"
+                    f"（{len(suspicious_frames)} suspicious + {len(uca_indices)} UCA + {len(context_indices)} context）"
+                )
+                return keyframes
+
+        # Fallback
+        return self._fallback_frames(frames, n, cv2_mod, pil_mod)
+
+    def _fallback_frames(self, frames, n, cv2_mod, pil_mod):
+        """均勻取幀的 fallback。"""
+        valid = [f for f in frames if f is not None and hasattr(f, "shape")]
+        if not valid:
+            return []
+        total = len(valid)
+        indices = [int(i * total / min(n, total)) for i in range(min(n, total))]
+        keyframes = [pil_mod.fromarray(cv2_mod.cvtColor(valid[idx], cv2_mod.COLOR_BGR2RGB)) for idx in indices]
+        logger.info(f"[VLM classify] Fallback {len(keyframes)} 張均勻幀")
+        return keyframes
+
     # ── RAG-guided Classification Verification ──────────────
 
     def _rag_verify_classification(
@@ -767,21 +852,36 @@ class PlannerAgent:
             indices = [int(i * n / 8) for i in range(8)]
             keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
 
-        # 構成要件驗證 prompt
+        # 找出 top-3 候選類別（排除 initial_category，提供有限選項）
+        from rag.rag_module import GROUP_LEGAL_CONTEXT
+        # 同群組的替代類別
+        crime_groups = {
+            "violent": {"Assault", "Fighting", "Shooting", "Robbery", "Abuse", "Arrest"},
+            "property": {"Stealing", "Shoplifting", "Burglary", "Vandalism"},
+            "public_safety": {"Arson", "Explosion", "RoadAccidents"},
+        }
+        current_group = ""
+        for g, cats in crime_groups.items():
+            if initial_category in cats:
+                current_group = g
+                break
+        # 同群組的替代 + 其他群組各一
+        alternatives = [c for c in crime_groups.get(current_group, set()) if c != initial_category][:3]
+
         elements_str = "\n".join(f"- {e}" for e in elements)
-        categories_str = ", ".join(UCF_CATEGORIES)
+        alt_str = ", ".join(alternatives) if alternatives else ", ".join(UCF_CATEGORIES[:5])
 
         verify_prompt = (
-            f"You initially classified this CCTV footage as: {initial_category}\n\n"
-            f"The legal elements required for {initial_category} are:\n"
+            f"You classified this CCTV footage as: {initial_category}\n\n"
+            f"Required legal elements for {initial_category}:\n"
             f"{elements_str}\n\n"
-            f"Look at the video frames again carefully.\n"
-            f"For EACH element above, answer YES or NO — is it visible in the footage?\n\n"
-            f"If MOST elements are NOT visible, choose a BETTER category from:\n"
-            f"{categories_str}\n\n"
-            f"Reply in this format:\n"
+            f"Look at these frames carefully. For each element, is it VISIBLE?\n"
+            f"Count how many elements you can actually see.\n\n"
+            f"If you can see MOST elements → keep {initial_category}\n"
+            f"If you CANNOT see most elements → choose from: {alt_str}\n\n"
+            f"Reply:\n"
             f"ELEMENTS_MATCHED: <number>/{len(elements)}\n"
-            f"FINAL_CATEGORY: <same or different category>"
+            f"FINAL_CATEGORY: <category name>"
         )
 
         messages = [{
@@ -807,7 +907,18 @@ class PlannerAgent:
             response = processor.decode(generated, skip_special_tokens=True).strip()
             response = re.sub(r"<think>.*?</think>\s*", "", response, flags=re.DOTALL).strip()
 
-            logger.info(f"[RAG verify] {response[:120]}")
+            logger.info(f"[RAG verify] {response[:150]}")
+
+            # 解析 ELEMENTS_MATCHED
+            em_match = re.search(r"ELEMENTS_MATCHED:\s*(\d+)\s*/\s*(\d+)", response, re.IGNORECASE)
+            if em_match:
+                matched = int(em_match.group(1))
+                total_el = int(em_match.group(2))
+                ratio = matched / max(total_el, 1)
+                # 如果超過一半要件符合 → 保留原分類
+                if ratio >= 0.5:
+                    logger.info(f"[RAG verify] {matched}/{total_el} 要件符合 → 保留 {initial_category}")
+                    return None
 
             # 解析 FINAL_CATEGORY
             cat_match = re.search(r"FINAL_CATEGORY:\s*(\w+)", response, re.IGNORECASE)
@@ -816,11 +927,6 @@ class PlannerAgent:
                 for cat in UCF_CATEGORIES:
                     if cat.lower() == raw.lower():
                         return cat
-
-            # Fallback: 搜尋類別名稱
-            for cat in UCF_CATEGORIES:
-                if cat.lower() in response.lower().split("final")[-1] if "final" in response.lower() else "":
-                    return cat
 
         except Exception as e:
             logger.warning(f"[RAG verify] 失敗：{e}")
@@ -901,46 +1007,44 @@ class PlannerAgent:
         import torch, re, cv2
         from PIL import Image as PILImage
 
-        # 簡潔 prompt（跟 standalone 診斷一致，長 prompt 反而降低準確率）
+        # 混淆感知 prompt — 定義精確 + 常混淆組別特別說明
         categories_str = ", ".join(UCF_CATEGORIES)
         prompt = (
             "You are a forensic surveillance video analyst.\n"
             "Look at these frames from a CCTV video and determine what crime is occurring.\n\n"
             f"Choose ONE category from: {categories_str}\n\n"
-            "Category definitions:\n"
-            "- Assault: One person attacking another (one-sided)\n"
-            "- Robbery: Forcibly taking someone's belongings\n"
-            "- Stealing: Secretly taking items\n"
-            "- Shoplifting: Concealing store merchandise\n"
-            "- Burglary: Breaking into a building/car\n"
-            "- Fighting: Mutual physical combat (both sides)\n"
-            "- Arson: Deliberately setting fire\n"
-            "- Explosion: Sudden blast with smoke/debris\n"
-            "- RoadAccidents: Vehicle collision\n"
-            "- Vandalism: Deliberately damaging property\n"
-            "- Abuse: Sustained harm to vulnerable person\n"
-            "- Shooting: Gunfire, weapon visible\n"
-            "- Arrest: Law enforcement restraining suspect\n\n"
+            "Definitions:\n"
+            "- Assault: One person attacking another, one-sided, purpose is to HURT\n"
+            "- Robbery: Attacking + TAKING belongings (violence is the MEANS, stealing is the GOAL)\n"
+            "- Stealing: Secretly taking items, NO confrontation, thief acts casual\n"
+            "- Shoplifting: Inside a STORE, hiding merchandise, leaving without paying\n"
+            "- Burglary: BREAKING INTO a building (climbing wall, forcing door/window)\n"
+            "- Fighting: MUTUAL combat, BOTH sides throwing punches\n"
+            "- Arson: Person deliberately SETTING FIRE, flames spreading\n"
+            "- Explosion: Sudden BLAST, shockwave, debris flying\n"
+            "- RoadAccidents: VEHICLE collision or hitting pedestrian/animal\n"
+            "- Vandalism: SMASHING or DESTROYING property (not fire, not explosion)\n"
+            "- Abuse: REPEATED harm to helpless person (elderly/child), over time\n"
+            "- Shooting: GUN visible, muzzle flash, victim drops\n"
+            "- Arrest: POLICE/uniform restraining suspect, handcuffs\n\n"
+            "CRITICAL: Ask yourself these questions:\n"
+            "- Is someone TAKING an object? → Robbery/Stealing/Shoplifting\n"
+            "- Is there a VEHICLE involved? → RoadAccidents\n"
+            "- Is there FIRE or SMOKE? → Arson or Explosion\n"
+            "- Are people hitting each other? → Fighting (mutual) or Assault (one-sided)\n"
+            "- Is someone in UNIFORM? → Arrest\n"
+            "- Is someone BREAKING IN? → Burglary\n\n"
             "Reply with ONLY: CATEGORY: <name>"
         )
 
-        # UCA 引導抽幀：70% 犯罪時段 + 30% 背景
+        # MIL-guided + UCA 引導抽幀
+        # 優先用 MIL snippet scores 找最可疑時段，搭配 UCA 背景
         video_path = (video_metadata or {}).get("video_path", "")
-        uca_segments = (video_metadata or {}).get("uca_segments", [])
-        n_keyframes = 8  # 8 幀比 16 幀準確率更高（standalone 診斷確認）
-        keyframes = _extract_uca_guided_frames(video_path, uca_segments, n_keyframes, cv2, PILImage)
-        if keyframes:
-            logger.info(f"[VLM classify] UCA 引導抽取 {len(keyframes)} 幀：{Path(video_path).name}")
+        n_keyframes = 8
 
-        # Fallback: 從 pipeline 預抽的幀取樣
-        if not keyframes:
-            valid = [f for f in frames if f is not None and hasattr(f, "shape")]
-            if not valid:
-                return None
-            n = len(valid)
-            indices = [int(i * n / min(n_keyframes, n)) for i in range(min(n_keyframes, n))]
-            keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
-            logger.info(f"[VLM classify] Fallback {len(keyframes)} 張預抽幀")
+        keyframes = self._mil_guided_frames(
+            frames, video_path, video_metadata, n_keyframes, cv2, PILImage,
+        )
 
         video_content = [{"type": "image", "image": img} for img in keyframes]
 
