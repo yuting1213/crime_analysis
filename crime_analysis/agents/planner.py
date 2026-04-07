@@ -469,6 +469,15 @@ class PlannerAgent:
 
                 ae_agent = self.agents.get("action_emotion")
                 if ae_agent and hasattr(ae_agent, "analyze"):
+                    # 保存 VLM 分類結果，re-analyze 後恢復
+                    vlm_category = None
+                    vlm_conf = None
+                    for r in all_reports:
+                        if hasattr(r, 'metadata') and r.metadata.get("vlm_used"):
+                            vlm_category = r.crime_category
+                            vlm_conf = r.confidence
+                            break
+
                     conflict_meta = dict(video_metadata)
                     conflict_meta.update({
                         "reassignment_reason": "HARD_CONFLICT",
@@ -477,6 +486,11 @@ class PlannerAgent:
                     })
                     try:
                         updated = ae_agent.analyze(frames, conflict_meta)
+                        # 恢復 VLM 分類（MIL re-analyze 不應覆蓋 VLM 結果）
+                        if vlm_category:
+                            updated.crime_category = vlm_category
+                            updated.confidence = vlm_conf
+                            updated.metadata["vlm_used"] = True
                         all_reports = [updated if "action_emotion" in r.agent_name.lower()
                                        or "行為情緒" in r.agent_name else r
                                        for r in all_reports]
@@ -498,7 +512,18 @@ class PlannerAgent:
         low_reliability: bool,
         generated_report_text: str = "",
     ) -> Dict[str, Any]:
-        crime_type = final_audit.consensus_category
+        # VLM 分類優先於 Reflector consensus（Reflector 用的是 MIL Head 的結果）
+        # 如果 VLM 有分類結果，以 VLM 為準
+        ae_report_for_cat = next(
+            (r for r in reports
+             if "行為情緒" in r.agent_name or "ActionEmotion" in r.agent_name),
+            None,
+        )
+        vlm_used = ae_report_for_cat and ae_report_for_cat.metadata.get("vlm_used", False)
+        if vlm_used:
+            crime_type = ae_report_for_cat.crime_category  # VLM 分類結果
+        else:
+            crime_type = final_audit.consensus_category  # fallback 到 Reflector
         weights = self._get_eval_weights(crime_type)
 
         ae_report = next(
