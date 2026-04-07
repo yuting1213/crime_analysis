@@ -295,6 +295,29 @@ class PlannerAgent:
                 )
                 self._total_turns += 1
 
+        # ── Step 2c-2d：RAG-guided Classification Verification ──
+        # 用法律構成要件反向驗證 VLM 的分類是否正確
+        if (self._report_model is not None
+                and not self._skip_vlm_classify
+                and crime_type != "Normal"
+                and self.rag):
+            verified = self._rag_verify_classification(
+                frames, video_metadata, crime_type,
+            )
+            if verified and verified != crime_type:
+                old_type = crime_type
+                crime_type = verified
+                if ae_report:
+                    ae_report.crime_category = crime_type
+                    ae_report.metadata["rag_verified"] = True
+                    ae_report.metadata["pre_verify_type"] = old_type
+                logger.info(
+                    f"[Planner] Step 2d: RAG 驗證修正 {old_type} → {crime_type}"
+                )
+                self._total_turns += 1
+            else:
+                logger.info(f"[Planner] Step 2c: RAG 驗證通過 → {crime_type}")
+
         # ── Step 3：法律整合（3a RAG → 3b 報告生成 → 3c Rlegal）──
         rag_results: Dict = {"laws": [], "judgments": []}
         rlegal = 0.0
@@ -703,6 +726,106 @@ class PlannerAgent:
         parts.append(f"綜合以上分析，本案涉及{crime_type}類型犯罪之可能性為{confidence:.0%}。")
 
         return "\n".join(parts)
+
+    # ── RAG-guided Classification Verification ──────────────
+
+    def _rag_verify_classification(
+        self,
+        frames: List,
+        video_metadata: Dict,
+        initial_category: str,
+    ) -> Optional[str]:
+        """
+        Step 2c-2d: 用 RAG 的法律構成要件驗證 VLM 分類。
+
+        流程：
+        1. 查出 initial_category 的構成要件
+        2. 問 VLM：「你在影片中看到這些要件嗎？」
+        3. 如果多數要件不符合 → 讓 VLM 重新選擇類別
+        """
+        if self._report_model is None or self._report_tokenizer is None:
+            return None
+
+        import torch, re, cv2
+        from PIL import Image as PILImage
+
+        elements = LEGAL_ELEMENTS.get(initial_category, [])
+        if not elements:
+            return None
+
+        # 取幀（跟分類用的一樣，8 幀）
+        keyframes = _extract_uca_guided_frames(
+            (video_metadata or {}).get("video_path", ""),
+            (video_metadata or {}).get("uca_segments", []),
+            8, cv2, PILImage,
+        )
+        if not keyframes:
+            valid = [f for f in frames if f is not None and hasattr(f, "shape")]
+            if not valid:
+                return None
+            n = len(valid)
+            indices = [int(i * n / 8) for i in range(8)]
+            keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
+
+        # 構成要件驗證 prompt
+        elements_str = "\n".join(f"- {e}" for e in elements)
+        categories_str = ", ".join(UCF_CATEGORIES)
+
+        verify_prompt = (
+            f"You initially classified this CCTV footage as: {initial_category}\n\n"
+            f"The legal elements required for {initial_category} are:\n"
+            f"{elements_str}\n\n"
+            f"Look at the video frames again carefully.\n"
+            f"For EACH element above, answer YES or NO — is it visible in the footage?\n\n"
+            f"If MOST elements are NOT visible, choose a BETTER category from:\n"
+            f"{categories_str}\n\n"
+            f"Reply in this format:\n"
+            f"ELEMENTS_MATCHED: <number>/{len(elements)}\n"
+            f"FINAL_CATEGORY: <same or different category>"
+        )
+
+        messages = [{
+            "role": "user",
+            "content": [
+                *[{"type": "image", "image": img} for img in keyframes],
+                {"type": "text", "text": verify_prompt},
+            ],
+        }]
+
+        try:
+            processor = self._report_tokenizer
+            inputs = processor.apply_chat_template(
+                messages, tokenize=True, add_generation_prompt=True,
+                return_dict=True, return_tensors="pt",
+            ).to(self._report_model.device)
+
+            with torch.no_grad():
+                output_ids = self._report_model.generate(
+                    **inputs, max_new_tokens=128, temperature=0.1, do_sample=False,
+                )
+            generated = output_ids[0, inputs["input_ids"].shape[1]:]
+            response = processor.decode(generated, skip_special_tokens=True).strip()
+            response = re.sub(r"<think>.*?</think>\s*", "", response, flags=re.DOTALL).strip()
+
+            logger.info(f"[RAG verify] {response[:120]}")
+
+            # 解析 FINAL_CATEGORY
+            cat_match = re.search(r"FINAL_CATEGORY:\s*(\w+)", response, re.IGNORECASE)
+            if cat_match:
+                raw = cat_match.group(1)
+                for cat in UCF_CATEGORIES:
+                    if cat.lower() == raw.lower():
+                        return cat
+
+            # Fallback: 搜尋類別名稱
+            for cat in UCF_CATEGORIES:
+                if cat.lower() in response.lower().split("final")[-1] if "final" in response.lower() else "":
+                    return cat
+
+        except Exception as e:
+            logger.warning(f"[RAG verify] 失敗：{e}")
+
+        return None
 
     # ── UCA 引導抽幀 ──────────────────────────────────────
 
