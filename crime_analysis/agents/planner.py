@@ -1007,44 +1007,46 @@ class PlannerAgent:
         import torch, re, cv2
         from PIL import Image as PILImage
 
-        # 混淆感知 prompt — 定義精確 + 常混淆組別特別說明
+        # 簡潔 prompt（跟 standalone 診斷完全一致，38.5% 最高準確率）
         categories_str = ", ".join(UCF_CATEGORIES)
         prompt = (
             "You are a forensic surveillance video analyst.\n"
             "Look at these frames from a CCTV video and determine what crime is occurring.\n\n"
             f"Choose ONE category from: {categories_str}\n\n"
-            "Definitions:\n"
-            "- Assault: One person attacking another, one-sided, purpose is to HURT\n"
-            "- Robbery: Attacking + TAKING belongings (violence is the MEANS, stealing is the GOAL)\n"
-            "- Stealing: Secretly taking items, NO confrontation, thief acts casual\n"
-            "- Shoplifting: Inside a STORE, hiding merchandise, leaving without paying\n"
-            "- Burglary: BREAKING INTO a building (climbing wall, forcing door/window)\n"
-            "- Fighting: MUTUAL combat, BOTH sides throwing punches\n"
-            "- Arson: Person deliberately SETTING FIRE, flames spreading\n"
-            "- Explosion: Sudden BLAST, shockwave, debris flying\n"
-            "- RoadAccidents: VEHICLE collision or hitting pedestrian/animal\n"
-            "- Vandalism: SMASHING or DESTROYING property (not fire, not explosion)\n"
-            "- Abuse: REPEATED harm to helpless person (elderly/child), over time\n"
-            "- Shooting: GUN visible, muzzle flash, victim drops\n"
-            "- Arrest: POLICE/uniform restraining suspect, handcuffs\n\n"
-            "CRITICAL: Ask yourself these questions:\n"
-            "- Is someone TAKING an object? → Robbery/Stealing/Shoplifting\n"
-            "- Is there a VEHICLE involved? → RoadAccidents\n"
-            "- Is there FIRE or SMOKE? → Arson or Explosion\n"
-            "- Are people hitting each other? → Fighting (mutual) or Assault (one-sided)\n"
-            "- Is someone in UNIFORM? → Arrest\n"
-            "- Is someone BREAKING IN? → Burglary\n\n"
+            "Category definitions:\n"
+            "- Assault: One person attacking another (one-sided)\n"
+            "- Robbery: Forcibly taking someone's belongings\n"
+            "- Stealing: Secretly taking items\n"
+            "- Shoplifting: Concealing store merchandise\n"
+            "- Burglary: Breaking into a building/car\n"
+            "- Fighting: Mutual physical combat (both sides)\n"
+            "- Arson: Deliberately setting fire\n"
+            "- Explosion: Sudden blast with smoke/debris\n"
+            "- RoadAccidents: Vehicle collision\n"
+            "- Vandalism: Deliberately damaging property\n"
+            "- Abuse: Sustained harm to vulnerable person\n"
+            "- Shooting: Gunfire, weapon visible\n"
+            "- Arrest: Law enforcement restraining suspect\n\n"
             "Reply with ONLY: CATEGORY: <name>"
         )
 
-        # MIL-guided + UCA 引導抽幀
-        # 優先用 MIL snippet scores 找最可疑時段，搭配 UCA 背景
+        # 均勻 8 幀（跟 standalone 診斷一致，MIL-guided 反而引入偏差）
         video_path = (video_metadata or {}).get("video_path", "")
         n_keyframes = 8
-
-        keyframes = self._mil_guided_frames(
-            frames, video_path, video_metadata, n_keyframes, cv2, PILImage,
-        )
+        keyframes = []
+        if video_path and Path(video_path).exists():
+            cap = cv2.VideoCapture(video_path)
+            total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            if total > 0:
+                indices = [int(i * total / n_keyframes) for i in range(n_keyframes)]
+                for idx in indices:
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+                    ret, frame = cap.read()
+                    if ret:
+                        keyframes.append(PILImage.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
+            cap.release()
+        if not keyframes:
+            keyframes = self._fallback_frames(frames, n_keyframes, cv2, PILImage)
 
         video_content = [{"type": "image", "image": img} for img in keyframes]
 
