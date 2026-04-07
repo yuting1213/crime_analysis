@@ -209,8 +209,18 @@ def finetune(
         lr=lr, weight_decay=0.01,
     )
 
-    training_log = []
+    training_log = {
+        "step_losses": [],       # 每 step 的 loss
+        "epoch_losses": [],      # 每 epoch 平均 loss
+        "cat_losses": [],        # 每 epoch 各類別平均 loss
+        "val_accuracy": [],      # 每 epoch 結束的 validation 準確率
+    }
     total_start = time.time()
+    global_step = 0
+
+    # 準備 validation set（13 支，每類 1 個，從 Test split）
+    val_samples = prepare_training_data(split="Test", n_frames=n_frames, max_per_category=1)
+    logger.info(f"Validation set: {len(val_samples)} 支")
 
     logger.info(f"Step 4: 開始訓練 — {epochs} epochs, {len(samples)} samples, lr={lr}")
 
@@ -218,6 +228,7 @@ def finetune(
         random.shuffle(samples)
         epoch_loss = 0.0
         n_steps = 0
+        cat_losses: Dict[str, List[float]] = {c: [] for c in CRIME_CATEGORIES}
 
         for i, sample in enumerate(samples):
             cat = sample["category"]
@@ -270,25 +281,56 @@ def finetune(
             )
             optimizer.step()
 
-            epoch_loss += loss.item()
+            step_loss = loss.item()
+            epoch_loss += step_loss
             n_steps += 1
+            global_step += 1
+            cat_losses[cat].append(step_loss)
+            training_log["step_losses"].append({
+                "step": global_step, "loss": round(step_loss, 4), "category": cat,
+            })
 
-            if (i + 1) % 50 == 0:
+            if (i + 1) % 20 == 0:
                 avg = epoch_loss / n_steps
-                logger.info(f"  Epoch {epoch+1} [{i+1}/{len(samples)}] loss={avg:.4f}")
+                elapsed = time.time() - total_start
+                logger.info(
+                    f"  Epoch {epoch+1} [{i+1}/{len(samples)}] "
+                    f"loss={avg:.4f} step_loss={step_loss:.4f} "
+                    f"({elapsed/60:.1f}min)"
+                )
 
+        # Epoch 統計
         avg_loss = epoch_loss / max(n_steps, 1)
         elapsed = time.time() - total_start
-        log_entry = {
+
+        # Per-category loss
+        cat_avg = {c: round(sum(v)/len(v), 4) if v else 0.0 for c, v in cat_losses.items()}
+        training_log["cat_losses"].append({"epoch": epoch + 1, **cat_avg})
+
+        # Validation：快速跑 13 支 test 看分類準確率
+        val_acc = _validate(model, processor, val_samples, categories_str)
+        training_log["val_accuracy"].append({
+            "epoch": epoch + 1, "accuracy": val_acc,
+        })
+
+        training_log["epoch_losses"].append({
             "epoch": epoch + 1,
             "loss": round(avg_loss, 4),
             "elapsed_min": round(elapsed / 60, 1),
-        }
-        training_log.append(log_entry)
+            "val_accuracy": val_acc,
+        })
         logger.info(
             f"Epoch {epoch+1}/{epochs} | loss={avg_loss:.4f} | "
-            f"elapsed={elapsed/60:.1f}min"
+            f"val_acc={val_acc:.1%} | elapsed={elapsed/60:.1f}min"
         )
+        logger.info(f"  Per-cat loss: {cat_avg}")
+
+        # 每 epoch 更新視覺化（可即時查看）
+        _plot_training(training_log, OUTPUT_DIR)
+
+        # 每 epoch 儲存 log（斷電也不丟）
+        with open(OUTPUT_DIR / "training_log.json", "w") as f:
+            json.dump(training_log, f, indent=2, ensure_ascii=False)
 
     # Step 5: 儲存 adapter
     adapter_dir = OUTPUT_DIR / "adapter_model"
@@ -296,37 +338,162 @@ def finetune(
     processor.save_pretrained(str(adapter_dir))
     logger.info(f"LoRA adapter → {adapter_dir}")
 
-    # 儲存 log
-    with open(OUTPUT_DIR / "training_log.json", "w") as f:
-        json.dump(training_log, f, indent=2)
-
-    # 視覺化
-    _plot_training(training_log, OUTPUT_DIR)
-
     total_elapsed = time.time() - total_start
     logger.info(f"Fine-tune 完成！{total_elapsed/60:.1f} 分鐘")
 
 
+def _validate(model, processor, val_samples, categories_str):
+    """快速 validation：跑 val_samples 看分類準確率。"""
+    import re
+    correct = 0
+    total = 0
+
+    for sample in val_samples:
+        cat = sample["category"]
+        frames = sample["frames"]
+
+        prompt = (
+            f"You are a forensic surveillance video analyst.\n"
+            f"Look at these frames from a CCTV video and determine what crime is occurring.\n\n"
+            f"Choose ONE category from: {categories_str}\n\n"
+            f"Reply with ONLY: CATEGORY: <name>"
+        )
+
+        messages = [{
+            "role": "user",
+            "content": [
+                *[{"type": "image", "image": img} for img in frames],
+                {"type": "text", "text": prompt},
+            ],
+        }]
+
+        try:
+            inputs = processor.apply_chat_template(
+                messages, tokenize=True, add_generation_prompt=True,
+                return_dict=True, return_tensors="pt",
+            ).to(model.device)
+
+            with torch.no_grad():
+                out = model.generate(**inputs, max_new_tokens=32, temperature=0.1, do_sample=False)
+            resp = processor.decode(out[0, inputs["input_ids"].shape[1]:], skip_special_tokens=True).strip()
+            resp = re.sub(r"<think>.*?</think>\s*", "", resp, flags=re.DOTALL).strip()
+
+            # 解析
+            m = re.search(r"CATEGORY:\s*(\w+)", resp, re.IGNORECASE)
+            if m:
+                pred = m.group(1)
+                for c in CRIME_CATEGORIES:
+                    if c.lower() == pred.lower():
+                        if c == cat:
+                            correct += 1
+                        break
+            total += 1
+        except Exception:
+            total += 1
+
+    return correct / max(total, 1)
+
+
 def _plot_training(log, output_dir):
+    """4-panel training dashboard，每 epoch 更新。"""
     try:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        import numpy as np
+    except ImportError:
+        return
 
-        epochs = [e["epoch"] for e in log]
-        losses = [e["loss"] for e in log]
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+    fig.suptitle("QLoRA Fine-tune Dashboard: Qwen3-VL-32B on UCF-Crime", fontsize=14, fontweight="bold")
 
-        fig, ax = plt.subplots(figsize=(8, 5))
-        ax.plot(epochs, losses, "b-o", linewidth=2)
+    # 1. Step-level Loss（每個訓練步的 loss）
+    ax = axes[0, 0]
+    step_data = log.get("step_losses", [])
+    if step_data:
+        steps = [s["step"] for s in step_data]
+        losses = [s["loss"] for s in step_data]
+        ax.plot(steps, losses, "b-", alpha=0.3, linewidth=0.5)
+        # 滑動平均
+        window = min(20, len(losses))
+        if window > 1:
+            smooth = np.convolve(losses, np.ones(window)/window, mode="valid")
+            ax.plot(steps[window-1:], smooth, "r-", linewidth=2, label=f"MA-{window}")
+            ax.legend()
+    ax.set_xlabel("Step")
+    ax.set_ylabel("Loss")
+    ax.set_title("Step Loss (raw + moving avg)")
+    ax.grid(True, alpha=0.3)
+
+    # 2. Epoch Loss + Validation Accuracy（雙 Y 軸）
+    ax = axes[0, 1]
+    epoch_data = log.get("epoch_losses", [])
+    if epoch_data:
+        epochs = [e["epoch"] for e in epoch_data]
+        ep_losses = [e["loss"] for e in epoch_data]
+        ax.plot(epochs, ep_losses, "b-o", linewidth=2, label="Train Loss")
+        ax.set_xlabel("Epoch")
+        ax.set_ylabel("Loss", color="blue")
+        ax.tick_params(axis="y", labelcolor="blue")
+
+        # 右軸：validation accuracy
+        val_data = log.get("val_accuracy", [])
+        if val_data:
+            ax2 = ax.twinx()
+            val_acc = [v["accuracy"] for v in val_data]
+            ax2.plot(epochs[:len(val_acc)], val_acc, "g-s", linewidth=2, label="Val Accuracy")
+            ax2.set_ylabel("Accuracy", color="green")
+            ax2.tick_params(axis="y", labelcolor="green")
+            ax2.set_ylim(0, 1)
+            ax2.legend(loc="center right")
+    ax.set_title("Epoch Loss + Validation Accuracy")
+    ax.legend(loc="center left")
+    ax.grid(True, alpha=0.3)
+
+    # 3. Per-Category Loss（每類的 loss 變化）
+    ax = axes[1, 0]
+    cat_data = log.get("cat_losses", [])
+    if cat_data:
+        categories = [c for c in cat_data[0].keys() if c != "epoch"]
+        epochs = [e["epoch"] for e in cat_data]
+        colors = plt.cm.tab20(np.linspace(0, 1, len(categories)))
+        for cat, color in zip(sorted(categories), colors):
+            values = [e.get(cat, 0) for e in cat_data]
+            if any(v > 0 for v in values):
+                ax.plot(epochs, values, "-o", color=color, linewidth=1.5, markersize=4, label=cat)
         ax.set_xlabel("Epoch")
         ax.set_ylabel("Loss")
-        ax.set_title("QLoRA Fine-tune: Qwen3-VL-32B on UCF-Crime")
+        ax.set_title("Per-Category Loss")
+        ax.legend(fontsize=7, ncol=2, loc="upper right")
         ax.grid(True, alpha=0.3)
-        plt.tight_layout()
-        fig.savefig(output_dir / "training_curves.png", dpi=150)
-        plt.close(fig)
-    except ImportError:
-        pass
+
+    # 4. Step Loss 分布（histogram）
+    ax = axes[1, 1]
+    if step_data:
+        # 按 epoch 分組的 loss 分布
+        epoch_nums = sorted(set(
+            1 + s["step"] // max(len(step_data) // max(len(epoch_data), 1), 1)
+            for s in step_data
+        ))
+        n_epochs = len(log.get("epoch_losses", []))
+        if n_epochs > 0:
+            steps_per_epoch = len(step_data) // n_epochs
+            for ep in range(n_epochs):
+                start = ep * steps_per_epoch
+                end = start + steps_per_epoch
+                ep_losses = [s["loss"] for s in step_data[start:end]]
+                if ep_losses:
+                    ax.hist(ep_losses, bins=30, alpha=0.5, label=f"Epoch {ep+1}")
+        ax.set_xlabel("Loss")
+        ax.set_ylabel("Count")
+        ax.set_title("Loss Distribution per Epoch")
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    fig.savefig(output_dir / "training_curves.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"Dashboard → {output_dir / 'training_curves.png'}")
 
 
 if __name__ == "__main__":
