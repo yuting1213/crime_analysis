@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Multi-agent LLM system for forensic crime video analysis. Uses Qwen3-VL-8B-Instruct as unified VLM for both crime classification and forensic report generation. Combines vision models (R3D-18, ViT) for MIL Head pre-screening, Qwen3-VL-8B-Instruct (local VLM, classification + report), Gemini 2.0 Flash (judge), hierarchical RAG over Taiwan Criminal Code (刑法), and DPO alignment. Targets the UCF-Crime dataset with UCA temporal annotations. Scope is limited to Taiwan criminal law. All models run locally on RTX 5090 — no API tokens required for inference.
+Multi-agent LLM system for forensic crime video analysis. Uses Qwen3-VL-32B-Instruct (QLoRA INT4) as unified VLM for crime classification and forensic report generation. Combines vision models (R3D-18, ViT) for MIL Head pre-screening, Qwen3-VL (local VLM, classification + report), Gemini 2.0 Flash (judge), hierarchical RAG over Taiwan Criminal Code (刑法), and DPO alignment. Targets the UCF-Crime dataset with UCA temporal annotations. Scope is limited to Taiwan criminal law. All models run locally on RTX 5090 — no API tokens required for inference.
 
 ## Setup & Commands
 
@@ -181,10 +181,64 @@ cfg.training.batch_size = 16             # VRAM < 16GB
 cfg.training.num_workers = 2             # CPU 核心少時降低
 ```
 
+## Experimental Results (2026-04-07)
+
+### Classification Accuracy (52 test videos, zero-shot)
+
+| Model | Accuracy | Notes |
+|-------|----------|-------|
+| **Gemini 2.5 Flash** | **51.9% (27/52)** | Commercial API baseline |
+| 8B + 32B Ensemble | 40.4% (21/52) | Best local ensemble |
+| Qwen3-VL-32B INT4 | 32.7% (17/52) | Robbery bias (21/52 predictions) |
+| Qwen3-VL-8B standalone | 30.8% (16/52) | Best single local model |
+| Pipeline (8B, fixed) | ≈30.8% | Matches standalone after fixes |
+| Gemma-4-E4B | 21.2% (11/52) | Too small |
+| MIL Head only | 15.4% (4/26) | Shooting/Explosion bias |
+| InternVL3-8B | 0% (0/13) | Incompatible with task |
+
+### MIL + VLM Ensemble Analysis (26 videos)
+
+| Method | Accuracy |
+|--------|----------|
+| MIL Head only | 15.4% (4/26) |
+| VLM (8B) only | 34.6% (9/26) |
+| **MIL + VLM Ensemble** | **42.3% (11/26)** |
+
+Complementarity: 2 both-right, 2 MIL-only, 7 VLM-only, 15 both-wrong.
+
+### Pipeline Metrics (Pilot, 52 videos)
+
+| Metric | Ours | Gemini |
+|--------|------|--------|
+| Racc | 25.0% | 51.9% |
+| **Rlegal** | **0.956** | 0.000 |
+| Rcons | 0.905 | 1.000 |
+| Report quality | Qwen3-VL with frames | Gemini direct |
+| Local deployment | ✅ | ❌ |
+
+### Key Findings
+
+1. **Pipeline no longer hurts classification** — fixed MIL rationale poisoning, Reflector override, prompt length issues
+2. **VLM systematic bias**: Qwen3-VL-8B over-predicts Robbery (6/13) and Burglary (3/13)
+3. **Frame count**: 8 frames > 16 frames (attention dilution confirmed)
+4. **Prompt length**: Simple prompt > detailed/decision-tree prompt
+5. **Rlegal fix effective**: Two-tier scoring (article numbers + elements) no longer always 1.0
+6. **QLoRA fine-tune in progress**: Qwen3-VL-32B on UCF-Crime training set, expected 50-65%
+
+### Systematic Confusion Pairs (15 both-wrong cases)
+
+```
+VLM wrong predictions: Robbery (6x), Burglary (5x), Vandalism (2x)
+Top confusions:
+  Assault/Fighting → Robbery (4x)  — violence misread as theft
+  Arson/Arrest/Stealing → Burglary (3x) — scene misread as break-in
+  8 cross-group errors, 7 within-group errors
+```
+
 ## Design Decisions
 
 - `action_agent.py`, `time_emotion_agent.py`, `semantic_agent.py` have been **removed**; use `action_emotion_agent.py` (early-fusion, 1386D → 512D)
-- **Qwen3-VL-8B-Instruct** is the unified VLM — replaces both Qwen2.5-VL (classification) and Qwen3-8B (text-only report). One model, two tasks, loaded once.
+- **Qwen3-VL-32B-Instruct (QLoRA INT4)** is the target unified VLM. Currently using 8B for pipeline, 32B for fine-tuning.
 - Planner is intentionally **not** an LLM to avoid task-scheduling hallucinations
 - MIL Head provides fast pre-screening; VLM overrides classification in Step 2b
 - Feature extraction uses **StandardScaler** (mean/std saved in `feature_scaler.npz`) to normalize cross-modality scale differences

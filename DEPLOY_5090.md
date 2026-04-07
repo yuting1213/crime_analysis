@@ -110,27 +110,33 @@ python -m scripts.pilot_experiment --n_samples 154 --split Test --seed 42 --no-v
 #   outputs/confusion_matrix.png          — 分類混淆矩陣
 ```
 
-## 8. 5090 專屬：Qwen3-VL 視覺分類+報告
-
-5090 才能跑的功能（需要 ~16GB VRAM）：
+## 8. QLoRA Fine-tune Qwen3-VL-32B（提升分類準確率）
 
 ```bash
-# 確認 Qwen3-VL 能載入
-python -c "
-from agents.planner import PlannerAgent
-p = PlannerAgent.__new__(PlannerAgent)
-p._report_model = None
-p._report_tokenizer = None
-p._load_report_model()
-print('Qwen3-VL-8B loaded successfully')
-"
+# Fine-tune（需要 ~24GB VRAM，3-5 小時）
+# 使用 tmux 避免斷線中斷
+tmux new -s finetune -d "cd ~/crime_analysis/crime_analysis && \
+  unset SSL_CERT_FILE && export TF_CPP_MIN_LOG_LEVEL=3 && \
+  $HOME/miniconda3/envs/crime/bin/python -m scripts.finetune_vlm \
+  --epochs 3 --n_frames 4 --max_per_category 50 2>&1 | tee finetune.log"
+
+# 看進度
+tail -f ~/crime_analysis/crime_analysis/finetune.log
+
+# 產出：outputs/vlm_finetune/adapter_model/（LoRA adapter）
 ```
 
-Qwen3-VL 統一負責：
-- **Step 2b**：看 4 張關鍵幀 → zero-shot 犯罪分類（覆核 MIL Head）
-- **Step 3b**：帶幀生成繁體中文鑑定報告（含法律構成要件分析）
+Fine-tune 後的分類準確率預期 50-65%（超越 Gemini 2.5 Flash 的 51.9%）。
 
-## 9. DPO 訓練（可選，需要 Gemini API key）
+## 9. Gemini Baseline（實驗一）
+
+```bash
+export GEMINI_API_KEY="your-key"
+python -m scripts.run_gemini_baseline --n_samples 52 --split Test --seed 42
+# 結果：51.9% accuracy, outputs/experiments/gemini_baseline/
+```
+
+## 10. DPO 訓練（可選，需要 Gemini API key）
 
 ```bash
 # 唯一需要 API key 的功能（用 Gemini 做偏好對比較）
@@ -173,13 +179,14 @@ OS:        WSL2 (Ubuntu)
 
 | 模型 | 用途 | VRAM | API Key |
 |------|------|------|---------|
-| Qwen3-VL-8B-Instruct | 分類 + 報告 | ~16GB | 不需要 |
+| Qwen3-VL-32B-Instruct (INT4) | 分類 + 報告（fine-tuned） | ~18GB | 不需要 |
+| Qwen3-VL-8B-Instruct | 分類 + 報告（fallback） | ~16GB | 不需要 |
 | R3D-18 (torchvision) | 行為特徵提取 | ~45MB | 不需要 |
 | ViT-Base | 視覺語意特徵 | ~340MB | 不需要 |
 | BGE-M3 | RAG 向量檢索 | ~2.2GB | 不需要 |
 | MediaPipe Pose | 姿態特徵 | CPU only | 不需要 |
 | DeepFace | 情緒特徵 | CPU only | 不需要 |
-| Gemini 2.0 Flash | DPO Judge | Cloud | `GEMINI_API_KEY`（僅 DPO） |
+| Gemini 2.5 Flash | Baseline + DPO Judge | Cloud | `GEMINI_API_KEY` |
 
 ## 訓練參數（已調優）
 
@@ -195,13 +202,23 @@ OS:        WSL2 (Ubuntu)
 | class_weights | 自動計算 | Explosion 6.3x, RoadAccidents 0.4x |
 | feature_version | v4 | R3D(無L2norm) + ViT + Pose + Emotion + StandardScaler |
 
+## 分類準確率實驗結果（2026-04-07）
+
+| Model | Accuracy (52 videos) | Notes |
+|-------|---------------------|-------|
+| Gemini 2.5 Flash (API) | 51.9% | Commercial baseline |
+| 8B + 32B Ensemble | 40.4% | Best local combo |
+| Qwen3-VL-32B INT4 | 32.7% | Zero-shot |
+| Qwen3-VL-8B | 30.8% | Pipeline default |
+| QLoRA fine-tuned 32B | ⏳ TBD | Expected 50-65% |
+
 ## 環境差異注意
 
 | 項目 | 3060 (12GB) | 5090 (32GB) |
 |------|-------------|-------------|
 | Qwen3-VL-8B | 無法載入 | **BF16 可跑（~16GB）** |
+| Qwen3-VL-32B | 無法載入 | **INT4 可跑（~18GB）** |
+| QLoRA fine-tune 32B | 無法 | **INT4 + LoRA（~24GB）** |
 | MIL Head 分類 | 僅 MIL Head | **MIL + VLM 覆核** |
 | 報告生成 | fallback（結構化模板） | **Qwen3-VL 帶幀生成** |
-| batch_size (MIL) | 16 | **32** |
 | DPO 訓練 | 不可 | **可以** |
-| 4/4 模態推理 | 可能 OOM | **充裕** |
