@@ -1,0 +1,93 @@
+[
+  {
+    "video_id": "Abuse037_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Arrest043_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Arson020_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Assault027_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Burglary065_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Explosion007_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Fighting039_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "RoadAccidents109_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Robbery085_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Shooting033_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Shoplifting034_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Stealing078_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  },
+  {
+    "video_id": "Vandalism031_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "'InternVLModel' object has no attribute 'generate'"
+  }
+]

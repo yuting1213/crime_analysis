@@ -12,7 +12,7 @@ class ModelConfig:
     planner_model: str = "gpt-4o"                      # Planner 使用 GPT-4o
     embedding_model: str = "BAAI/bge-m3"               # BGE-M3 中文向量
     device: str = "cuda"
-    max_new_tokens: int = 1024
+    max_new_tokens: int = 2048  # 繁中鑑定報告需要 2000+ tokens
     temperature: float = 0.7
     # ── RTX 5090 優化參數 ──
     torch_dtype: str = "bfloat16"          # Blackwell 原生 BF16，吞吐量遠高於 FP32

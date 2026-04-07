@@ -315,11 +315,13 @@ class PlannerAgent:
         if hasattr(self, '_last_audit') and self._last_audit:
             conflict_detail = f"- 衝突層：{self._last_audit.conflict_layer}"
 
+        # 不傳 MIL Head 的 rationale（常有錯誤分類描述，會誤導 VLM 報告生成）
+        # VLM 直接根據影片幀 + RAG 法條 + VLM 自己的分類來寫報告
         report_messages = build_report_prompt(
             case_id=case_id,
             crime_type=crime_type,
             confidence=ae_confidence,
-            rationale=ae_report.metadata.get("rationale", "") if ae_report else "",
+            rationale="",  # 留空，讓 VLM 根據影片內容自行分析
             rag_results=rag_results,
             conflict_type="NONE",
             rcons=0.0,
@@ -751,39 +753,33 @@ class PlannerAgent:
         import torch, re, cv2
         from PIL import Image as PILImage
 
+        # 簡潔 prompt（跟 standalone 診斷一致，長 prompt 反而降低準確率）
         categories_str = ", ".join(UCF_CATEGORIES)
         prompt = (
-            "You are a forensic surveillance video analyst specializing in UCF-Crime dataset.\n"
-            "Watch this CCTV footage carefully and determine what crime is occurring.\n"
-            "Pay close attention to MOTION and ACTIONS, not just static scenes.\n\n"
+            "You are a forensic surveillance video analyst.\n"
+            "Look at these frames from a CCTV video and determine what crime is occurring.\n\n"
             f"Choose ONE category from: {categories_str}\n\n"
-            "Category definitions with key motion cues:\n\n"
-            "- Assault: One person ATTACKING another — punching, kicking, pushing. One-sided aggression.\n"
-            "- Robbery: Threatening someone to FORCIBLY TAKE their belongings. Look for weapon or struggle over items.\n"
-            "- Stealing: SECRETLY taking items when owner is away. No confrontation, thief acts casually.\n"
-            "- Shoplifting: In a STORE, concealing merchandise, leaving without paying.\n"
-            "- Burglary: BREAKING INTO a building/house/car. Forced entry — smashing windows, prying doors.\n"
-            "- Fighting: TWO OR MORE people in MUTUAL combat — BOTH sides throwing punches/kicks.\n"
-            "- Arson: Deliberately SETTING FIRE. Flames growing, person near ignition point.\n"
-            "- Explosion: SUDDEN BLAST — smoke, debris, shockwave. Instant destruction.\n"
-            "- RoadAccidents: VEHICLE COLLISION or hitting pedestrian/animal. Damaged vehicles, skid marks.\n"
-            "- Vandalism: Deliberately DAMAGING PROPERTY — smashing, spray painting, breaking objects.\n"
-            "- Abuse: SUSTAINED harm to vulnerable person. REPEATED hitting over time, victim helpless.\n"
-            "- Shooting: GUNFIRE — weapon visible, muzzle flash, victim collapsing, people fleeing.\n"
-            "- Arrest: LAW ENFORCEMENT restraining suspect — handcuffs, police vehicles, uniforms.\n\n"
-            "KEY DISTINCTIONS:\n"
-            "- Fighting = MUTUAL combat (both fight) vs Assault = ONE-SIDED attack\n"
-            "- Robbery = FORCE + TAKING items vs Stealing = SECRET taking\n"
-            "- Burglary = BREAKING IN vs Stealing = already inside\n"
-            "- Abuse = REPEATED over time vs Assault = single incident\n\n"
-            "Reply in this exact format:\n"
-            "CATEGORY: <name>\nCONFIDENCE: <0.0-1.0>\nREASON: <one sentence explaining what you see>"
+            "Category definitions:\n"
+            "- Assault: One person attacking another (one-sided)\n"
+            "- Robbery: Forcibly taking someone's belongings\n"
+            "- Stealing: Secretly taking items\n"
+            "- Shoplifting: Concealing store merchandise\n"
+            "- Burglary: Breaking into a building/car\n"
+            "- Fighting: Mutual physical combat (both sides)\n"
+            "- Arson: Deliberately setting fire\n"
+            "- Explosion: Sudden blast with smoke/debris\n"
+            "- RoadAccidents: Vehicle collision\n"
+            "- Vandalism: Deliberately damaging property\n"
+            "- Abuse: Sustained harm to vulnerable person\n"
+            "- Shooting: Gunfire, weapon visible\n"
+            "- Arrest: Law enforcement restraining suspect\n\n"
+            "Reply with ONLY: CATEGORY: <name>"
         )
 
         # UCA 引導抽幀：70% 犯罪時段 + 30% 背景
         video_path = (video_metadata or {}).get("video_path", "")
         uca_segments = (video_metadata or {}).get("uca_segments", [])
-        n_keyframes = 16
+        n_keyframes = 8  # 8 幀比 16 幀準確率更高（standalone 診斷確認）
         keyframes = _extract_uca_guided_frames(video_path, uca_segments, n_keyframes, cv2, PILImage)
         if keyframes:
             logger.info(f"[VLM classify] UCA 引導抽取 {len(keyframes)} 幀：{Path(video_path).name}")
