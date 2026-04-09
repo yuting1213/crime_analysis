@@ -1,0 +1,6928 @@
+{
+  "step_losses": [
+    {
+      "step": 1,
+      "loss": 16.6019,
+      "category": "Fighting"
+    },
+    {
+      "step": 2,
+      "loss": 16.3222,
+      "category": "Stealing"
+    },
+    {
+      "step": 3,
+      "loss": 17.4168,
+      "category": "Robbery"
+    },
+    {
+      "step": 4,
+      "loss": 18.6183,
+      "category": "Robbery"
+    },
+    {
+      "step": 5,
+      "loss": 17.7561,
+      "category": "Vandalism"
+    },
+    {
+      "step": 6,
+      "loss": 16.6665,
+      "category": "Arson"
+    },
+    {
+      "step": 7,
+      "loss": 18.2771,
+      "category": "Stealing"
+    },
+    {
+      "step": 8,
+      "loss": 18.6307,
+      "category": "Stealing"
+    },
+    {
+      "step": 9,
+      "loss": 17.1804,
+      "category": "Robbery"
+    },
+    {
+      "step": 10,
+      "loss": 15.9447,
+      "category": "Shooting"
+    },
+    {
+      "step": 11,
+      "loss": 16.2141,
+      "category": "Fighting"
+    },
+    {
+      "step": 12,
+      "loss": 18.1104,
+      "category": "Fighting"
+    },
+    {
+      "step": 13,
+      "loss": 15.9326,
+      "category": "Shooting"
+    },
+    {
+      "step": 14,
+      "loss": 17.1107,
+      "category": "Vandalism"
+    },
+    {
+      "step": 15,
+      "loss": 15.663,
+      "category": "Burglary"
+    },
+    {
+      "step": 16,
+      "loss": 18.5367,
+      "category": "Stealing"
+    },
+    {
+      "step": 17,
+      "loss": 16.0464,
+      "category": "Stealing"
+    },
+    {
+      "step": 18,
+      "loss": 15.3878,
+      "category": "Explosion"
+    },
+    {
+      "step": 19,
+      "loss": 15.7461,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 20,
+      "loss": 15.1984,
+      "category": "Fighting"
+    },
+    {
+      "step": 21,
+      "loss": 14.7487,
+      "category": "Robbery"
+    },
+    {
+      "step": 22,
+      "loss": 15.9102,
+      "category": "Robbery"
+    },
+    {
+      "step": 23,
+      "loss": 16.4541,
+      "category": "Burglary"
+    },
+    {
+      "step": 24,
+      "loss": 15.5527,
+      "category": "Robbery"
+    },
+    {
+      "step": 25,
+      "loss": 12.5109,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 26,
+      "loss": 13.8514,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 27,
+      "loss": 14.6949,
+      "category": "Assault"
+    },
+    {
+      "step": 28,
+      "loss": 14.581,
+      "category": "Robbery"
+    },
+    {
+      "step": 29,
+      "loss": 14.6282,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 30,
+      "loss": 13.8508,
+      "category": "Vandalism"
+    },
+    {
+      "step": 31,
+      "loss": 13.7285,
+      "category": "Vandalism"
+    },
+    {
+      "step": 32,
+      "loss": 13.7673,
+      "category": "Shooting"
+    },
+    {
+      "step": 33,
+      "loss": 13.9288,
+      "category": "Abuse"
+    },
+    {
+      "step": 34,
+      "loss": 12.7189,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 35,
+      "loss": 14.3025,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 36,
+      "loss": 13.9174,
+      "category": "Stealing"
+    },
+    {
+      "step": 37,
+      "loss": 13.2455,
+      "category": "Shooting"
+    },
+    {
+      "step": 38,
+      "loss": 12.9923,
+      "category": "Robbery"
+    },
+    {
+      "step": 39,
+      "loss": 12.7261,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 40,
+      "loss": 13.7696,
+      "category": "Shooting"
+    },
+    {
+      "step": 41,
+      "loss": 13.2887,
+      "category": "Burglary"
+    },
+    {
+      "step": 42,
+      "loss": 12.3231,
+      "category": "Robbery"
+    },
+    {
+      "step": 43,
+      "loss": 12.5313,
+      "category": "Arson"
+    },
+    {
+      "step": 44,
+      "loss": 12.3952,
+      "category": "Robbery"
+    },
+    {
+      "step": 45,
+      "loss": 12.3267,
+      "category": "Fighting"
+    },
+    {
+      "step": 46,
+      "loss": 12.1698,
+      "category": "Fighting"
+    },
+    {
+      "step": 47,
+      "loss": 12.0098,
+      "category": "Fighting"
+    },
+    {
+      "step": 48,
+      "loss": 11.7098,
+      "category": "Robbery"
+    },
+    {
+      "step": 49,
+      "loss": 11.957,
+      "category": "Assault"
+    },
+    {
+      "step": 50,
+      "loss": 11.599,
+      "category": "Arson"
+    },
+    {
+      "step": 51,
+      "loss": 11.6681,
+      "category": "Burglary"
+    },
+    {
+      "step": 52,
+      "loss": 11.442,
+      "category": "Burglary"
+    },
+    {
+      "step": 53,
+      "loss": 12.9418,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 54,
+      "loss": 10.8544,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 55,
+      "loss": 10.5023,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 56,
+      "loss": 10.8321,
+      "category": "Fighting"
+    },
+    {
+      "step": 57,
+      "loss": 11.477,
+      "category": "Fighting"
+    },
+    {
+      "step": 58,
+      "loss": 10.4923,
+      "category": "Robbery"
+    },
+    {
+      "step": 59,
+      "loss": 10.2769,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 60,
+      "loss": 9.7243,
+      "category": "Stealing"
+    },
+    {
+      "step": 61,
+      "loss": 10.2229,
+      "category": "Burglary"
+    },
+    {
+      "step": 62,
+      "loss": 9.3733,
+      "category": "Vandalism"
+    },
+    {
+      "step": 63,
+      "loss": 9.2324,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 64,
+      "loss": 9.4605,
+      "category": "Shooting"
+    },
+    {
+      "step": 65,
+      "loss": 8.9924,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 66,
+      "loss": 8.7687,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 67,
+      "loss": 9.1666,
+      "category": "Fighting"
+    },
+    {
+      "step": 68,
+      "loss": 9.0082,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 69,
+      "loss": 8.8143,
+      "category": "Robbery"
+    },
+    {
+      "step": 70,
+      "loss": 8.4448,
+      "category": "Abuse"
+    },
+    {
+      "step": 71,
+      "loss": 8.8123,
+      "category": "Arson"
+    },
+    {
+      "step": 72,
+      "loss": 8.7767,
+      "category": "Arrest"
+    },
+    {
+      "step": 73,
+      "loss": 8.507,
+      "category": "Fighting"
+    },
+    {
+      "step": 74,
+      "loss": 8.4031,
+      "category": "Stealing"
+    },
+    {
+      "step": 75,
+      "loss": 8.3055,
+      "category": "Stealing"
+    },
+    {
+      "step": 76,
+      "loss": 7.8165,
+      "category": "Vandalism"
+    },
+    {
+      "step": 77,
+      "loss": 8.0168,
+      "category": "Burglary"
+    },
+    {
+      "step": 78,
+      "loss": 8.0204,
+      "category": "Burglary"
+    },
+    {
+      "step": 79,
+      "loss": 7.9282,
+      "category": "Robbery"
+    },
+    {
+      "step": 80,
+      "loss": 7.9678,
+      "category": "Abuse"
+    },
+    {
+      "step": 81,
+      "loss": 6.9501,
+      "category": "Arrest"
+    },
+    {
+      "step": 82,
+      "loss": 7.7403,
+      "category": "Burglary"
+    },
+    {
+      "step": 83,
+      "loss": 7.6762,
+      "category": "Robbery"
+    },
+    {
+      "step": 84,
+      "loss": 7.6341,
+      "category": "Burglary"
+    },
+    {
+      "step": 85,
+      "loss": 7.2143,
+      "category": "Vandalism"
+    },
+    {
+      "step": 86,
+      "loss": 7.5221,
+      "category": "Arson"
+    },
+    {
+      "step": 87,
+      "loss": 7.4217,
+      "category": "Burglary"
+    },
+    {
+      "step": 88,
+      "loss": 7.3671,
+      "category": "Assault"
+    },
+    {
+      "step": 89,
+      "loss": 7.3239,
+      "category": "Shooting"
+    },
+    {
+      "step": 90,
+      "loss": 7.2264,
+      "category": "Robbery"
+    },
+    {
+      "step": 91,
+      "loss": 7.1715,
+      "category": "Robbery"
+    },
+    {
+      "step": 92,
+      "loss": 6.8407,
+      "category": "Arrest"
+    },
+    {
+      "step": 93,
+      "loss": 7.0985,
+      "category": "Robbery"
+    },
+    {
+      "step": 94,
+      "loss": 7.0701,
+      "category": "Vandalism"
+    },
+    {
+      "step": 95,
+      "loss": 7.0037,
+      "category": "Assault"
+    },
+    {
+      "step": 96,
+      "loss": 6.7067,
+      "category": "Abuse"
+    },
+    {
+      "step": 97,
+      "loss": 6.6099,
+      "category": "Shooting"
+    },
+    {
+      "step": 98,
+      "loss": 6.5738,
+      "category": "Burglary"
+    },
+    {
+      "step": 99,
+      "loss": 6.8389,
+      "category": "Burglary"
+    },
+    {
+      "step": 100,
+      "loss": 6.8177,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 101,
+      "loss": 6.514,
+      "category": "Fighting"
+    },
+    {
+      "step": 102,
+      "loss": 6.7751,
+      "category": "Stealing"
+    },
+    {
+      "step": 103,
+      "loss": 6.7393,
+      "category": "Burglary"
+    },
+    {
+      "step": 104,
+      "loss": 6.6983,
+      "category": "Robbery"
+    },
+    {
+      "step": 105,
+      "loss": 6.6746,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 106,
+      "loss": 6.6506,
+      "category": "Fighting"
+    },
+    {
+      "step": 107,
+      "loss": 6.2722,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 108,
+      "loss": 6.5912,
+      "category": "Burglary"
+    },
+    {
+      "step": 109,
+      "loss": 6.6088,
+      "category": "Fighting"
+    },
+    {
+      "step": 110,
+      "loss": 6.2931,
+      "category": "Abuse"
+    },
+    {
+      "step": 111,
+      "loss": 6.562,
+      "category": "Arson"
+    },
+    {
+      "step": 112,
+      "loss": 6.5395,
+      "category": "Arrest"
+    },
+    {
+      "step": 113,
+      "loss": 6.5001,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 114,
+      "loss": 6.4918,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 115,
+      "loss": 6.4828,
+      "category": "Assault"
+    },
+    {
+      "step": 116,
+      "loss": 6.4455,
+      "category": "Robbery"
+    },
+    {
+      "step": 117,
+      "loss": 6.41,
+      "category": "Burglary"
+    },
+    {
+      "step": 118,
+      "loss": 6.0603,
+      "category": "Arrest"
+    },
+    {
+      "step": 119,
+      "loss": 6.4177,
+      "category": "Abuse"
+    },
+    {
+      "step": 120,
+      "loss": 6.3858,
+      "category": "Fighting"
+    },
+    {
+      "step": 121,
+      "loss": 6.3394,
+      "category": "Burglary"
+    },
+    {
+      "step": 122,
+      "loss": 6.3688,
+      "category": "Abuse"
+    },
+    {
+      "step": 123,
+      "loss": 5.9291,
+      "category": "Stealing"
+    },
+    {
+      "step": 124,
+      "loss": 6.3252,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 125,
+      "loss": 6.3542,
+      "category": "Abuse"
+    },
+    {
+      "step": 126,
+      "loss": 5.908,
+      "category": "Stealing"
+    },
+    {
+      "step": 127,
+      "loss": 6.3261,
+      "category": "Fighting"
+    },
+    {
+      "step": 128,
+      "loss": 5.9144,
+      "category": "Arrest"
+    },
+    {
+      "step": 129,
+      "loss": 5.9102,
+      "category": "Shooting"
+    },
+    {
+      "step": 130,
+      "loss": 6.246,
+      "category": "Vandalism"
+    },
+    {
+      "step": 131,
+      "loss": 5.2898,
+      "category": "Arrest"
+    },
+    {
+      "step": 132,
+      "loss": 6.2615,
+      "category": "Stealing"
+    },
+    {
+      "step": 133,
+      "loss": 5.8732,
+      "category": "Abuse"
+    },
+    {
+      "step": 134,
+      "loss": 6.2722,
+      "category": "Arrest"
+    },
+    {
+      "step": 135,
+      "loss": 6.2401,
+      "category": "Burglary"
+    },
+    {
+      "step": 136,
+      "loss": 5.892,
+      "category": "Abuse"
+    },
+    {
+      "step": 137,
+      "loss": 6.2274,
+      "category": "Burglary"
+    },
+    {
+      "step": 138,
+      "loss": 5.8295,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 139,
+      "loss": 6.2347,
+      "category": "Robbery"
+    },
+    {
+      "step": 140,
+      "loss": 6.2215,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 141,
+      "loss": 6.2564,
+      "category": "Fighting"
+    },
+    {
+      "step": 142,
+      "loss": 5.8661,
+      "category": "Fighting"
+    },
+    {
+      "step": 143,
+      "loss": 5.8342,
+      "category": "Stealing"
+    },
+    {
+      "step": 144,
+      "loss": 5.861,
+      "category": "Fighting"
+    },
+    {
+      "step": 145,
+      "loss": 6.2255,
+      "category": "Stealing"
+    },
+    {
+      "step": 146,
+      "loss": 6.2554,
+      "category": "Arrest"
+    },
+    {
+      "step": 147,
+      "loss": 5.1595,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 148,
+      "loss": 5.8253,
+      "category": "Stealing"
+    },
+    {
+      "step": 149,
+      "loss": 5.8793,
+      "category": "Arrest"
+    },
+    {
+      "step": 150,
+      "loss": 6.2091,
+      "category": "Burglary"
+    },
+    {
+      "step": 151,
+      "loss": 5.8424,
+      "category": "Arrest"
+    },
+    {
+      "step": 152,
+      "loss": 6.2299,
+      "category": "Arson"
+    },
+    {
+      "step": 153,
+      "loss": 6.2105,
+      "category": "Vandalism"
+    },
+    {
+      "step": 154,
+      "loss": 6.2112,
+      "category": "Stealing"
+    },
+    {
+      "step": 155,
+      "loss": 6.2327,
+      "category": "Arrest"
+    },
+    {
+      "step": 156,
+      "loss": 6.2224,
+      "category": "Assault"
+    },
+    {
+      "step": 157,
+      "loss": 6.224,
+      "category": "Fighting"
+    },
+    {
+      "step": 158,
+      "loss": 6.1998,
+      "category": "Vandalism"
+    },
+    {
+      "step": 159,
+      "loss": 6.1928,
+      "category": "Burglary"
+    },
+    {
+      "step": 160,
+      "loss": 6.1897,
+      "category": "Burglary"
+    },
+    {
+      "step": 161,
+      "loss": 5.8142,
+      "category": "Vandalism"
+    },
+    {
+      "step": 162,
+      "loss": 5.7952,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 163,
+      "loss": 5.8121,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 164,
+      "loss": 5.8081,
+      "category": "Vandalism"
+    },
+    {
+      "step": 165,
+      "loss": 5.809,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 166,
+      "loss": 6.1847,
+      "category": "Burglary"
+    },
+    {
+      "step": 167,
+      "loss": 5.8268,
+      "category": "Fighting"
+    },
+    {
+      "step": 168,
+      "loss": 6.1996,
+      "category": "Stealing"
+    },
+    {
+      "step": 169,
+      "loss": 5.8124,
+      "category": "Stealing"
+    },
+    {
+      "step": 170,
+      "loss": 5.8012,
+      "category": "Stealing"
+    },
+    {
+      "step": 171,
+      "loss": 5.8088,
+      "category": "Stealing"
+    },
+    {
+      "step": 172,
+      "loss": 5.8224,
+      "category": "Arrest"
+    },
+    {
+      "step": 173,
+      "loss": 5.8011,
+      "category": "Robbery"
+    },
+    {
+      "step": 174,
+      "loss": 5.8267,
+      "category": "Abuse"
+    },
+    {
+      "step": 175,
+      "loss": 6.203,
+      "category": "Arson"
+    },
+    {
+      "step": 176,
+      "loss": 5.8347,
+      "category": "Shooting"
+    },
+    {
+      "step": 177,
+      "loss": 5.8232,
+      "category": "Shooting"
+    },
+    {
+      "step": 178,
+      "loss": 5.8286,
+      "category": "Shooting"
+    },
+    {
+      "step": 179,
+      "loss": 6.2085,
+      "category": "Shooting"
+    },
+    {
+      "step": 180,
+      "loss": 6.1797,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 181,
+      "loss": 5.795,
+      "category": "Stealing"
+    },
+    {
+      "step": 182,
+      "loss": 6.1813,
+      "category": "Vandalism"
+    },
+    {
+      "step": 183,
+      "loss": 5.817,
+      "category": "Fighting"
+    },
+    {
+      "step": 184,
+      "loss": 6.2104,
+      "category": "Arrest"
+    },
+    {
+      "step": 185,
+      "loss": 6.1755,
+      "category": "Burglary"
+    },
+    {
+      "step": 186,
+      "loss": 5.7963,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 187,
+      "loss": 6.2026,
+      "category": "Assault"
+    },
+    {
+      "step": 188,
+      "loss": 6.185,
+      "category": "Robbery"
+    },
+    {
+      "step": 189,
+      "loss": 6.1838,
+      "category": "Stealing"
+    },
+    {
+      "step": 190,
+      "loss": 6.1906,
+      "category": "Robbery"
+    },
+    {
+      "step": 191,
+      "loss": 6.2104,
+      "category": "Abuse"
+    },
+    {
+      "step": 192,
+      "loss": 6.1743,
+      "category": "Burglary"
+    },
+    {
+      "step": 193,
+      "loss": 6.2057,
+      "category": "Abuse"
+    },
+    {
+      "step": 194,
+      "loss": 5.8155,
+      "category": "Shooting"
+    },
+    {
+      "step": 195,
+      "loss": 5.7779,
+      "category": "Vandalism"
+    },
+    {
+      "step": 196,
+      "loss": 6.1852,
+      "category": "Arson"
+    },
+    {
+      "step": 197,
+      "loss": 6.1997,
+      "category": "Assault"
+    },
+    {
+      "step": 198,
+      "loss": 6.2044,
+      "category": "Assault"
+    },
+    {
+      "step": 199,
+      "loss": 6.1661,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 200,
+      "loss": 6.2,
+      "category": "Arrest"
+    },
+    {
+      "step": 201,
+      "loss": 5.8029,
+      "category": "Arrest"
+    },
+    {
+      "step": 202,
+      "loss": 5.7701,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 203,
+      "loss": 5.1781,
+      "category": "Arrest"
+    },
+    {
+      "step": 204,
+      "loss": 5.7886,
+      "category": "Stealing"
+    },
+    {
+      "step": 205,
+      "loss": 6.1958,
+      "category": "Assault"
+    },
+    {
+      "step": 206,
+      "loss": 5.7937,
+      "category": "Robbery"
+    },
+    {
+      "step": 207,
+      "loss": 6.1866,
+      "category": "Stealing"
+    },
+    {
+      "step": 208,
+      "loss": 5.8017,
+      "category": "Abuse"
+    },
+    {
+      "step": 209,
+      "loss": 6.1697,
+      "category": "Burglary"
+    },
+    {
+      "step": 210,
+      "loss": 6.1818,
+      "category": "Stealing"
+    },
+    {
+      "step": 211,
+      "loss": 5.7653,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 212,
+      "loss": 6.1783,
+      "category": "Robbery"
+    },
+    {
+      "step": 213,
+      "loss": 5.7821,
+      "category": "Stealing"
+    },
+    {
+      "step": 214,
+      "loss": 6.1636,
+      "category": "Burglary"
+    },
+    {
+      "step": 215,
+      "loss": 6.19,
+      "category": "Fighting"
+    },
+    {
+      "step": 216,
+      "loss": 6.1656,
+      "category": "Burglary"
+    },
+    {
+      "step": 217,
+      "loss": 5.1921,
+      "category": "Arrest"
+    },
+    {
+      "step": 218,
+      "loss": 6.175,
+      "category": "Robbery"
+    },
+    {
+      "step": 219,
+      "loss": 5.7663,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 220,
+      "loss": 5.7696,
+      "category": "Vandalism"
+    },
+    {
+      "step": 221,
+      "loss": 5.7871,
+      "category": "Stealing"
+    },
+    {
+      "step": 222,
+      "loss": 6.1911,
+      "category": "Fighting"
+    },
+    {
+      "step": 223,
+      "loss": 5.7863,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 224,
+      "loss": 5.8015,
+      "category": "Fighting"
+    },
+    {
+      "step": 225,
+      "loss": 6.1587,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 226,
+      "loss": 6.1641,
+      "category": "Burglary"
+    },
+    {
+      "step": 227,
+      "loss": 5.7812,
+      "category": "Stealing"
+    },
+    {
+      "step": 228,
+      "loss": 6.1593,
+      "category": "Burglary"
+    },
+    {
+      "step": 229,
+      "loss": 5.8115,
+      "category": "Abuse"
+    },
+    {
+      "step": 230,
+      "loss": 5.7597,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 231,
+      "loss": 6.1616,
+      "category": "Vandalism"
+    },
+    {
+      "step": 232,
+      "loss": 5.7805,
+      "category": "Stealing"
+    },
+    {
+      "step": 233,
+      "loss": 6.174,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 234,
+      "loss": 6.1719,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 235,
+      "loss": 6.177,
+      "category": "Robbery"
+    },
+    {
+      "step": 236,
+      "loss": 6.1879,
+      "category": "Shooting"
+    },
+    {
+      "step": 237,
+      "loss": 6.1735,
+      "category": "Robbery"
+    },
+    {
+      "step": 238,
+      "loss": 6.1873,
+      "category": "Abuse"
+    },
+    {
+      "step": 239,
+      "loss": 6.1724,
+      "category": "Robbery"
+    },
+    {
+      "step": 240,
+      "loss": 5.798,
+      "category": "Arrest"
+    },
+    {
+      "step": 241,
+      "loss": 5.7969,
+      "category": "Abuse"
+    },
+    {
+      "step": 242,
+      "loss": 6.1867,
+      "category": "Abuse"
+    },
+    {
+      "step": 243,
+      "loss": 6.1883,
+      "category": "Assault"
+    },
+    {
+      "step": 244,
+      "loss": 6.1783,
+      "category": "Robbery"
+    },
+    {
+      "step": 245,
+      "loss": 5.7582,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 246,
+      "loss": 6.1528,
+      "category": "Burglary"
+    },
+    {
+      "step": 247,
+      "loss": 6.155,
+      "category": "Burglary"
+    },
+    {
+      "step": 248,
+      "loss": 6.1711,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 249,
+      "loss": 6.1724,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 250,
+      "loss": 6.1698,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 251,
+      "loss": 5.7552,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 252,
+      "loss": 6.1843,
+      "category": "Assault"
+    },
+    {
+      "step": 253,
+      "loss": 6.1784,
+      "category": "Abuse"
+    },
+    {
+      "step": 254,
+      "loss": 5.7765,
+      "category": "Stealing"
+    },
+    {
+      "step": 255,
+      "loss": 5.7786,
+      "category": "Stealing"
+    },
+    {
+      "step": 256,
+      "loss": 6.1676,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 257,
+      "loss": 6.1561,
+      "category": "Burglary"
+    },
+    {
+      "step": 258,
+      "loss": 6.1728,
+      "category": "Arson"
+    },
+    {
+      "step": 259,
+      "loss": 5.7735,
+      "category": "Stealing"
+    },
+    {
+      "step": 260,
+      "loss": 6.1798,
+      "category": "Assault"
+    },
+    {
+      "step": 261,
+      "loss": 6.1534,
+      "category": "Vandalism"
+    },
+    {
+      "step": 262,
+      "loss": 6.1857,
+      "category": "Shooting"
+    },
+    {
+      "step": 263,
+      "loss": 5.7801,
+      "category": "Arson"
+    },
+    {
+      "step": 264,
+      "loss": 6.1487,
+      "category": "Burglary"
+    },
+    {
+      "step": 265,
+      "loss": 5.7933,
+      "category": "Assault"
+    },
+    {
+      "step": 266,
+      "loss": 6.1798,
+      "category": "Assault"
+    },
+    {
+      "step": 267,
+      "loss": 6.1634,
+      "category": "Stealing"
+    },
+    {
+      "step": 268,
+      "loss": 6.1681,
+      "category": "Robbery"
+    },
+    {
+      "step": 269,
+      "loss": 5.7612,
+      "category": "Vandalism"
+    },
+    {
+      "step": 270,
+      "loss": 6.1641,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 271,
+      "loss": 6.1486,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 272,
+      "loss": 6.1821,
+      "category": "Abuse"
+    },
+    {
+      "step": 273,
+      "loss": 5.1801,
+      "category": "Arrest"
+    },
+    {
+      "step": 274,
+      "loss": 5.7905,
+      "category": "Shooting"
+    },
+    {
+      "step": 275,
+      "loss": 5.795,
+      "category": "Fighting"
+    },
+    {
+      "step": 276,
+      "loss": 5.7678,
+      "category": "Robbery"
+    },
+    {
+      "step": 277,
+      "loss": 5.7702,
+      "category": "Robbery"
+    },
+    {
+      "step": 278,
+      "loss": 6.1677,
+      "category": "Robbery"
+    },
+    {
+      "step": 279,
+      "loss": 5.7502,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 280,
+      "loss": 5.8156,
+      "category": "Explosion"
+    },
+    {
+      "step": 281,
+      "loss": 5.7913,
+      "category": "Fighting"
+    },
+    {
+      "step": 282,
+      "loss": 6.1827,
+      "category": "Shooting"
+    },
+    {
+      "step": 283,
+      "loss": 5.7861,
+      "category": "Fighting"
+    },
+    {
+      "step": 284,
+      "loss": 6.182,
+      "category": "Arrest"
+    },
+    {
+      "step": 285,
+      "loss": 6.1526,
+      "category": "Burglary"
+    },
+    {
+      "step": 286,
+      "loss": 6.1638,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 287,
+      "loss": 6.1471,
+      "category": "Burglary"
+    },
+    {
+      "step": 288,
+      "loss": 6.1776,
+      "category": "Assault"
+    },
+    {
+      "step": 289,
+      "loss": 6.164,
+      "category": "Stealing"
+    },
+    {
+      "step": 290,
+      "loss": 6.1486,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 291,
+      "loss": 6.1641,
+      "category": "Robbery"
+    },
+    {
+      "step": 292,
+      "loss": 5.7741,
+      "category": "Robbery"
+    },
+    {
+      "step": 293,
+      "loss": 5.8049,
+      "category": "Abuse"
+    },
+    {
+      "step": 294,
+      "loss": 6.1705,
+      "category": "Arson"
+    },
+    {
+      "step": 295,
+      "loss": 6.1682,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 296,
+      "loss": 6.1575,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 297,
+      "loss": 5.7748,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 298,
+      "loss": 6.1772,
+      "category": "Shooting"
+    },
+    {
+      "step": 299,
+      "loss": 5.1694,
+      "category": "Arrest"
+    },
+    {
+      "step": 300,
+      "loss": 6.1447,
+      "category": "Burglary"
+    },
+    {
+      "step": 301,
+      "loss": 6.1738,
+      "category": "Fighting"
+    },
+    {
+      "step": 302,
+      "loss": 5.7845,
+      "category": "Fighting"
+    },
+    {
+      "step": 303,
+      "loss": 6.1757,
+      "category": "Fighting"
+    },
+    {
+      "step": 304,
+      "loss": 6.1817,
+      "category": "Arrest"
+    },
+    {
+      "step": 305,
+      "loss": 5.7476,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 306,
+      "loss": 6.1475,
+      "category": "Burglary"
+    },
+    {
+      "step": 307,
+      "loss": 5.7467,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 308,
+      "loss": 5.7481,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 309,
+      "loss": 5.7506,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 310,
+      "loss": 6.1436,
+      "category": "Burglary"
+    },
+    {
+      "step": 311,
+      "loss": 6.1781,
+      "category": "Shooting"
+    },
+    {
+      "step": 312,
+      "loss": 5.7822,
+      "category": "Shooting"
+    },
+    {
+      "step": 313,
+      "loss": 5.7578,
+      "category": "Vandalism"
+    },
+    {
+      "step": 314,
+      "loss": 5.7883,
+      "category": "Shooting"
+    },
+    {
+      "step": 315,
+      "loss": 6.1392,
+      "category": "Burglary"
+    },
+    {
+      "step": 316,
+      "loss": 5.7868,
+      "category": "Arrest"
+    },
+    {
+      "step": 317,
+      "loss": 6.1698,
+      "category": "Shooting"
+    },
+    {
+      "step": 318,
+      "loss": 6.1712,
+      "category": "Explosion"
+    },
+    {
+      "step": 319,
+      "loss": 5.7648,
+      "category": "Stealing"
+    },
+    {
+      "step": 320,
+      "loss": 5.1041,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 321,
+      "loss": 6.1426,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 322,
+      "loss": 5.7994,
+      "category": "Arrest"
+    },
+    {
+      "step": 323,
+      "loss": 6.1598,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 324,
+      "loss": 6.1432,
+      "category": "Burglary"
+    },
+    {
+      "step": 325,
+      "loss": 5.7658,
+      "category": "Stealing"
+    },
+    {
+      "step": 326,
+      "loss": 6.1436,
+      "category": "Vandalism"
+    },
+    {
+      "step": 327,
+      "loss": 5.1627,
+      "category": "Explosion"
+    },
+    {
+      "step": 328,
+      "loss": 5.7789,
+      "category": "Abuse"
+    },
+    {
+      "step": 329,
+      "loss": 5.7434,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 330,
+      "loss": 6.1425,
+      "category": "Burglary"
+    },
+    {
+      "step": 331,
+      "loss": 6.1526,
+      "category": "Robbery"
+    },
+    {
+      "step": 332,
+      "loss": 6.1383,
+      "category": "Burglary"
+    },
+    {
+      "step": 333,
+      "loss": 6.1499,
+      "category": "Vandalism"
+    },
+    {
+      "step": 334,
+      "loss": 5.7426,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 335,
+      "loss": 5.7772,
+      "category": "Abuse"
+    },
+    {
+      "step": 336,
+      "loss": 6.1671,
+      "category": "Shooting"
+    },
+    {
+      "step": 337,
+      "loss": 5.1104,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 338,
+      "loss": 5.7438,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 339,
+      "loss": 6.1679,
+      "category": "Arrest"
+    },
+    {
+      "step": 340,
+      "loss": 6.1701,
+      "category": "Abuse"
+    },
+    {
+      "step": 341,
+      "loss": 5.7619,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 342,
+      "loss": 5.7606,
+      "category": "Stealing"
+    },
+    {
+      "step": 343,
+      "loss": 5.7808,
+      "category": "Fighting"
+    },
+    {
+      "step": 344,
+      "loss": 6.1604,
+      "category": "Arson"
+    },
+    {
+      "step": 345,
+      "loss": 6.1695,
+      "category": "Explosion"
+    },
+    {
+      "step": 346,
+      "loss": 5.7548,
+      "category": "Arson"
+    },
+    {
+      "step": 347,
+      "loss": 6.1329,
+      "category": "Burglary"
+    },
+    {
+      "step": 348,
+      "loss": 6.1761,
+      "category": "Abuse"
+    },
+    {
+      "step": 349,
+      "loss": 6.1656,
+      "category": "Shooting"
+    },
+    {
+      "step": 350,
+      "loss": 6.1579,
+      "category": "Robbery"
+    },
+    {
+      "step": 351,
+      "loss": 5.1035,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 352,
+      "loss": 6.1614,
+      "category": "Fighting"
+    },
+    {
+      "step": 353,
+      "loss": 5.7597,
+      "category": "Stealing"
+    },
+    {
+      "step": 354,
+      "loss": 5.7348,
+      "category": "Vandalism"
+    },
+    {
+      "step": 355,
+      "loss": 6.1581,
+      "category": "Shooting"
+    },
+    {
+      "step": 356,
+      "loss": 6.1406,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 357,
+      "loss": 5.7594,
+      "category": "Arrest"
+    },
+    {
+      "step": 358,
+      "loss": 5.7591,
+      "category": "Arrest"
+    },
+    {
+      "step": 359,
+      "loss": 5.7588,
+      "category": "Abuse"
+    },
+    {
+      "step": 360,
+      "loss": 6.1399,
+      "category": "Arson"
+    },
+    {
+      "step": 361,
+      "loss": 5.7529,
+      "category": "Arrest"
+    },
+    {
+      "step": 362,
+      "loss": 5.7407,
+      "category": "Stealing"
+    },
+    {
+      "step": 363,
+      "loss": 5.7653,
+      "category": "Abuse"
+    },
+    {
+      "step": 364,
+      "loss": 6.1482,
+      "category": "Abuse"
+    },
+    {
+      "step": 365,
+      "loss": 5.7589,
+      "category": "Arrest"
+    },
+    {
+      "step": 366,
+      "loss": 5.7222,
+      "category": "Vandalism"
+    },
+    {
+      "step": 367,
+      "loss": 5.7211,
+      "category": "Vandalism"
+    },
+    {
+      "step": 368,
+      "loss": 6.1329,
+      "category": "Robbery"
+    },
+    {
+      "step": 369,
+      "loss": 6.1208,
+      "category": "Burglary"
+    },
+    {
+      "step": 370,
+      "loss": 6.1432,
+      "category": "Abuse"
+    },
+    {
+      "step": 371,
+      "loss": 6.1451,
+      "category": "Abuse"
+    },
+    {
+      "step": 372,
+      "loss": 6.1163,
+      "category": "Vandalism"
+    },
+    {
+      "step": 373,
+      "loss": 6.1296,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 374,
+      "loss": 6.1289,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 375,
+      "loss": 5.7592,
+      "category": "Shooting"
+    },
+    {
+      "step": 376,
+      "loss": 6.1133,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 377,
+      "loss": 6.1459,
+      "category": "Fighting"
+    },
+    {
+      "step": 378,
+      "loss": 6.1487,
+      "category": "Assault"
+    },
+    {
+      "step": 379,
+      "loss": 6.1478,
+      "category": "Assault"
+    },
+    {
+      "step": 380,
+      "loss": 6.1284,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 381,
+      "loss": 6.1183,
+      "category": "Vandalism"
+    },
+    {
+      "step": 382,
+      "loss": 6.1281,
+      "category": "Robbery"
+    },
+    {
+      "step": 383,
+      "loss": 6.1443,
+      "category": "Fighting"
+    },
+    {
+      "step": 384,
+      "loss": 5.7569,
+      "category": "Shooting"
+    },
+    {
+      "step": 385,
+      "loss": 5.7429,
+      "category": "Arson"
+    },
+    {
+      "step": 386,
+      "loss": 5.766,
+      "category": "Arrest"
+    },
+    {
+      "step": 387,
+      "loss": 6.1444,
+      "category": "Fighting"
+    },
+    {
+      "step": 388,
+      "loss": 6.1295,
+      "category": "Robbery"
+    },
+    {
+      "step": 389,
+      "loss": 6.1132,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 390,
+      "loss": 6.112,
+      "category": "Burglary"
+    },
+    {
+      "step": 391,
+      "loss": 5.1004,
+      "category": "Stealing"
+    },
+    {
+      "step": 392,
+      "loss": 5.7466,
+      "category": "Arrest"
+    },
+    {
+      "step": 393,
+      "loss": 6.1163,
+      "category": "Burglary"
+    },
+    {
+      "step": 394,
+      "loss": 5.7473,
+      "category": "Arrest"
+    },
+    {
+      "step": 395,
+      "loss": 6.1287,
+      "category": "Stealing"
+    },
+    {
+      "step": 396,
+      "loss": 6.1476,
+      "category": "Assault"
+    },
+    {
+      "step": 397,
+      "loss": 6.1265,
+      "category": "Robbery"
+    },
+    {
+      "step": 398,
+      "loss": 5.7211,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 399,
+      "loss": 6.1465,
+      "category": "Arrest"
+    },
+    {
+      "step": 400,
+      "loss": 6.1112,
+      "category": "Burglary"
+    },
+    {
+      "step": 401,
+      "loss": 6.1518,
+      "category": "Assault"
+    },
+    {
+      "step": 402,
+      "loss": 5.1237,
+      "category": "Arrest"
+    },
+    {
+      "step": 403,
+      "loss": 5.7786,
+      "category": "Explosion"
+    },
+    {
+      "step": 404,
+      "loss": 5.7127,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 405,
+      "loss": 6.1444,
+      "category": "Assault"
+    },
+    {
+      "step": 406,
+      "loss": 6.1306,
+      "category": "Stealing"
+    },
+    {
+      "step": 407,
+      "loss": 5.7202,
+      "category": "Vandalism"
+    },
+    {
+      "step": 408,
+      "loss": 5.7136,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 409,
+      "loss": 5.7126,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 410,
+      "loss": 6.1277,
+      "category": "Robbery"
+    },
+    {
+      "step": 411,
+      "loss": 5.7467,
+      "category": "Arrest"
+    },
+    {
+      "step": 412,
+      "loss": 5.7544,
+      "category": "Fighting"
+    },
+    {
+      "step": 413,
+      "loss": 5.1209,
+      "category": "Explosion"
+    },
+    {
+      "step": 414,
+      "loss": 5.7531,
+      "category": "Shooting"
+    },
+    {
+      "step": 415,
+      "loss": 6.1424,
+      "category": "Abuse"
+    },
+    {
+      "step": 416,
+      "loss": 6.152,
+      "category": "Shooting"
+    },
+    {
+      "step": 417,
+      "loss": 6.115,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 418,
+      "loss": 5.7337,
+      "category": "Stealing"
+    },
+    {
+      "step": 419,
+      "loss": 5.7464,
+      "category": "Abuse"
+    },
+    {
+      "step": 420,
+      "loss": 6.1271,
+      "category": "Robbery"
+    },
+    {
+      "step": 421,
+      "loss": 5.7365,
+      "category": "Stealing"
+    },
+    {
+      "step": 422,
+      "loss": 6.1249,
+      "category": "Robbery"
+    },
+    {
+      "step": 423,
+      "loss": 6.1421,
+      "category": "Abuse"
+    },
+    {
+      "step": 424,
+      "loss": 6.1296,
+      "category": "Robbery"
+    },
+    {
+      "step": 425,
+      "loss": 6.1301,
+      "category": "Arson"
+    },
+    {
+      "step": 426,
+      "loss": 5.7344,
+      "category": "Stealing"
+    },
+    {
+      "step": 427,
+      "loss": 5.7565,
+      "category": "Abuse"
+    },
+    {
+      "step": 428,
+      "loss": 6.1451,
+      "category": "Assault"
+    },
+    {
+      "step": 429,
+      "loss": 5.7523,
+      "category": "Arrest"
+    },
+    {
+      "step": 430,
+      "loss": 6.1267,
+      "category": "Arson"
+    },
+    {
+      "step": 431,
+      "loss": 5.0722,
+      "category": "Vandalism"
+    },
+    {
+      "step": 432,
+      "loss": 5.1103,
+      "category": "Arrest"
+    },
+    {
+      "step": 433,
+      "loss": 6.1451,
+      "category": "Assault"
+    },
+    {
+      "step": 434,
+      "loss": 5.7462,
+      "category": "Arrest"
+    },
+    {
+      "step": 435,
+      "loss": 5.7479,
+      "category": "Abuse"
+    },
+    {
+      "step": 436,
+      "loss": 6.1378,
+      "category": "Robbery"
+    },
+    {
+      "step": 437,
+      "loss": 5.7336,
+      "category": "Stealing"
+    },
+    {
+      "step": 438,
+      "loss": 6.1146,
+      "category": "Burglary"
+    },
+    {
+      "step": 439,
+      "loss": 6.138,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 440,
+      "loss": 5.7553,
+      "category": "Shooting"
+    },
+    {
+      "step": 441,
+      "loss": 6.1115,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 442,
+      "loss": 5.0618,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 443,
+      "loss": 5.0624,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 444,
+      "loss": 5.7156,
+      "category": "Vandalism"
+    },
+    {
+      "step": 445,
+      "loss": 5.7365,
+      "category": "Stealing"
+    },
+    {
+      "step": 446,
+      "loss": 6.142,
+      "category": "Assault"
+    },
+    {
+      "step": 447,
+      "loss": 6.1278,
+      "category": "Robbery"
+    },
+    {
+      "step": 448,
+      "loss": 6.1252,
+      "category": "Robbery"
+    },
+    {
+      "step": 449,
+      "loss": 5.7281,
+      "category": "Stealing"
+    },
+    {
+      "step": 450,
+      "loss": 6.1466,
+      "category": "Assault"
+    },
+    {
+      "step": 451,
+      "loss": 5.7544,
+      "category": "Arrest"
+    },
+    {
+      "step": 452,
+      "loss": 5.7287,
+      "category": "Stealing"
+    },
+    {
+      "step": 453,
+      "loss": 6.1406,
+      "category": "Abuse"
+    },
+    {
+      "step": 454,
+      "loss": 5.7555,
+      "category": "Arrest"
+    },
+    {
+      "step": 455,
+      "loss": 5.1171,
+      "category": "Arrest"
+    },
+    {
+      "step": 456,
+      "loss": 6.11,
+      "category": "Burglary"
+    },
+    {
+      "step": 457,
+      "loss": 6.1291,
+      "category": "Robbery"
+    },
+    {
+      "step": 458,
+      "loss": 6.1254,
+      "category": "Robbery"
+    },
+    {
+      "step": 459,
+      "loss": 6.1418,
+      "category": "Arrest"
+    },
+    {
+      "step": 460,
+      "loss": 5.1016,
+      "category": "Arrest"
+    },
+    {
+      "step": 461,
+      "loss": 6.1565,
+      "category": "Shooting"
+    },
+    {
+      "step": 462,
+      "loss": 5.7363,
+      "category": "Robbery"
+    },
+    {
+      "step": 463,
+      "loss": 5.7307,
+      "category": "Stealing"
+    },
+    {
+      "step": 464,
+      "loss": 6.1425,
+      "category": "Fighting"
+    },
+    {
+      "step": 465,
+      "loss": 6.1155,
+      "category": "Burglary"
+    },
+    {
+      "step": 466,
+      "loss": 6.1317,
+      "category": "Robbery"
+    },
+    {
+      "step": 467,
+      "loss": 5.7522,
+      "category": "Abuse"
+    },
+    {
+      "step": 468,
+      "loss": 5.7109,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 469,
+      "loss": 5.7406,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 470,
+      "loss": 5.7318,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 471,
+      "loss": 6.1439,
+      "category": "Shooting"
+    },
+    {
+      "step": 472,
+      "loss": 6.1443,
+      "category": "Fighting"
+    },
+    {
+      "step": 473,
+      "loss": 6.1286,
+      "category": "Robbery"
+    },
+    {
+      "step": 474,
+      "loss": 6.1426,
+      "category": "Abuse"
+    },
+    {
+      "step": 475,
+      "loss": 5.7269,
+      "category": "Robbery"
+    },
+    {
+      "step": 476,
+      "loss": 6.1436,
+      "category": "Assault"
+    },
+    {
+      "step": 477,
+      "loss": 6.1447,
+      "category": "Arrest"
+    },
+    {
+      "step": 478,
+      "loss": 6.1241,
+      "category": "Robbery"
+    },
+    {
+      "step": 479,
+      "loss": 5.7478,
+      "category": "Abuse"
+    },
+    {
+      "step": 480,
+      "loss": 6.1418,
+      "category": "Explosion"
+    },
+    {
+      "step": 481,
+      "loss": 5.7104,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 482,
+      "loss": 5.7602,
+      "category": "Shooting"
+    },
+    {
+      "step": 483,
+      "loss": 6.1223,
+      "category": "Robbery"
+    },
+    {
+      "step": 484,
+      "loss": 6.1286,
+      "category": "Stealing"
+    },
+    {
+      "step": 485,
+      "loss": 6.1456,
+      "category": "Assault"
+    },
+    {
+      "step": 486,
+      "loss": 5.71,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 487,
+      "loss": 6.1407,
+      "category": "Arrest"
+    },
+    {
+      "step": 488,
+      "loss": 6.1177,
+      "category": "Burglary"
+    },
+    {
+      "step": 489,
+      "loss": 6.1112,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 490,
+      "loss": 6.1115,
+      "category": "Burglary"
+    },
+    {
+      "step": 491,
+      "loss": 5.7195,
+      "category": "Vandalism"
+    },
+    {
+      "step": 492,
+      "loss": 6.132,
+      "category": "Arson"
+    },
+    {
+      "step": 493,
+      "loss": 5.7477,
+      "category": "Abuse"
+    },
+    {
+      "step": 494,
+      "loss": 5.7501,
+      "category": "Fighting"
+    },
+    {
+      "step": 495,
+      "loss": 6.1246,
+      "category": "Arson"
+    },
+    {
+      "step": 496,
+      "loss": 5.744,
+      "category": "Arrest"
+    },
+    {
+      "step": 497,
+      "loss": 5.709,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 498,
+      "loss": 6.137,
+      "category": "Arrest"
+    },
+    {
+      "step": 499,
+      "loss": 6.1103,
+      "category": "Burglary"
+    },
+    {
+      "step": 500,
+      "loss": 5.7479,
+      "category": "Assault"
+    },
+    {
+      "step": 501,
+      "loss": 6.1243,
+      "category": "Robbery"
+    },
+    {
+      "step": 502,
+      "loss": 6.1424,
+      "category": "Fighting"
+    },
+    {
+      "step": 503,
+      "loss": 6.1108,
+      "category": "Vandalism"
+    },
+    {
+      "step": 504,
+      "loss": 5.7562,
+      "category": "Shooting"
+    },
+    {
+      "step": 505,
+      "loss": 5.7612,
+      "category": "Explosion"
+    },
+    {
+      "step": 506,
+      "loss": 5.7482,
+      "category": "Shooting"
+    },
+    {
+      "step": 507,
+      "loss": 5.7425,
+      "category": "Abuse"
+    },
+    {
+      "step": 508,
+      "loss": 6.114,
+      "category": "Vandalism"
+    },
+    {
+      "step": 509,
+      "loss": 6.1431,
+      "category": "Arrest"
+    },
+    {
+      "step": 510,
+      "loss": 6.1435,
+      "category": "Abuse"
+    },
+    {
+      "step": 511,
+      "loss": 6.1293,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 512,
+      "loss": 6.1438,
+      "category": "Fighting"
+    },
+    {
+      "step": 513,
+      "loss": 5.7476,
+      "category": "Fighting"
+    },
+    {
+      "step": 514,
+      "loss": 6.1263,
+      "category": "Stealing"
+    },
+    {
+      "step": 515,
+      "loss": 6.1104,
+      "category": "Burglary"
+    },
+    {
+      "step": 516,
+      "loss": 5.742,
+      "category": "Arrest"
+    },
+    {
+      "step": 517,
+      "loss": 6.1107,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 518,
+      "loss": 5.7369,
+      "category": "Stealing"
+    },
+    {
+      "step": 519,
+      "loss": 6.1118,
+      "category": "Burglary"
+    },
+    {
+      "step": 520,
+      "loss": 6.1224,
+      "category": "Robbery"
+    },
+    {
+      "step": 521,
+      "loss": 6.1249,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 522,
+      "loss": 5.7076,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 523,
+      "loss": 6.1229,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 524,
+      "loss": 5.7108,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 525,
+      "loss": 5.7301,
+      "category": "Stealing"
+    },
+    {
+      "step": 526,
+      "loss": 6.1073,
+      "category": "Burglary"
+    },
+    {
+      "step": 527,
+      "loss": 6.1071,
+      "category": "Burglary"
+    },
+    {
+      "step": 528,
+      "loss": 5.7439,
+      "category": "Arrest"
+    },
+    {
+      "step": 529,
+      "loss": 5.7077,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 530,
+      "loss": 6.1137,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 531,
+      "loss": 6.1074,
+      "category": "Burglary"
+    },
+    {
+      "step": 532,
+      "loss": 6.1244,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 533,
+      "loss": 6.1548,
+      "category": "Abuse"
+    },
+    {
+      "step": 534,
+      "loss": 6.1119,
+      "category": "Vandalism"
+    },
+    {
+      "step": 535,
+      "loss": 6.1393,
+      "category": "Fighting"
+    },
+    {
+      "step": 536,
+      "loss": 6.1415,
+      "category": "Assault"
+    },
+    {
+      "step": 537,
+      "loss": 6.1274,
+      "category": "Arson"
+    },
+    {
+      "step": 538,
+      "loss": 6.1241,
+      "category": "Robbery"
+    },
+    {
+      "step": 539,
+      "loss": 5.7634,
+      "category": "Shooting"
+    },
+    {
+      "step": 540,
+      "loss": 5.7119,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 541,
+      "loss": 6.1291,
+      "category": "Arson"
+    },
+    {
+      "step": 542,
+      "loss": 6.1083,
+      "category": "Burglary"
+    },
+    {
+      "step": 543,
+      "loss": 6.1225,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 544,
+      "loss": 6.1447,
+      "category": "Abuse"
+    },
+    {
+      "step": 545,
+      "loss": 5.0745,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 546,
+      "loss": 6.1415,
+      "category": "Shooting"
+    },
+    {
+      "step": 547,
+      "loss": 6.1204,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 548,
+      "loss": 5.1041,
+      "category": "Arrest"
+    },
+    {
+      "step": 549,
+      "loss": 5.7505,
+      "category": "Shooting"
+    },
+    {
+      "step": 550,
+      "loss": 5.7126,
+      "category": "Vandalism"
+    },
+    {
+      "step": 551,
+      "loss": 6.1223,
+      "category": "Robbery"
+    },
+    {
+      "step": 552,
+      "loss": 6.1104,
+      "category": "Burglary"
+    },
+    {
+      "step": 553,
+      "loss": 5.7485,
+      "category": "Fighting"
+    },
+    {
+      "step": 554,
+      "loss": 5.7514,
+      "category": "Arrest"
+    },
+    {
+      "step": 555,
+      "loss": 6.1241,
+      "category": "Stealing"
+    },
+    {
+      "step": 556,
+      "loss": 5.7137,
+      "category": "Vandalism"
+    },
+    {
+      "step": 557,
+      "loss": 6.1124,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 558,
+      "loss": 6.1419,
+      "category": "Assault"
+    },
+    {
+      "step": 559,
+      "loss": 5.7291,
+      "category": "Stealing"
+    },
+    {
+      "step": 560,
+      "loss": 5.7485,
+      "category": "Fighting"
+    },
+    {
+      "step": 561,
+      "loss": 5.7306,
+      "category": "Arson"
+    },
+    {
+      "step": 562,
+      "loss": 5.7303,
+      "category": "Stealing"
+    },
+    {
+      "step": 563,
+      "loss": 6.1137,
+      "category": "Burglary"
+    },
+    {
+      "step": 564,
+      "loss": 5.7413,
+      "category": "Abuse"
+    },
+    {
+      "step": 565,
+      "loss": 5.7097,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 566,
+      "loss": 6.1102,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 567,
+      "loss": 5.7257,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 568,
+      "loss": 6.1213,
+      "category": "Stealing"
+    },
+    {
+      "step": 569,
+      "loss": 5.7064,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 570,
+      "loss": 5.747,
+      "category": "Shooting"
+    },
+    {
+      "step": 571,
+      "loss": 6.1392,
+      "category": "Arrest"
+    },
+    {
+      "step": 572,
+      "loss": 6.105,
+      "category": "Burglary"
+    },
+    {
+      "step": 573,
+      "loss": 6.1079,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 574,
+      "loss": 5.0722,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 575,
+      "loss": 5.7484,
+      "category": "Fighting"
+    },
+    {
+      "step": 576,
+      "loss": 5.7437,
+      "category": "Abuse"
+    },
+    {
+      "step": 577,
+      "loss": 6.1323,
+      "category": "Arson"
+    },
+    {
+      "step": 578,
+      "loss": 5.7513,
+      "category": "Shooting"
+    },
+    {
+      "step": 579,
+      "loss": 6.1417,
+      "category": "Arrest"
+    },
+    {
+      "step": 580,
+      "loss": 6.1387,
+      "category": "Shooting"
+    },
+    {
+      "step": 581,
+      "loss": 6.1163,
+      "category": "Vandalism"
+    },
+    {
+      "step": 582,
+      "loss": 6.1335,
+      "category": "Arson"
+    },
+    {
+      "step": 583,
+      "loss": 5.7428,
+      "category": "Shooting"
+    },
+    {
+      "step": 584,
+      "loss": 6.1057,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 585,
+      "loss": 6.1406,
+      "category": "Assault"
+    },
+    {
+      "step": 586,
+      "loss": 5.7149,
+      "category": "Vandalism"
+    },
+    {
+      "step": 587,
+      "loss": 5.7271,
+      "category": "Stealing"
+    },
+    {
+      "step": 588,
+      "loss": 5.749,
+      "category": "Arrest"
+    },
+    {
+      "step": 589,
+      "loss": 6.1107,
+      "category": "Burglary"
+    },
+    {
+      "step": 590,
+      "loss": 5.7447,
+      "category": "Arrest"
+    },
+    {
+      "step": 591,
+      "loss": 6.1219,
+      "category": "Robbery"
+    },
+    {
+      "step": 592,
+      "loss": 6.1275,
+      "category": "Robbery"
+    },
+    {
+      "step": 593,
+      "loss": 6.121,
+      "category": "Stealing"
+    },
+    {
+      "step": 594,
+      "loss": 6.1424,
+      "category": "Shooting"
+    },
+    {
+      "step": 595,
+      "loss": 5.7067,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 596,
+      "loss": 6.1393,
+      "category": "Arrest"
+    },
+    {
+      "step": 597,
+      "loss": 6.1055,
+      "category": "Burglary"
+    },
+    {
+      "step": 598,
+      "loss": 6.1499,
+      "category": "Assault"
+    },
+    {
+      "step": 599,
+      "loss": 5.736,
+      "category": "Stealing"
+    },
+    {
+      "step": 600,
+      "loss": 6.1045,
+      "category": "Burglary"
+    },
+    {
+      "step": 601,
+      "loss": 6.1093,
+      "category": "Vandalism"
+    },
+    {
+      "step": 602,
+      "loss": 5.0606,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 603,
+      "loss": 6.1347,
+      "category": "Fighting"
+    },
+    {
+      "step": 604,
+      "loss": 6.1382,
+      "category": "Assault"
+    },
+    {
+      "step": 605,
+      "loss": 6.1049,
+      "category": "Burglary"
+    },
+    {
+      "step": 606,
+      "loss": 6.1367,
+      "category": "Assault"
+    },
+    {
+      "step": 607,
+      "loss": 6.1236,
+      "category": "Robbery"
+    },
+    {
+      "step": 608,
+      "loss": 6.104,
+      "category": "Burglary"
+    },
+    {
+      "step": 609,
+      "loss": 6.1201,
+      "category": "Robbery"
+    },
+    {
+      "step": 610,
+      "loss": 6.1043,
+      "category": "Burglary"
+    },
+    {
+      "step": 611,
+      "loss": 6.1226,
+      "category": "Arson"
+    },
+    {
+      "step": 612,
+      "loss": 5.754,
+      "category": "Abuse"
+    },
+    {
+      "step": 613,
+      "loss": 5.7435,
+      "category": "Arrest"
+    },
+    {
+      "step": 614,
+      "loss": 5.714,
+      "category": "Vandalism"
+    },
+    {
+      "step": 615,
+      "loss": 6.1374,
+      "category": "Assault"
+    },
+    {
+      "step": 616,
+      "loss": 6.1051,
+      "category": "Burglary"
+    },
+    {
+      "step": 617,
+      "loss": 6.1205,
+      "category": "Vandalism"
+    },
+    {
+      "step": 618,
+      "loss": 6.1385,
+      "category": "Arrest"
+    },
+    {
+      "step": 619,
+      "loss": 6.1208,
+      "category": "Stealing"
+    },
+    {
+      "step": 620,
+      "loss": 6.1272,
+      "category": "Arson"
+    },
+    {
+      "step": 621,
+      "loss": 6.1272,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 622,
+      "loss": 6.1214,
+      "category": "Robbery"
+    },
+    {
+      "step": 623,
+      "loss": 5.7174,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 624,
+      "loss": 6.1189,
+      "category": "Robbery"
+    },
+    {
+      "step": 625,
+      "loss": 6.134,
+      "category": "Arrest"
+    },
+    {
+      "step": 626,
+      "loss": 6.1216,
+      "category": "Robbery"
+    },
+    {
+      "step": 627,
+      "loss": 6.1367,
+      "category": "Fighting"
+    },
+    {
+      "step": 628,
+      "loss": 6.1219,
+      "category": "Stealing"
+    },
+    {
+      "step": 629,
+      "loss": 6.1357,
+      "category": "Abuse"
+    },
+    {
+      "step": 630,
+      "loss": 5.7442,
+      "category": "Arrest"
+    },
+    {
+      "step": 631,
+      "loss": 5.7566,
+      "category": "Explosion"
+    },
+    {
+      "step": 632,
+      "loss": 6.1053,
+      "category": "Burglary"
+    },
+    {
+      "step": 633,
+      "loss": 5.1109,
+      "category": "Explosion"
+    },
+    {
+      "step": 634,
+      "loss": 6.1206,
+      "category": "Robbery"
+    },
+    {
+      "step": 635,
+      "loss": 5.7402,
+      "category": "Arrest"
+    },
+    {
+      "step": 636,
+      "loss": 5.7172,
+      "category": "Vandalism"
+    },
+    {
+      "step": 637,
+      "loss": 6.122,
+      "category": "Stealing"
+    },
+    {
+      "step": 638,
+      "loss": 5.7311,
+      "category": "Arson"
+    },
+    {
+      "step": 639,
+      "loss": 6.1197,
+      "category": "Robbery"
+    },
+    {
+      "step": 640,
+      "loss": 5.7234,
+      "category": "Robbery"
+    },
+    {
+      "step": 641,
+      "loss": 6.1226,
+      "category": "Arson"
+    },
+    {
+      "step": 642,
+      "loss": 5.7242,
+      "category": "Stealing"
+    },
+    {
+      "step": 643,
+      "loss": 5.7253,
+      "category": "Stealing"
+    },
+    {
+      "step": 644,
+      "loss": 5.7546,
+      "category": "Arrest"
+    },
+    {
+      "step": 645,
+      "loss": 5.7539,
+      "category": "Shooting"
+    },
+    {
+      "step": 646,
+      "loss": 6.1085,
+      "category": "Burglary"
+    },
+    {
+      "step": 647,
+      "loss": 6.1121,
+      "category": "Burglary"
+    },
+    {
+      "step": 648,
+      "loss": 5.7543,
+      "category": "Abuse"
+    },
+    {
+      "step": 649,
+      "loss": 6.1114,
+      "category": "Burglary"
+    },
+    {
+      "step": 650,
+      "loss": 6.1359,
+      "category": "Fighting"
+    },
+    {
+      "step": 651,
+      "loss": 6.1415,
+      "category": "Shooting"
+    },
+    {
+      "step": 652,
+      "loss": 6.1193,
+      "category": "Stealing"
+    },
+    {
+      "step": 653,
+      "loss": 5.7482,
+      "category": "Fighting"
+    },
+    {
+      "step": 654,
+      "loss": 6.1365,
+      "category": "Fighting"
+    },
+    {
+      "step": 655,
+      "loss": 6.1038,
+      "category": "Burglary"
+    },
+    {
+      "step": 656,
+      "loss": 6.1202,
+      "category": "Robbery"
+    },
+    {
+      "step": 657,
+      "loss": 6.1368,
+      "category": "Shooting"
+    },
+    {
+      "step": 658,
+      "loss": 6.1112,
+      "category": "Burglary"
+    },
+    {
+      "step": 659,
+      "loss": 6.1381,
+      "category": "Assault"
+    },
+    {
+      "step": 660,
+      "loss": 6.1047,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 661,
+      "loss": 5.7051,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 662,
+      "loss": 5.7479,
+      "category": "Shooting"
+    },
+    {
+      "step": 663,
+      "loss": 6.1267,
+      "category": "Arson"
+    },
+    {
+      "step": 664,
+      "loss": 5.0611,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 665,
+      "loss": 6.1354,
+      "category": "Abuse"
+    },
+    {
+      "step": 666,
+      "loss": 5.7474,
+      "category": "Shooting"
+    },
+    {
+      "step": 667,
+      "loss": 6.1375,
+      "category": "Fighting"
+    },
+    {
+      "step": 668,
+      "loss": 6.1061,
+      "category": "Burglary"
+    },
+    {
+      "step": 669,
+      "loss": 5.7435,
+      "category": "Fighting"
+    },
+    {
+      "step": 670,
+      "loss": 6.1035,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 671,
+      "loss": 5.1045,
+      "category": "Arrest"
+    },
+    {
+      "step": 672,
+      "loss": 5.7225,
+      "category": "Stealing"
+    },
+    {
+      "step": 673,
+      "loss": 5.7562,
+      "category": "Abuse"
+    },
+    {
+      "step": 674,
+      "loss": 5.7063,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 675,
+      "loss": 5.7447,
+      "category": "Abuse"
+    },
+    {
+      "step": 676,
+      "loss": 5.7239,
+      "category": "Stealing"
+    },
+    {
+      "step": 677,
+      "loss": 6.1391,
+      "category": "Abuse"
+    },
+    {
+      "step": 678,
+      "loss": 6.1355,
+      "category": "Abuse"
+    },
+    {
+      "step": 679,
+      "loss": 5.0519,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 680,
+      "loss": 6.1332,
+      "category": "Fighting"
+    },
+    {
+      "step": 681,
+      "loss": 6.1352,
+      "category": "Fighting"
+    },
+    {
+      "step": 682,
+      "loss": 6.1037,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 683,
+      "loss": 6.1409,
+      "category": "Assault"
+    },
+    {
+      "step": 684,
+      "loss": 5.714,
+      "category": "Vandalism"
+    },
+    {
+      "step": 685,
+      "loss": 6.1037,
+      "category": "Burglary"
+    },
+    {
+      "step": 686,
+      "loss": 5.0587,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 687,
+      "loss": 5.7116,
+      "category": "Vandalism"
+    },
+    {
+      "step": 688,
+      "loss": 5.7437,
+      "category": "Abuse"
+    },
+    {
+      "step": 689,
+      "loss": 6.1413,
+      "category": "Assault"
+    },
+    {
+      "step": 690,
+      "loss": 5.727,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 691,
+      "loss": 5.7502,
+      "category": "Arrest"
+    },
+    {
+      "step": 692,
+      "loss": 6.1048,
+      "category": "Burglary"
+    },
+    {
+      "step": 693,
+      "loss": 6.1267,
+      "category": "Robbery"
+    },
+    {
+      "step": 694,
+      "loss": 6.135,
+      "category": "Abuse"
+    },
+    {
+      "step": 695,
+      "loss": 6.1243,
+      "category": "Arson"
+    },
+    {
+      "step": 696,
+      "loss": 6.1438,
+      "category": "Assault"
+    },
+    {
+      "step": 697,
+      "loss": 6.1262,
+      "category": "Arson"
+    },
+    {
+      "step": 698,
+      "loss": 5.7396,
+      "category": "Arrest"
+    },
+    {
+      "step": 699,
+      "loss": 6.1206,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 700,
+      "loss": 6.126,
+      "category": "Arson"
+    },
+    {
+      "step": 701,
+      "loss": 6.1375,
+      "category": "Assault"
+    },
+    {
+      "step": 702,
+      "loss": 5.7066,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 703,
+      "loss": 6.142,
+      "category": "Shooting"
+    },
+    {
+      "step": 704,
+      "loss": 5.726,
+      "category": "Stealing"
+    },
+    {
+      "step": 705,
+      "loss": 5.7618,
+      "category": "Arrest"
+    },
+    {
+      "step": 706,
+      "loss": 5.7503,
+      "category": "Arrest"
+    },
+    {
+      "step": 707,
+      "loss": 5.7419,
+      "category": "Arrest"
+    },
+    {
+      "step": 708,
+      "loss": 6.1344,
+      "category": "Fighting"
+    },
+    {
+      "step": 709,
+      "loss": 6.1201,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 710,
+      "loss": 5.7053,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 711,
+      "loss": 6.1355,
+      "category": "Assault"
+    },
+    {
+      "step": 712,
+      "loss": 5.7128,
+      "category": "Vandalism"
+    },
+    {
+      "step": 713,
+      "loss": 6.1029,
+      "category": "Burglary"
+    },
+    {
+      "step": 714,
+      "loss": 6.1217,
+      "category": "Arson"
+    },
+    {
+      "step": 715,
+      "loss": 6.1067,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 716,
+      "loss": 5.7496,
+      "category": "Fighting"
+    },
+    {
+      "step": 717,
+      "loss": 6.1193,
+      "category": "Stealing"
+    },
+    {
+      "step": 718,
+      "loss": 5.7476,
+      "category": "Abuse"
+    },
+    {
+      "step": 719,
+      "loss": 5.102,
+      "category": "Arrest"
+    },
+    {
+      "step": 720,
+      "loss": 5.7068,
+      "category": "Burglary"
+    },
+    {
+      "step": 721,
+      "loss": 6.1361,
+      "category": "Assault"
+    },
+    {
+      "step": 722,
+      "loss": 6.1218,
+      "category": "Stealing"
+    },
+    {
+      "step": 723,
+      "loss": 6.1186,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 724,
+      "loss": 6.1353,
+      "category": "Abuse"
+    },
+    {
+      "step": 725,
+      "loss": 6.1397,
+      "category": "Abuse"
+    },
+    {
+      "step": 726,
+      "loss": 6.1192,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 727,
+      "loss": 5.7213,
+      "category": "Stealing"
+    },
+    {
+      "step": 728,
+      "loss": 5.7472,
+      "category": "Abuse"
+    },
+    {
+      "step": 729,
+      "loss": 6.1075,
+      "category": "Vandalism"
+    },
+    {
+      "step": 730,
+      "loss": 6.1374,
+      "category": "Assault"
+    },
+    {
+      "step": 731,
+      "loss": 5.1026,
+      "category": "Arrest"
+    },
+    {
+      "step": 732,
+      "loss": 6.1245,
+      "category": "Robbery"
+    },
+    {
+      "step": 733,
+      "loss": 5.7103,
+      "category": "Vandalism"
+    },
+    {
+      "step": 734,
+      "loss": 6.1176,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 735,
+      "loss": 5.7514,
+      "category": "Shooting"
+    },
+    {
+      "step": 736,
+      "loss": 6.1188,
+      "category": "Robbery"
+    },
+    {
+      "step": 737,
+      "loss": 6.118,
+      "category": "Robbery"
+    },
+    {
+      "step": 738,
+      "loss": 6.1063,
+      "category": "Burglary"
+    },
+    {
+      "step": 739,
+      "loss": 6.1195,
+      "category": "Stealing"
+    },
+    {
+      "step": 740,
+      "loss": 6.121,
+      "category": "Robbery"
+    },
+    {
+      "step": 741,
+      "loss": 6.1047,
+      "category": "Burglary"
+    },
+    {
+      "step": 742,
+      "loss": 6.1065,
+      "category": "Burglary"
+    },
+    {
+      "step": 743,
+      "loss": 5.7454,
+      "category": "Fighting"
+    },
+    {
+      "step": 744,
+      "loss": 6.1085,
+      "category": "Burglary"
+    },
+    {
+      "step": 745,
+      "loss": 5.7168,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 746,
+      "loss": 6.1212,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 747,
+      "loss": 5.7494,
+      "category": "Arrest"
+    },
+    {
+      "step": 748,
+      "loss": 5.7233,
+      "category": "Stealing"
+    },
+    {
+      "step": 749,
+      "loss": 6.1173,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 750,
+      "loss": 5.7242,
+      "category": "Stealing"
+    },
+    {
+      "step": 751,
+      "loss": 6.1171,
+      "category": "Robbery"
+    },
+    {
+      "step": 752,
+      "loss": 6.1203,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 753,
+      "loss": 6.1434,
+      "category": "Assault"
+    },
+    {
+      "step": 754,
+      "loss": 5.059,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 755,
+      "loss": 6.1188,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 756,
+      "loss": 5.7234,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 757,
+      "loss": 6.1421,
+      "category": "Fighting"
+    },
+    {
+      "step": 758,
+      "loss": 5.7465,
+      "category": "Shooting"
+    },
+    {
+      "step": 759,
+      "loss": 5.7217,
+      "category": "Stealing"
+    },
+    {
+      "step": 760,
+      "loss": 6.1179,
+      "category": "Robbery"
+    },
+    {
+      "step": 761,
+      "loss": 6.1211,
+      "category": "Robbery"
+    },
+    {
+      "step": 762,
+      "loss": 6.1207,
+      "category": "Robbery"
+    },
+    {
+      "step": 763,
+      "loss": 6.1324,
+      "category": "Fighting"
+    },
+    {
+      "step": 764,
+      "loss": 6.1051,
+      "category": "Burglary"
+    },
+    {
+      "step": 765,
+      "loss": 6.1315,
+      "category": "Abuse"
+    },
+    {
+      "step": 766,
+      "loss": 5.7514,
+      "category": "Stealing"
+    },
+    {
+      "step": 767,
+      "loss": 5.7129,
+      "category": "Vandalism"
+    },
+    {
+      "step": 768,
+      "loss": 6.1042,
+      "category": "Vandalism"
+    },
+    {
+      "step": 769,
+      "loss": 5.7067,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 770,
+      "loss": 5.7658,
+      "category": "Fighting"
+    },
+    {
+      "step": 771,
+      "loss": 5.7391,
+      "category": "Arrest"
+    },
+    {
+      "step": 772,
+      "loss": 6.1218,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 773,
+      "loss": 6.1393,
+      "category": "Shooting"
+    },
+    {
+      "step": 774,
+      "loss": 5.7277,
+      "category": "Robbery"
+    },
+    {
+      "step": 775,
+      "loss": 6.1337,
+      "category": "Abuse"
+    },
+    {
+      "step": 776,
+      "loss": 5.7302,
+      "category": "Stealing"
+    },
+    {
+      "step": 777,
+      "loss": 5.7051,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 778,
+      "loss": 5.7254,
+      "category": "Stealing"
+    },
+    {
+      "step": 779,
+      "loss": 6.1221,
+      "category": "Robbery"
+    },
+    {
+      "step": 780,
+      "loss": 6.1202,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 781,
+      "loss": 5.7217,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 782,
+      "loss": 5.7271,
+      "category": "Stealing"
+    },
+    {
+      "step": 783,
+      "loss": 6.1231,
+      "category": "Stealing"
+    },
+    {
+      "step": 784,
+      "loss": 6.1347,
+      "category": "Shooting"
+    },
+    {
+      "step": 785,
+      "loss": 6.1359,
+      "category": "Abuse"
+    },
+    {
+      "step": 786,
+      "loss": 6.1206,
+      "category": "Robbery"
+    },
+    {
+      "step": 787,
+      "loss": 6.1379,
+      "category": "Assault"
+    },
+    {
+      "step": 788,
+      "loss": 6.1048,
+      "category": "Vandalism"
+    },
+    {
+      "step": 789,
+      "loss": 5.7448,
+      "category": "Fighting"
+    },
+    {
+      "step": 790,
+      "loss": 6.1035,
+      "category": "Burglary"
+    },
+    {
+      "step": 791,
+      "loss": 6.1171,
+      "category": "Robbery"
+    },
+    {
+      "step": 792,
+      "loss": 5.7285,
+      "category": "Stealing"
+    },
+    {
+      "step": 793,
+      "loss": 5.0763,
+      "category": "Vandalism"
+    },
+    {
+      "step": 794,
+      "loss": 5.7037,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 795,
+      "loss": 6.1361,
+      "category": "Assault"
+    },
+    {
+      "step": 796,
+      "loss": 5.1148,
+      "category": "Arrest"
+    },
+    {
+      "step": 797,
+      "loss": 6.1174,
+      "category": "Robbery"
+    },
+    {
+      "step": 798,
+      "loss": 6.1218,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 799,
+      "loss": 5.099,
+      "category": "Arrest"
+    },
+    {
+      "step": 800,
+      "loss": 5.7081,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 801,
+      "loss": 5.7403,
+      "category": "Fighting"
+    },
+    {
+      "step": 802,
+      "loss": 6.1369,
+      "category": "Fighting"
+    },
+    {
+      "step": 803,
+      "loss": 6.1276,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 804,
+      "loss": 5.7226,
+      "category": "Arson"
+    },
+    {
+      "step": 805,
+      "loss": 5.7474,
+      "category": "Arrest"
+    },
+    {
+      "step": 806,
+      "loss": 6.1421,
+      "category": "Fighting"
+    },
+    {
+      "step": 807,
+      "loss": 6.1149,
+      "category": "Vandalism"
+    },
+    {
+      "step": 808,
+      "loss": 5.7452,
+      "category": "Shooting"
+    },
+    {
+      "step": 809,
+      "loss": 6.1051,
+      "category": "Burglary"
+    },
+    {
+      "step": 810,
+      "loss": 6.1052,
+      "category": "Burglary"
+    },
+    {
+      "step": 811,
+      "loss": 6.1346,
+      "category": "Fighting"
+    },
+    {
+      "step": 812,
+      "loss": 6.1266,
+      "category": "Robbery"
+    },
+    {
+      "step": 813,
+      "loss": 5.7115,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 814,
+      "loss": 5.7536,
+      "category": "Shooting"
+    },
+    {
+      "step": 815,
+      "loss": 6.1325,
+      "category": "Abuse"
+    },
+    {
+      "step": 816,
+      "loss": 6.1315,
+      "category": "Abuse"
+    },
+    {
+      "step": 817,
+      "loss": 5.7299,
+      "category": "Robbery"
+    },
+    {
+      "step": 818,
+      "loss": 6.1091,
+      "category": "Burglary"
+    },
+    {
+      "step": 819,
+      "loss": 6.1044,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 820,
+      "loss": 6.1221,
+      "category": "Stealing"
+    },
+    {
+      "step": 821,
+      "loss": 5.7466,
+      "category": "Abuse"
+    },
+    {
+      "step": 822,
+      "loss": 6.1192,
+      "category": "Robbery"
+    },
+    {
+      "step": 823,
+      "loss": 5.7035,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 824,
+      "loss": 5.7399,
+      "category": "Arrest"
+    },
+    {
+      "step": 825,
+      "loss": 5.7458,
+      "category": "Shooting"
+    },
+    {
+      "step": 826,
+      "loss": 6.1036,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 827,
+      "loss": 5.7392,
+      "category": "Abuse"
+    },
+    {
+      "step": 828,
+      "loss": 5.7218,
+      "category": "Stealing"
+    },
+    {
+      "step": 829,
+      "loss": 5.7618,
+      "category": "Explosion"
+    },
+    {
+      "step": 830,
+      "loss": 6.1045,
+      "category": "Vandalism"
+    },
+    {
+      "step": 831,
+      "loss": 5.716,
+      "category": "Vandalism"
+    },
+    {
+      "step": 832,
+      "loss": 6.1214,
+      "category": "Robbery"
+    },
+    {
+      "step": 833,
+      "loss": 6.1038,
+      "category": "Burglary"
+    },
+    {
+      "step": 834,
+      "loss": 6.1469,
+      "category": "Fighting"
+    },
+    {
+      "step": 835,
+      "loss": 6.1051,
+      "category": "Burglary"
+    },
+    {
+      "step": 836,
+      "loss": 6.1392,
+      "category": "Assault"
+    },
+    {
+      "step": 837,
+      "loss": 6.1052,
+      "category": "Burglary"
+    },
+    {
+      "step": 838,
+      "loss": 6.1234,
+      "category": "Robbery"
+    },
+    {
+      "step": 839,
+      "loss": 5.7033,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 840,
+      "loss": 6.1224,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 841,
+      "loss": 6.1171,
+      "category": "Robbery"
+    },
+    {
+      "step": 842,
+      "loss": 6.1174,
+      "category": "Stealing"
+    },
+    {
+      "step": 843,
+      "loss": 6.1314,
+      "category": "Abuse"
+    },
+    {
+      "step": 844,
+      "loss": 5.7457,
+      "category": "Arrest"
+    },
+    {
+      "step": 845,
+      "loss": 5.7238,
+      "category": "Stealing"
+    },
+    {
+      "step": 846,
+      "loss": 5.7212,
+      "category": "Stealing"
+    },
+    {
+      "step": 847,
+      "loss": 6.1328,
+      "category": "Fighting"
+    },
+    {
+      "step": 848,
+      "loss": 6.1319,
+      "category": "Abuse"
+    },
+    {
+      "step": 849,
+      "loss": 6.1347,
+      "category": "Shooting"
+    },
+    {
+      "step": 850,
+      "loss": 6.1109,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 851,
+      "loss": 6.122,
+      "category": "Arson"
+    },
+    {
+      "step": 852,
+      "loss": 6.118,
+      "category": "Stealing"
+    },
+    {
+      "step": 853,
+      "loss": 5.7245,
+      "category": "Stealing"
+    },
+    {
+      "step": 854,
+      "loss": 5.725,
+      "category": "Stealing"
+    },
+    {
+      "step": 855,
+      "loss": 6.1371,
+      "category": "Abuse"
+    },
+    {
+      "step": 856,
+      "loss": 5.7272,
+      "category": "Stealing"
+    },
+    {
+      "step": 857,
+      "loss": 6.1048,
+      "category": "Burglary"
+    },
+    {
+      "step": 858,
+      "loss": 5.7415,
+      "category": "Abuse"
+    },
+    {
+      "step": 859,
+      "loss": 5.7047,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 860,
+      "loss": 5.7259,
+      "category": "Stealing"
+    },
+    {
+      "step": 861,
+      "loss": 5.1059,
+      "category": "Arrest"
+    },
+    {
+      "step": 862,
+      "loss": 6.1203,
+      "category": "Stealing"
+    },
+    {
+      "step": 863,
+      "loss": 5.7277,
+      "category": "Stealing"
+    },
+    {
+      "step": 864,
+      "loss": 5.1036,
+      "category": "Explosion"
+    },
+    {
+      "step": 865,
+      "loss": 5.7108,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 866,
+      "loss": 5.7409,
+      "category": "Fighting"
+    },
+    {
+      "step": 867,
+      "loss": 6.153,
+      "category": "Shooting"
+    },
+    {
+      "step": 868,
+      "loss": 5.7227,
+      "category": "Stealing"
+    },
+    {
+      "step": 869,
+      "loss": 5.0963,
+      "category": "Arrest"
+    },
+    {
+      "step": 870,
+      "loss": 5.723,
+      "category": "Robbery"
+    },
+    {
+      "step": 871,
+      "loss": 6.147,
+      "category": "Arrest"
+    },
+    {
+      "step": 872,
+      "loss": 5.7465,
+      "category": "Abuse"
+    },
+    {
+      "step": 873,
+      "loss": 6.1476,
+      "category": "Fighting"
+    },
+    {
+      "step": 874,
+      "loss": 6.1079,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 875,
+      "loss": 5.721,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 876,
+      "loss": 5.0791,
+      "category": "Stealing"
+    },
+    {
+      "step": 877,
+      "loss": 6.105,
+      "category": "Burglary"
+    },
+    {
+      "step": 878,
+      "loss": 6.1373,
+      "category": "Assault"
+    },
+    {
+      "step": 879,
+      "loss": 5.7131,
+      "category": "Vandalism"
+    },
+    {
+      "step": 880,
+      "loss": 5.7096,
+      "category": "Vandalism"
+    },
+    {
+      "step": 881,
+      "loss": 6.1312,
+      "category": "Explosion"
+    },
+    {
+      "step": 882,
+      "loss": 5.7213,
+      "category": "Robbery"
+    },
+    {
+      "step": 883,
+      "loss": 6.1341,
+      "category": "Fighting"
+    },
+    {
+      "step": 884,
+      "loss": 5.7095,
+      "category": "Vandalism"
+    },
+    {
+      "step": 885,
+      "loss": 5.7518,
+      "category": "Fighting"
+    },
+    {
+      "step": 886,
+      "loss": 6.1074,
+      "category": "Vandalism"
+    },
+    {
+      "step": 887,
+      "loss": 5.721,
+      "category": "Stealing"
+    },
+    {
+      "step": 888,
+      "loss": 6.1059,
+      "category": "Vandalism"
+    },
+    {
+      "step": 889,
+      "loss": 5.7099,
+      "category": "Vandalism"
+    },
+    {
+      "step": 890,
+      "loss": 6.124,
+      "category": "Robbery"
+    },
+    {
+      "step": 891,
+      "loss": 5.7102,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 892,
+      "loss": 6.1186,
+      "category": "Robbery"
+    },
+    {
+      "step": 893,
+      "loss": 6.1348,
+      "category": "Shooting"
+    },
+    {
+      "step": 894,
+      "loss": 6.1366,
+      "category": "Assault"
+    },
+    {
+      "step": 895,
+      "loss": 6.1032,
+      "category": "Burglary"
+    },
+    {
+      "step": 896,
+      "loss": 6.1401,
+      "category": "Shooting"
+    },
+    {
+      "step": 897,
+      "loss": 6.1067,
+      "category": "Burglary"
+    },
+    {
+      "step": 898,
+      "loss": 5.7374,
+      "category": "Arrest"
+    },
+    {
+      "step": 899,
+      "loss": 6.119,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 900,
+      "loss": 6.1062,
+      "category": "Burglary"
+    },
+    {
+      "step": 901,
+      "loss": 5.7422,
+      "category": "Arrest"
+    },
+    {
+      "step": 902,
+      "loss": 6.1172,
+      "category": "Robbery"
+    },
+    {
+      "step": 903,
+      "loss": 6.1351,
+      "category": "Assault"
+    },
+    {
+      "step": 904,
+      "loss": 6.1211,
+      "category": "Stealing"
+    },
+    {
+      "step": 905,
+      "loss": 6.1376,
+      "category": "Shooting"
+    },
+    {
+      "step": 906,
+      "loss": 6.1017,
+      "category": "Burglary"
+    },
+    {
+      "step": 907,
+      "loss": 6.1018,
+      "category": "Burglary"
+    },
+    {
+      "step": 908,
+      "loss": 5.7313,
+      "category": "Robbery"
+    },
+    {
+      "step": 909,
+      "loss": 6.1327,
+      "category": "Fighting"
+    },
+    {
+      "step": 910,
+      "loss": 6.1169,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 911,
+      "loss": 6.1164,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 912,
+      "loss": 6.1173,
+      "category": "Robbery"
+    },
+    {
+      "step": 913,
+      "loss": 6.1158,
+      "category": "Robbery"
+    },
+    {
+      "step": 914,
+      "loss": 5.7226,
+      "category": "Robbery"
+    },
+    {
+      "step": 915,
+      "loss": 6.1373,
+      "category": "Abuse"
+    },
+    {
+      "step": 916,
+      "loss": 6.1314,
+      "category": "Fighting"
+    },
+    {
+      "step": 917,
+      "loss": 6.1207,
+      "category": "Robbery"
+    },
+    {
+      "step": 918,
+      "loss": 6.1364,
+      "category": "Shooting"
+    },
+    {
+      "step": 919,
+      "loss": 6.1309,
+      "category": "Abuse"
+    },
+    {
+      "step": 920,
+      "loss": 6.1336,
+      "category": "Arrest"
+    },
+    {
+      "step": 921,
+      "loss": 5.7089,
+      "category": "Vandalism"
+    },
+    {
+      "step": 922,
+      "loss": 6.1044,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 923,
+      "loss": 6.1013,
+      "category": "Burglary"
+    },
+    {
+      "step": 924,
+      "loss": 5.7494,
+      "category": "Abuse"
+    },
+    {
+      "step": 925,
+      "loss": 6.1307,
+      "category": "Fighting"
+    },
+    {
+      "step": 926,
+      "loss": 6.1353,
+      "category": "Assault"
+    },
+    {
+      "step": 927,
+      "loss": 5.7221,
+      "category": "Stealing"
+    },
+    {
+      "step": 928,
+      "loss": 5.053,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 929,
+      "loss": 5.7393,
+      "category": "Abuse"
+    },
+    {
+      "step": 930,
+      "loss": 6.1312,
+      "category": "Fighting"
+    },
+    {
+      "step": 931,
+      "loss": 6.1426,
+      "category": "Abuse"
+    },
+    {
+      "step": 932,
+      "loss": 6.1204,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 933,
+      "loss": 6.1024,
+      "category": "Burglary"
+    },
+    {
+      "step": 934,
+      "loss": 6.1305,
+      "category": "Abuse"
+    },
+    {
+      "step": 935,
+      "loss": 6.1345,
+      "category": "Assault"
+    },
+    {
+      "step": 936,
+      "loss": 6.1016,
+      "category": "Burglary"
+    },
+    {
+      "step": 937,
+      "loss": 6.1361,
+      "category": "Fighting"
+    },
+    {
+      "step": 938,
+      "loss": 5.7083,
+      "category": "Vandalism"
+    },
+    {
+      "step": 939,
+      "loss": 5.7451,
+      "category": "Arrest"
+    },
+    {
+      "step": 940,
+      "loss": 6.1373,
+      "category": "Shooting"
+    },
+    {
+      "step": 941,
+      "loss": 6.1159,
+      "category": "Robbery"
+    },
+    {
+      "step": 942,
+      "loss": 5.7377,
+      "category": "Abuse"
+    },
+    {
+      "step": 943,
+      "loss": 6.1031,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 944,
+      "loss": 5.7371,
+      "category": "Abuse"
+    },
+    {
+      "step": 945,
+      "loss": 6.103,
+      "category": "Burglary"
+    },
+    {
+      "step": 946,
+      "loss": 6.1334,
+      "category": "Shooting"
+    },
+    {
+      "step": 947,
+      "loss": 5.0916,
+      "category": "Stealing"
+    },
+    {
+      "step": 948,
+      "loss": 6.107,
+      "category": "Burglary"
+    },
+    {
+      "step": 949,
+      "loss": 5.7259,
+      "category": "Stealing"
+    },
+    {
+      "step": 950,
+      "loss": 5.7403,
+      "category": "Shooting"
+    },
+    {
+      "step": 951,
+      "loss": 6.1387,
+      "category": "Assault"
+    },
+    {
+      "step": 952,
+      "loss": 6.1011,
+      "category": "Burglary"
+    },
+    {
+      "step": 953,
+      "loss": 6.1363,
+      "category": "Assault"
+    },
+    {
+      "step": 954,
+      "loss": 5.0929,
+      "category": "Arrest"
+    },
+    {
+      "step": 955,
+      "loss": 6.1033,
+      "category": "Burglary"
+    },
+    {
+      "step": 956,
+      "loss": 5.7202,
+      "category": "Stealing"
+    },
+    {
+      "step": 957,
+      "loss": 5.7393,
+      "category": "Arrest"
+    },
+    {
+      "step": 958,
+      "loss": 6.1183,
+      "category": "Stealing"
+    },
+    {
+      "step": 959,
+      "loss": 6.1289,
+      "category": "Arson"
+    },
+    {
+      "step": 960,
+      "loss": 6.1335,
+      "category": "Explosion"
+    },
+    {
+      "step": 961,
+      "loss": 6.121,
+      "category": "Robbery"
+    },
+    {
+      "step": 962,
+      "loss": 6.1325,
+      "category": "Assault"
+    },
+    {
+      "step": 963,
+      "loss": 6.1073,
+      "category": "Vandalism"
+    },
+    {
+      "step": 964,
+      "loss": 6.1167,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 965,
+      "loss": 6.1038,
+      "category": "Burglary"
+    },
+    {
+      "step": 966,
+      "loss": 5.7046,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 967,
+      "loss": 5.7229,
+      "category": "Stealing"
+    },
+    {
+      "step": 968,
+      "loss": 5.706,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 969,
+      "loss": 6.1305,
+      "category": "Arrest"
+    },
+    {
+      "step": 970,
+      "loss": 6.1319,
+      "category": "Assault"
+    },
+    {
+      "step": 971,
+      "loss": 6.117,
+      "category": "Stealing"
+    },
+    {
+      "step": 972,
+      "loss": 6.1165,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 973,
+      "loss": 5.7489,
+      "category": "Shooting"
+    },
+    {
+      "step": 974,
+      "loss": 5.7087,
+      "category": "Vandalism"
+    },
+    {
+      "step": 975,
+      "loss": 5.7511,
+      "category": "Abuse"
+    },
+    {
+      "step": 976,
+      "loss": 6.1171,
+      "category": "Robbery"
+    },
+    {
+      "step": 977,
+      "loss": 6.1256,
+      "category": "Arson"
+    },
+    {
+      "step": 978,
+      "loss": 6.1139,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 979,
+      "loss": 6.1153,
+      "category": "Robbery"
+    },
+    {
+      "step": 980,
+      "loss": 6.102,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 981,
+      "loss": 6.1171,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 982,
+      "loss": 5.7147,
+      "category": "Vandalism"
+    },
+    {
+      "step": 983,
+      "loss": 5.7058,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 984,
+      "loss": 5.7026,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 985,
+      "loss": 5.7222,
+      "category": "Stealing"
+    },
+    {
+      "step": 986,
+      "loss": 6.117,
+      "category": "Stealing"
+    },
+    {
+      "step": 987,
+      "loss": 6.1032,
+      "category": "Burglary"
+    },
+    {
+      "step": 988,
+      "loss": 5.7053,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 989,
+      "loss": 6.1443,
+      "category": "Assault"
+    },
+    {
+      "step": 990,
+      "loss": 5.7196,
+      "category": "Stealing"
+    },
+    {
+      "step": 991,
+      "loss": 5.0861,
+      "category": "Arrest"
+    },
+    {
+      "step": 992,
+      "loss": 6.1453,
+      "category": "Abuse"
+    },
+    {
+      "step": 993,
+      "loss": 5.743,
+      "category": "Shooting"
+    },
+    {
+      "step": 994,
+      "loss": 6.1167,
+      "category": "Robbery"
+    },
+    {
+      "step": 995,
+      "loss": 6.1006,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 996,
+      "loss": 5.7386,
+      "category": "Abuse"
+    },
+    {
+      "step": 997,
+      "loss": 5.7399,
+      "category": "Arrest"
+    },
+    {
+      "step": 998,
+      "loss": 5.7076,
+      "category": "Vandalism"
+    },
+    {
+      "step": 999,
+      "loss": 6.1018,
+      "category": "Burglary"
+    },
+    {
+      "step": 1000,
+      "loss": 5.7205,
+      "category": "Stealing"
+    },
+    {
+      "step": 1001,
+      "loss": 5.7021,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1002,
+      "loss": 6.1329,
+      "category": "Assault"
+    },
+    {
+      "step": 1003,
+      "loss": 6.1207,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1004,
+      "loss": 6.1201,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1005,
+      "loss": 6.1382,
+      "category": "Fighting"
+    },
+    {
+      "step": 1006,
+      "loss": 6.1155,
+      "category": "Stealing"
+    },
+    {
+      "step": 1007,
+      "loss": 5.7029,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1008,
+      "loss": 6.1053,
+      "category": "Burglary"
+    },
+    {
+      "step": 1009,
+      "loss": 6.1168,
+      "category": "Arson"
+    },
+    {
+      "step": 1010,
+      "loss": 5.737,
+      "category": "Arson"
+    },
+    {
+      "step": 1011,
+      "loss": 5.7196,
+      "category": "Stealing"
+    },
+    {
+      "step": 1012,
+      "loss": 6.1073,
+      "category": "Burglary"
+    },
+    {
+      "step": 1013,
+      "loss": 6.1152,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1014,
+      "loss": 6.1079,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1015,
+      "loss": 6.1305,
+      "category": "Arson"
+    },
+    {
+      "step": 1016,
+      "loss": 6.1179,
+      "category": "Arson"
+    },
+    {
+      "step": 1017,
+      "loss": 5.7474,
+      "category": "Fighting"
+    },
+    {
+      "step": 1018,
+      "loss": 6.1209,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1019,
+      "loss": 5.7041,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1020,
+      "loss": 6.1197,
+      "category": "Robbery"
+    },
+    {
+      "step": 1021,
+      "loss": 5.7458,
+      "category": "Shooting"
+    },
+    {
+      "step": 1022,
+      "loss": 5.0596,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1023,
+      "loss": 6.116,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1024,
+      "loss": 6.1198,
+      "category": "Stealing"
+    },
+    {
+      "step": 1025,
+      "loss": 6.1262,
+      "category": "Robbery"
+    },
+    {
+      "step": 1026,
+      "loss": 6.1356,
+      "category": "Shooting"
+    },
+    {
+      "step": 1027,
+      "loss": 5.7492,
+      "category": "Arrest"
+    },
+    {
+      "step": 1028,
+      "loss": 5.743,
+      "category": "Fighting"
+    },
+    {
+      "step": 1029,
+      "loss": 5.737,
+      "category": "Arrest"
+    },
+    {
+      "step": 1030,
+      "loss": 6.1167,
+      "category": "Robbery"
+    },
+    {
+      "step": 1031,
+      "loss": 5.7439,
+      "category": "Shooting"
+    },
+    {
+      "step": 1032,
+      "loss": 6.1153,
+      "category": "Stealing"
+    },
+    {
+      "step": 1033,
+      "loss": 5.7417,
+      "category": "Arrest"
+    },
+    {
+      "step": 1034,
+      "loss": 6.124,
+      "category": "Robbery"
+    },
+    {
+      "step": 1035,
+      "loss": 6.1364,
+      "category": "Arrest"
+    },
+    {
+      "step": 1036,
+      "loss": 6.1329,
+      "category": "Assault"
+    },
+    {
+      "step": 1037,
+      "loss": 5.7588,
+      "category": "Arrest"
+    },
+    {
+      "step": 1038,
+      "loss": 6.1163,
+      "category": "Stealing"
+    },
+    {
+      "step": 1039,
+      "loss": 6.1114,
+      "category": "Burglary"
+    },
+    {
+      "step": 1040,
+      "loss": 5.7362,
+      "category": "Arrest"
+    },
+    {
+      "step": 1041,
+      "loss": 6.1167,
+      "category": "Stealing"
+    },
+    {
+      "step": 1042,
+      "loss": 6.1156,
+      "category": "Robbery"
+    },
+    {
+      "step": 1043,
+      "loss": 5.7382,
+      "category": "Arrest"
+    },
+    {
+      "step": 1044,
+      "loss": 5.7384,
+      "category": "Fighting"
+    },
+    {
+      "step": 1045,
+      "loss": 6.1055,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1046,
+      "loss": 5.719,
+      "category": "Arson"
+    },
+    {
+      "step": 1047,
+      "loss": 5.7024,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1048,
+      "loss": 6.1387,
+      "category": "Assault"
+    },
+    {
+      "step": 1049,
+      "loss": 5.7019,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1050,
+      "loss": 6.1151,
+      "category": "Robbery"
+    },
+    {
+      "step": 1051,
+      "loss": 6.102,
+      "category": "Burglary"
+    },
+    {
+      "step": 1052,
+      "loss": 6.1309,
+      "category": "Fighting"
+    },
+    {
+      "step": 1053,
+      "loss": 5.7037,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1054,
+      "loss": 5.1019,
+      "category": "Arrest"
+    },
+    {
+      "step": 1055,
+      "loss": 5.7373,
+      "category": "Fighting"
+    },
+    {
+      "step": 1056,
+      "loss": 6.1054,
+      "category": "Burglary"
+    },
+    {
+      "step": 1057,
+      "loss": 5.0516,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1058,
+      "loss": 6.1166,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1059,
+      "loss": 5.7437,
+      "category": "Arrest"
+    },
+    {
+      "step": 1060,
+      "loss": 5.7367,
+      "category": "Arrest"
+    },
+    {
+      "step": 1061,
+      "loss": 5.7215,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1062,
+      "loss": 6.1308,
+      "category": "Explosion"
+    },
+    {
+      "step": 1063,
+      "loss": 5.7215,
+      "category": "Stealing"
+    },
+    {
+      "step": 1064,
+      "loss": 6.1054,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1065,
+      "loss": 5.7401,
+      "category": "Arrest"
+    },
+    {
+      "step": 1066,
+      "loss": 5.7198,
+      "category": "Stealing"
+    },
+    {
+      "step": 1067,
+      "loss": 6.1232,
+      "category": "Stealing"
+    },
+    {
+      "step": 1068,
+      "loss": 5.0973,
+      "category": "Explosion"
+    },
+    {
+      "step": 1069,
+      "loss": 6.1074,
+      "category": "Burglary"
+    },
+    {
+      "step": 1070,
+      "loss": 5.7038,
+      "category": "Burglary"
+    },
+    {
+      "step": 1071,
+      "loss": 5.7469,
+      "category": "Explosion"
+    },
+    {
+      "step": 1072,
+      "loss": 6.1155,
+      "category": "Robbery"
+    },
+    {
+      "step": 1073,
+      "loss": 6.119,
+      "category": "Robbery"
+    },
+    {
+      "step": 1074,
+      "loss": 6.1381,
+      "category": "Shooting"
+    },
+    {
+      "step": 1075,
+      "loss": 5.7353,
+      "category": "Robbery"
+    },
+    {
+      "step": 1076,
+      "loss": 6.1148,
+      "category": "Robbery"
+    },
+    {
+      "step": 1077,
+      "loss": 6.1221,
+      "category": "Robbery"
+    },
+    {
+      "step": 1078,
+      "loss": 6.1323,
+      "category": "Fighting"
+    },
+    {
+      "step": 1079,
+      "loss": 6.1011,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1080,
+      "loss": 6.1236,
+      "category": "Arson"
+    },
+    {
+      "step": 1081,
+      "loss": 5.743,
+      "category": "Fighting"
+    },
+    {
+      "step": 1082,
+      "loss": 6.1297,
+      "category": "Fighting"
+    },
+    {
+      "step": 1083,
+      "loss": 6.1072,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1084,
+      "loss": 5.7076,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1085,
+      "loss": 6.1195,
+      "category": "Arson"
+    },
+    {
+      "step": 1086,
+      "loss": 6.1368,
+      "category": "Assault"
+    },
+    {
+      "step": 1087,
+      "loss": 5.0718,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1088,
+      "loss": 6.141,
+      "category": "Shooting"
+    },
+    {
+      "step": 1089,
+      "loss": 6.1049,
+      "category": "Burglary"
+    },
+    {
+      "step": 1090,
+      "loss": 6.1341,
+      "category": "Fighting"
+    },
+    {
+      "step": 1091,
+      "loss": 6.1218,
+      "category": "Arson"
+    },
+    {
+      "step": 1092,
+      "loss": 5.7194,
+      "category": "Robbery"
+    },
+    {
+      "step": 1093,
+      "loss": 6.1153,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1094,
+      "loss": 6.1175,
+      "category": "Stealing"
+    },
+    {
+      "step": 1095,
+      "loss": 5.7376,
+      "category": "Arrest"
+    },
+    {
+      "step": 1096,
+      "loss": 5.7419,
+      "category": "Stealing"
+    },
+    {
+      "step": 1097,
+      "loss": 6.133,
+      "category": "Shooting"
+    },
+    {
+      "step": 1098,
+      "loss": 5.7406,
+      "category": "Fighting"
+    },
+    {
+      "step": 1099,
+      "loss": 5.7408,
+      "category": "Fighting"
+    },
+    {
+      "step": 1100,
+      "loss": 6.1352,
+      "category": "Shooting"
+    },
+    {
+      "step": 1101,
+      "loss": 5.0948,
+      "category": "Arrest"
+    },
+    {
+      "step": 1102,
+      "loss": 6.1197,
+      "category": "Robbery"
+    },
+    {
+      "step": 1103,
+      "loss": 5.7034,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1104,
+      "loss": 6.1023,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1105,
+      "loss": 5.7417,
+      "category": "Fighting"
+    },
+    {
+      "step": 1106,
+      "loss": 5.0479,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1107,
+      "loss": 5.7222,
+      "category": "Stealing"
+    },
+    {
+      "step": 1108,
+      "loss": 6.1177,
+      "category": "Arson"
+    },
+    {
+      "step": 1109,
+      "loss": 5.7056,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1110,
+      "loss": 6.1198,
+      "category": "Robbery"
+    },
+    {
+      "step": 1111,
+      "loss": 6.1166,
+      "category": "Stealing"
+    },
+    {
+      "step": 1112,
+      "loss": 5.7397,
+      "category": "Fighting"
+    },
+    {
+      "step": 1113,
+      "loss": 6.1185,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1114,
+      "loss": 6.107,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1115,
+      "loss": 6.1359,
+      "category": "Arrest"
+    },
+    {
+      "step": 1116,
+      "loss": 5.7259,
+      "category": "Stealing"
+    },
+    {
+      "step": 1117,
+      "loss": 5.7189,
+      "category": "Stealing"
+    },
+    {
+      "step": 1118,
+      "loss": 6.1005,
+      "category": "Burglary"
+    },
+    {
+      "step": 1119,
+      "loss": 6.1348,
+      "category": "Assault"
+    },
+    {
+      "step": 1120,
+      "loss": 5.7195,
+      "category": "Stealing"
+    },
+    {
+      "step": 1121,
+      "loss": 5.7017,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1122,
+      "loss": 6.1294,
+      "category": "Abuse"
+    },
+    {
+      "step": 1123,
+      "loss": 5.7242,
+      "category": "Robbery"
+    },
+    {
+      "step": 1124,
+      "loss": 6.1161,
+      "category": "Robbery"
+    },
+    {
+      "step": 1125,
+      "loss": 6.102,
+      "category": "Burglary"
+    },
+    {
+      "step": 1126,
+      "loss": 6.0998,
+      "category": "Burglary"
+    },
+    {
+      "step": 1127,
+      "loss": 6.1192,
+      "category": "Robbery"
+    },
+    {
+      "step": 1128,
+      "loss": 6.1294,
+      "category": "Abuse"
+    },
+    {
+      "step": 1129,
+      "loss": 6.1169,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1130,
+      "loss": 6.1374,
+      "category": "Assault"
+    },
+    {
+      "step": 1131,
+      "loss": 6.1006,
+      "category": "Burglary"
+    },
+    {
+      "step": 1132,
+      "loss": 5.0592,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1133,
+      "loss": 5.7031,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1134,
+      "loss": 5.7394,
+      "category": "Arrest"
+    },
+    {
+      "step": 1135,
+      "loss": 6.1305,
+      "category": "Abuse"
+    },
+    {
+      "step": 1136,
+      "loss": 6.1154,
+      "category": "Robbery"
+    },
+    {
+      "step": 1137,
+      "loss": 5.7232,
+      "category": "Robbery"
+    },
+    {
+      "step": 1138,
+      "loss": 5.09,
+      "category": "Arrest"
+    },
+    {
+      "step": 1139,
+      "loss": 5.72,
+      "category": "Stealing"
+    },
+    {
+      "step": 1140,
+      "loss": 5.753,
+      "category": "Abuse"
+    },
+    {
+      "step": 1141,
+      "loss": 5.0958,
+      "category": "Arrest"
+    },
+    {
+      "step": 1142,
+      "loss": 6.12,
+      "category": "Stealing"
+    },
+    {
+      "step": 1143,
+      "loss": 6.1248,
+      "category": "Robbery"
+    },
+    {
+      "step": 1144,
+      "loss": 6.1198,
+      "category": "Stealing"
+    },
+    {
+      "step": 1145,
+      "loss": 6.101,
+      "category": "Burglary"
+    },
+    {
+      "step": 1146,
+      "loss": 6.1384,
+      "category": "Arrest"
+    },
+    {
+      "step": 1147,
+      "loss": 6.1329,
+      "category": "Abuse"
+    },
+    {
+      "step": 1148,
+      "loss": 5.7291,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1149,
+      "loss": 6.1304,
+      "category": "Abuse"
+    },
+    {
+      "step": 1150,
+      "loss": 6.1319,
+      "category": "Fighting"
+    },
+    {
+      "step": 1151,
+      "loss": 6.1354,
+      "category": "Fighting"
+    },
+    {
+      "step": 1152,
+      "loss": 5.7362,
+      "category": "Arrest"
+    },
+    {
+      "step": 1153,
+      "loss": 6.1081,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1154,
+      "loss": 6.1356,
+      "category": "Assault"
+    },
+    {
+      "step": 1155,
+      "loss": 6.1166,
+      "category": "Robbery"
+    },
+    {
+      "step": 1156,
+      "loss": 6.116,
+      "category": "Robbery"
+    },
+    {
+      "step": 1157,
+      "loss": 5.0549,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1158,
+      "loss": 5.7364,
+      "category": "Arrest"
+    },
+    {
+      "step": 1159,
+      "loss": 6.0999,
+      "category": "Burglary"
+    },
+    {
+      "step": 1160,
+      "loss": 5.7055,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1161,
+      "loss": 6.1175,
+      "category": "Arson"
+    },
+    {
+      "step": 1162,
+      "loss": 5.7199,
+      "category": "Stealing"
+    },
+    {
+      "step": 1163,
+      "loss": 6.116,
+      "category": "Robbery"
+    },
+    {
+      "step": 1164,
+      "loss": 5.7017,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1165,
+      "loss": 6.1419,
+      "category": "Abuse"
+    },
+    {
+      "step": 1166,
+      "loss": 5.7038,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1167,
+      "loss": 5.7358,
+      "category": "Abuse"
+    },
+    {
+      "step": 1168,
+      "loss": 6.1063,
+      "category": "Burglary"
+    },
+    {
+      "step": 1169,
+      "loss": 6.116,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1170,
+      "loss": 6.0998,
+      "category": "Burglary"
+    },
+    {
+      "step": 1171,
+      "loss": 6.1182,
+      "category": "Robbery"
+    },
+    {
+      "step": 1172,
+      "loss": 5.7018,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1173,
+      "loss": 5.1025,
+      "category": "Explosion"
+    },
+    {
+      "step": 1174,
+      "loss": 6.1,
+      "category": "Burglary"
+    },
+    {
+      "step": 1175,
+      "loss": 6.1017,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1176,
+      "loss": 5.7214,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1177,
+      "loss": 5.0881,
+      "category": "Arrest"
+    },
+    {
+      "step": 1178,
+      "loss": 5.7139,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1179,
+      "loss": 6.1321,
+      "category": "Abuse"
+    },
+    {
+      "step": 1180,
+      "loss": 6.1491,
+      "category": "Assault"
+    },
+    {
+      "step": 1181,
+      "loss": 6.1361,
+      "category": "Arrest"
+    },
+    {
+      "step": 1182,
+      "loss": 5.7485,
+      "category": "Shooting"
+    },
+    {
+      "step": 1183,
+      "loss": 6.1365,
+      "category": "Shooting"
+    },
+    {
+      "step": 1184,
+      "loss": 6.1149,
+      "category": "Stealing"
+    },
+    {
+      "step": 1185,
+      "loss": 5.7456,
+      "category": "Arrest"
+    },
+    {
+      "step": 1186,
+      "loss": 5.7187,
+      "category": "Stealing"
+    },
+    {
+      "step": 1187,
+      "loss": 6.0997,
+      "category": "Burglary"
+    },
+    {
+      "step": 1188,
+      "loss": 5.735,
+      "category": "Stealing"
+    },
+    {
+      "step": 1189,
+      "loss": 5.7281,
+      "category": "Stealing"
+    },
+    {
+      "step": 1190,
+      "loss": 6.1196,
+      "category": "Robbery"
+    },
+    {
+      "step": 1191,
+      "loss": 5.713,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1192,
+      "loss": 6.1037,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1193,
+      "loss": 6.1313,
+      "category": "Arrest"
+    },
+    {
+      "step": 1194,
+      "loss": 6.136,
+      "category": "Shooting"
+    },
+    {
+      "step": 1195,
+      "loss": 6.1326,
+      "category": "Fighting"
+    },
+    {
+      "step": 1196,
+      "loss": 6.1027,
+      "category": "Burglary"
+    },
+    {
+      "step": 1197,
+      "loss": 5.7468,
+      "category": "Fighting"
+    },
+    {
+      "step": 1198,
+      "loss": 6.1355,
+      "category": "Abuse"
+    },
+    {
+      "step": 1199,
+      "loss": 6.1149,
+      "category": "Stealing"
+    },
+    {
+      "step": 1200,
+      "loss": 6.101,
+      "category": "Burglary"
+    },
+    {
+      "step": 1201,
+      "loss": 6.1328,
+      "category": "Assault"
+    },
+    {
+      "step": 1202,
+      "loss": 6.1438,
+      "category": "Fighting"
+    },
+    {
+      "step": 1203,
+      "loss": 5.7484,
+      "category": "Abuse"
+    },
+    {
+      "step": 1204,
+      "loss": 5.7273,
+      "category": "Arson"
+    },
+    {
+      "step": 1205,
+      "loss": 6.1343,
+      "category": "Fighting"
+    },
+    {
+      "step": 1206,
+      "loss": 5.7196,
+      "category": "Robbery"
+    },
+    {
+      "step": 1207,
+      "loss": 6.1025,
+      "category": "Burglary"
+    },
+    {
+      "step": 1208,
+      "loss": 6.1404,
+      "category": "Assault"
+    },
+    {
+      "step": 1209,
+      "loss": 6.1047,
+      "category": "Burglary"
+    },
+    {
+      "step": 1210,
+      "loss": 6.1325,
+      "category": "Arrest"
+    },
+    {
+      "step": 1211,
+      "loss": 6.1018,
+      "category": "Burglary"
+    },
+    {
+      "step": 1212,
+      "loss": 6.1081,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1213,
+      "loss": 6.1063,
+      "category": "Burglary"
+    },
+    {
+      "step": 1214,
+      "loss": 5.7457,
+      "category": "Shooting"
+    },
+    {
+      "step": 1215,
+      "loss": 6.132,
+      "category": "Abuse"
+    },
+    {
+      "step": 1216,
+      "loss": 5.7471,
+      "category": "Shooting"
+    },
+    {
+      "step": 1217,
+      "loss": 5.7417,
+      "category": "Assault"
+    },
+    {
+      "step": 1218,
+      "loss": 5.7082,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1219,
+      "loss": 5.708,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1220,
+      "loss": 6.1188,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1221,
+      "loss": 6.1323,
+      "category": "Fighting"
+    },
+    {
+      "step": 1222,
+      "loss": 5.7435,
+      "category": "Abuse"
+    },
+    {
+      "step": 1223,
+      "loss": 5.7203,
+      "category": "Stealing"
+    },
+    {
+      "step": 1224,
+      "loss": 5.751,
+      "category": "Fighting"
+    },
+    {
+      "step": 1225,
+      "loss": 5.7081,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1226,
+      "loss": 6.1082,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1227,
+      "loss": 5.7493,
+      "category": "Explosion"
+    },
+    {
+      "step": 1228,
+      "loss": 5.7249,
+      "category": "Robbery"
+    },
+    {
+      "step": 1229,
+      "loss": 5.7037,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1230,
+      "loss": 6.1043,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1231,
+      "loss": 5.7372,
+      "category": "Arrest"
+    },
+    {
+      "step": 1232,
+      "loss": 6.1056,
+      "category": "Burglary"
+    },
+    {
+      "step": 1233,
+      "loss": 6.1061,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1234,
+      "loss": 6.1193,
+      "category": "Robbery"
+    },
+    {
+      "step": 1235,
+      "loss": 5.7201,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1236,
+      "loss": 6.1364,
+      "category": "Shooting"
+    },
+    {
+      "step": 1237,
+      "loss": 6.1164,
+      "category": "Stealing"
+    },
+    {
+      "step": 1238,
+      "loss": 6.1016,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1239,
+      "loss": 6.1171,
+      "category": "Robbery"
+    },
+    {
+      "step": 1240,
+      "loss": 6.134,
+      "category": "Abuse"
+    },
+    {
+      "step": 1241,
+      "loss": 5.749,
+      "category": "Stealing"
+    },
+    {
+      "step": 1242,
+      "loss": 6.1001,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1243,
+      "loss": 5.706,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1244,
+      "loss": 6.1206,
+      "category": "Robbery"
+    },
+    {
+      "step": 1245,
+      "loss": 5.7426,
+      "category": "Abuse"
+    },
+    {
+      "step": 1246,
+      "loss": 5.7325,
+      "category": "Stealing"
+    },
+    {
+      "step": 1247,
+      "loss": 6.1149,
+      "category": "Stealing"
+    },
+    {
+      "step": 1248,
+      "loss": 5.7085,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1249,
+      "loss": 6.1146,
+      "category": "Robbery"
+    },
+    {
+      "step": 1250,
+      "loss": 5.7199,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1251,
+      "loss": 5.7189,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1252,
+      "loss": 5.7272,
+      "category": "Stealing"
+    },
+    {
+      "step": 1253,
+      "loss": 6.103,
+      "category": "Burglary"
+    },
+    {
+      "step": 1254,
+      "loss": 6.1018,
+      "category": "Burglary"
+    },
+    {
+      "step": 1255,
+      "loss": 6.1008,
+      "category": "Burglary"
+    },
+    {
+      "step": 1256,
+      "loss": 6.1344,
+      "category": "Abuse"
+    },
+    {
+      "step": 1257,
+      "loss": 6.1016,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1258,
+      "loss": 6.1186,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1259,
+      "loss": 6.1296,
+      "category": "Arrest"
+    },
+    {
+      "step": 1260,
+      "loss": 5.7397,
+      "category": "Fighting"
+    },
+    {
+      "step": 1261,
+      "loss": 6.1009,
+      "category": "Burglary"
+    },
+    {
+      "step": 1262,
+      "loss": 6.1372,
+      "category": "Fighting"
+    },
+    {
+      "step": 1263,
+      "loss": 5.7014,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1264,
+      "loss": 5.7393,
+      "category": "Abuse"
+    },
+    {
+      "step": 1265,
+      "loss": 5.7447,
+      "category": "Shooting"
+    },
+    {
+      "step": 1266,
+      "loss": 5.7022,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1267,
+      "loss": 6.1042,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1268,
+      "loss": 6.1329,
+      "category": "Fighting"
+    },
+    {
+      "step": 1269,
+      "loss": 6.1173,
+      "category": "Robbery"
+    },
+    {
+      "step": 1270,
+      "loss": 5.7574,
+      "category": "Arrest"
+    },
+    {
+      "step": 1271,
+      "loss": 6.1203,
+      "category": "Arson"
+    },
+    {
+      "step": 1272,
+      "loss": 6.1144,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1273,
+      "loss": 5.7013,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1274,
+      "loss": 5.7447,
+      "category": "Abuse"
+    },
+    {
+      "step": 1275,
+      "loss": 5.736,
+      "category": "Arrest"
+    },
+    {
+      "step": 1276,
+      "loss": 5.7423,
+      "category": "Shooting"
+    },
+    {
+      "step": 1277,
+      "loss": 6.1243,
+      "category": "Arson"
+    },
+    {
+      "step": 1278,
+      "loss": 5.7389,
+      "category": "Abuse"
+    },
+    {
+      "step": 1279,
+      "loss": 6.1396,
+      "category": "Fighting"
+    },
+    {
+      "step": 1280,
+      "loss": 6.1149,
+      "category": "Robbery"
+    },
+    {
+      "step": 1281,
+      "loss": 5.1003,
+      "category": "Arrest"
+    },
+    {
+      "step": 1282,
+      "loss": 6.1339,
+      "category": "Shooting"
+    },
+    {
+      "step": 1283,
+      "loss": 5.0494,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1284,
+      "loss": 6.1253,
+      "category": "Arson"
+    },
+    {
+      "step": 1285,
+      "loss": 6.1029,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1286,
+      "loss": 6.1049,
+      "category": "Burglary"
+    },
+    {
+      "step": 1287,
+      "loss": 6.1185,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1288,
+      "loss": 5.7187,
+      "category": "Stealing"
+    },
+    {
+      "step": 1289,
+      "loss": 5.7227,
+      "category": "Stealing"
+    },
+    {
+      "step": 1290,
+      "loss": 6.1149,
+      "category": "Robbery"
+    },
+    {
+      "step": 1291,
+      "loss": 6.1217,
+      "category": "Robbery"
+    },
+    {
+      "step": 1292,
+      "loss": 6.1324,
+      "category": "Fighting"
+    },
+    {
+      "step": 1293,
+      "loss": 6.1049,
+      "category": "Burglary"
+    },
+    {
+      "step": 1294,
+      "loss": 6.1156,
+      "category": "Robbery"
+    },
+    {
+      "step": 1295,
+      "loss": 5.7415,
+      "category": "Shooting"
+    },
+    {
+      "step": 1296,
+      "loss": 5.7476,
+      "category": "Shooting"
+    },
+    {
+      "step": 1297,
+      "loss": 5.719,
+      "category": "Stealing"
+    },
+    {
+      "step": 1298,
+      "loss": 6.1323,
+      "category": "Fighting"
+    },
+    {
+      "step": 1299,
+      "loss": 5.7023,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1300,
+      "loss": 5.7196,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1301,
+      "loss": 6.1346,
+      "category": "Assault"
+    },
+    {
+      "step": 1302,
+      "loss": 5.7397,
+      "category": "Fighting"
+    },
+    {
+      "step": 1303,
+      "loss": 6.1408,
+      "category": "Shooting"
+    },
+    {
+      "step": 1304,
+      "loss": 6.1402,
+      "category": "Assault"
+    },
+    {
+      "step": 1305,
+      "loss": 5.7041,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1306,
+      "loss": 6.1144,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1307,
+      "loss": 6.0992,
+      "category": "Burglary"
+    },
+    {
+      "step": 1308,
+      "loss": 5.7068,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1309,
+      "loss": 6.1143,
+      "category": "Robbery"
+    },
+    {
+      "step": 1310,
+      "loss": 6.102,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1311,
+      "loss": 6.1171,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1312,
+      "loss": 5.7245,
+      "category": "Stealing"
+    },
+    {
+      "step": 1313,
+      "loss": 6.1303,
+      "category": "Arrest"
+    },
+    {
+      "step": 1314,
+      "loss": 5.7395,
+      "category": "Abuse"
+    },
+    {
+      "step": 1315,
+      "loss": 5.7227,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1316,
+      "loss": 6.1156,
+      "category": "Robbery"
+    },
+    {
+      "step": 1317,
+      "loss": 6.1081,
+      "category": "Burglary"
+    },
+    {
+      "step": 1318,
+      "loss": 6.1151,
+      "category": "Robbery"
+    },
+    {
+      "step": 1319,
+      "loss": 6.1312,
+      "category": "Abuse"
+    },
+    {
+      "step": 1320,
+      "loss": 6.1212,
+      "category": "Arson"
+    },
+    {
+      "step": 1321,
+      "loss": 5.7235,
+      "category": "Stealing"
+    },
+    {
+      "step": 1322,
+      "loss": 6.1163,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1323,
+      "loss": 6.131,
+      "category": "Arrest"
+    },
+    {
+      "step": 1324,
+      "loss": 6.1158,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1325,
+      "loss": 6.1125,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1326,
+      "loss": 6.1299,
+      "category": "Fighting"
+    },
+    {
+      "step": 1327,
+      "loss": 5.7014,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1328,
+      "loss": 5.7546,
+      "category": "Shooting"
+    },
+    {
+      "step": 1329,
+      "loss": 5.7444,
+      "category": "Abuse"
+    },
+    {
+      "step": 1330,
+      "loss": 6.1196,
+      "category": "Robbery"
+    },
+    {
+      "step": 1331,
+      "loss": 6.1366,
+      "category": "Shooting"
+    },
+    {
+      "step": 1332,
+      "loss": 6.1317,
+      "category": "Abuse"
+    },
+    {
+      "step": 1333,
+      "loss": 5.7052,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1334,
+      "loss": 5.1061,
+      "category": "Arrest"
+    },
+    {
+      "step": 1335,
+      "loss": 6.1022,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1336,
+      "loss": 6.141,
+      "category": "Assault"
+    },
+    {
+      "step": 1337,
+      "loss": 6.1344,
+      "category": "Assault"
+    },
+    {
+      "step": 1338,
+      "loss": 6.1033,
+      "category": "Burglary"
+    },
+    {
+      "step": 1339,
+      "loss": 5.7416,
+      "category": "Arrest"
+    },
+    {
+      "step": 1340,
+      "loss": 6.1432,
+      "category": "Assault"
+    },
+    {
+      "step": 1341,
+      "loss": 6.1004,
+      "category": "RoadAccidents"
+    },
+    {
+      "step": 1342,
+      "loss": 6.1067,
+      "category": "Burglary"
+    },
+    {
+      "step": 1343,
+      "loss": 5.7184,
+      "category": "Robbery"
+    },
+    {
+      "step": 1344,
+      "loss": 6.1341,
+      "category": "Assault"
+    },
+    {
+      "step": 1345,
+      "loss": 5.7444,
+      "category": "Shooting"
+    },
+    {
+      "step": 1346,
+      "loss": 5.7446,
+      "category": "Shooting"
+    },
+    {
+      "step": 1347,
+      "loss": 5.7497,
+      "category": "Shooting"
+    },
+    {
+      "step": 1348,
+      "loss": 6.1,
+      "category": "Burglary"
+    },
+    {
+      "step": 1349,
+      "loss": 5.7218,
+      "category": "Stealing"
+    },
+    {
+      "step": 1350,
+      "loss": 6.1238,
+      "category": "Arson"
+    },
+    {
+      "step": 1351,
+      "loss": 6.1343,
+      "category": "Shooting"
+    },
+    {
+      "step": 1352,
+      "loss": 5.7073,
+      "category": "Vandalism"
+    },
+    {
+      "step": 1353,
+      "loss": 6.1166,
+      "category": "Stealing"
+    },
+    {
+      "step": 1354,
+      "loss": 6.1053,
+      "category": "Burglary"
+    },
+    {
+      "step": 1355,
+      "loss": 6.1011,
+      "category": "Burglary"
+    },
+    {
+      "step": 1356,
+      "loss": 6.1217,
+      "category": "Robbery"
+    },
+    {
+      "step": 1357,
+      "loss": 6.0994,
+      "category": "Burglary"
+    },
+    {
+      "step": 1358,
+      "loss": 6.1295,
+      "category": "Abuse"
+    },
+    {
+      "step": 1359,
+      "loss": 6.1161,
+      "category": "Shoplifting"
+    },
+    {
+      "step": 1360,
+      "loss": 5.7386,
+      "category": "Arrest"
+    },
+    {
+      "step": 1361,
+      "loss": 6.1327,
+      "category": "Fighting"
+    },
+    {
+      "step": 1362,
+      "loss": 5.7361,
+      "category": "Abuse"
+    },
+    {
+      "step": 1363,
+      "loss": 5.7245,
+      "category": "Stealing"
+    },
+    {
+      "step": 1364,
+      "loss": 5.7412,
+      "category": "Fighting"
+    },
+    {
+      "step": 1365,
+      "loss": 6.1337,
+      "category": "Assault"
+    },
+    {
+      "step": 1366,
+      "loss": 5.7524,
+      "category": "Explosion"
+    },
+    {
+      "step": 1367,
+      "loss": 6.1,
+      "category": "Burglary"
+    },
+    {
+      "step": 1368,
+      "loss": 6.1329,
+      "category": "Fighting"
+    }
+  ],
+  "epoch_losses": [
+    {
+      "epoch": 1,
+      "loss": 7.2404,
+      "elapsed_min": 607.7,
+      "val_accuracy": 0.38461538461538464
+    },
+    {
+      "epoch": 2,
+      "loss": 5.9358,
+      "elapsed_min": 1221.6,
+      "val_accuracy": 0.38461538461538464
+    },
+    {
+      "epoch": 3,
+      "loss": 5.9314,
+      "elapsed_min": 1841.7,
+      "val_accuracy": 0.46153846153846156
+    }
+  ],
+  "cat_losses": [
+    {
+      "epoch": 1,
+      "Abuse": 6.3883,
+      "Arrest": 5.9064,
+      "Arson": 7.5828,
+      "Assault": 6.8221,
+      "Burglary": 7.2042,
+      "Explosion": 7.0866,
+      "Fighting": 8.1289,
+      "RoadAccidents": 6.7418,
+      "Robbery": 8.3156,
+      "Shooting": 7.535,
+      "Shoplifting": 7.5184,
+      "Stealing": 7.3992,
+      "Vandalism": 7.4659
+    },
+    {
+      "epoch": 2,
+      "Abuse": 5.9529,
+      "Arrest": 5.7114,
+      "Arson": 6.0601,
+      "Assault": 6.124,
+      "Burglary": 6.099,
+      "Explosion": 5.681,
+      "Fighting": 5.9906,
+      "RoadAccidents": 5.746,
+      "Robbery": 6.0588,
+      "Shooting": 5.9396,
+      "Shoplifting": 6.0295,
+      "Stealing": 5.8561,
+      "Vandalism": 5.864
+    },
+    {
+      "epoch": 3,
+      "Abuse": 5.9489,
+      "Arrest": 5.7056,
+      "Arson": 6.0566,
+      "Assault": 6.1211,
+      "Burglary": 6.095,
+      "Explosion": 5.6732,
+      "Fighting": 5.9855,
+      "RoadAccidents": 5.741,
+      "Robbery": 6.0549,
+      "Shooting": 5.9347,
+      "Shoplifting": 6.0249,
+      "Stealing": 5.853,
+      "Vandalism": 5.8593
+    }
+  ],
+  "val_accuracy": [
+    {
+      "epoch": 1,
+      "accuracy": 0.38461538461538464
+    },
+    {
+      "epoch": 2,
+      "accuracy": 0.38461538461538464
+    },
+    {
+      "epoch": 3,
+      "accuracy": 0.46153846153846156
+    }
+  ]
+}

@@ -1,0 +1,314 @@
+[
+  {
+    "video_id": "Abuse037_x264",
+    "ground_truth": "Abuse",
+    "predicted": "RoadAccidents",
+    "correct": false
+  },
+  {
+    "video_id": "Abuse038_x264",
+    "ground_truth": "Abuse",
+    "predicted": "RoadAccidents",
+    "correct": false
+  },
+  {
+    "video_id": "Abuse039_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Arrest",
+    "correct": false
+  },
+  {
+    "video_id": "Abuse040_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Abuse",
+    "correct": true
+  },
+  {
+    "video_id": "Arrest043_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Fighting",
+    "correct": false
+  },
+  {
+    "video_id": "Arrest044_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Arrest",
+    "correct": true
+  },
+  {
+    "video_id": "Arrest046_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Arrest",
+    "correct": true
+  },
+  {
+    "video_id": "Arrest048_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Arrest",
+    "correct": true
+  },
+  {
+    "video_id": "Arson020_x264",
+    "ground_truth": "Arson",
+    "predicted": "Arson",
+    "correct": true
+  },
+  {
+    "video_id": "Arson021_x264",
+    "ground_truth": "Arson",
+    "predicted": "RoadAccidents",
+    "correct": false
+  },
+  {
+    "video_id": "Arson022_x264",
+    "ground_truth": "Arson",
+    "predicted": "Arson",
+    "correct": true
+  },
+  {
+    "video_id": "Arson023_x264",
+    "ground_truth": "Arson",
+    "predicted": "Stealing",
+    "correct": false
+  },
+  {
+    "video_id": "Assault027_x264",
+    "ground_truth": "Assault",
+    "predicted": "Robbery",
+    "correct": false
+  },
+  {
+    "video_id": "Assault028_x264",
+    "ground_truth": "Assault",
+    "predicted": "Shooting",
+    "correct": false
+  },
+  {
+    "video_id": "Assault029_x264",
+    "ground_truth": "Assault",
+    "predicted": "Assault",
+    "correct": true
+  },
+  {
+    "video_id": "Assault030_x264",
+    "ground_truth": "Assault",
+    "predicted": "Assault",
+    "correct": true
+  },
+  {
+    "video_id": "Burglary065_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Burglary",
+    "correct": true
+  },
+  {
+    "video_id": "Burglary066_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Burglary",
+    "correct": true
+  },
+  {
+    "video_id": "Burglary067_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Burglary",
+    "correct": true
+  },
+  {
+    "video_id": "Burglary068_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Burglary",
+    "correct": true
+  },
+  {
+    "video_id": "Explosion007_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Fighting",
+    "correct": false
+  },
+  {
+    "video_id": "Explosion008_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Explosion",
+    "correct": true
+  },
+  {
+    "video_id": "Explosion009_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Explosion",
+    "correct": true
+  },
+  {
+    "video_id": "Explosion010_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Explosion",
+    "correct": true
+  },
+  {
+    "video_id": "Fighting039_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Shooting",
+    "correct": false
+  },
+  {
+    "video_id": "Fighting040_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Assault",
+    "correct": false
+  },
+  {
+    "video_id": "Fighting041_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Arrest",
+    "correct": false
+  },
+  {
+    "video_id": "Fighting042_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Assault",
+    "correct": false
+  },
+  {
+    "video_id": "RoadAccidents109_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Shooting",
+    "correct": false
+  },
+  {
+    "video_id": "RoadAccidents110_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "RoadAccidents",
+    "correct": true
+  },
+  {
+    "video_id": "RoadAccidents111_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "RoadAccidents",
+    "correct": true
+  },
+  {
+    "video_id": "RoadAccidents112_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "RoadAccidents",
+    "correct": true
+  },
+  {
+    "video_id": "Robbery085_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Robbery",
+    "correct": true
+  },
+  {
+    "video_id": "Robbery086_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Robbery",
+    "correct": true
+  },
+  {
+    "video_id": "Robbery087_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Robbery",
+    "correct": true
+  },
+  {
+    "video_id": "Robbery088_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Robbery",
+    "correct": true
+  },
+  {
+    "video_id": "Shooting033_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Shooting",
+    "correct": true
+  },
+  {
+    "video_id": "Shooting034_x264",
+    "ground_truth": "Shooting",
+    "predicted": "RoadAccidents",
+    "correct": false
+  },
+  {
+    "video_id": "Shooting036_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Robbery",
+    "correct": false
+  },
+  {
+    "video_id": "Shooting037_x264",
+    "ground_truth": "Shooting",
+    "predicted": "RoadAccidents",
+    "correct": false
+  },
+  {
+    "video_id": "Shoplifting034_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Shoplifting",
+    "correct": true
+  },
+  {
+    "video_id": "Shoplifting036_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Shoplifting",
+    "correct": true
+  },
+  {
+    "video_id": "Shoplifting037_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Shoplifting",
+    "correct": true
+  },
+  {
+    "video_id": "Shoplifting038_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Shooting",
+    "correct": false
+  },
+  {
+    "video_id": "Stealing078_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Stealing",
+    "correct": true
+  },
+  {
+    "video_id": "Stealing079_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Stealing",
+    "correct": true
+  },
+  {
+    "video_id": "Stealing080_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Shooting",
+    "correct": false
+  },
+  {
+    "video_id": "Stealing081_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Stealing",
+    "correct": true
+  },
+  {
+    "video_id": "Vandalism031_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Vandalism",
+    "correct": true
+  },
+  {
+    "video_id": "Vandalism032_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Stealing",
+    "correct": false
+  },
+  {
+    "video_id": "Vandalism033_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Vandalism",
+    "correct": true
+  },
+  {
+    "video_id": "Vandalism034_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Burglary",
+    "correct": false
+  }
+]
