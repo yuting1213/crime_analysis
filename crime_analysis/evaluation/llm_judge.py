@@ -71,7 +71,7 @@ class LLMJudge:
     Rubric：5 維度 × 1-5 分 = 總分 25
     """
 
-    def __init__(self, judge_model: str = None, api_key: str = None):
+    def __init__(self, judge_model: str = None, api_key: str = None, budget_limit_usd: float = None):
         self.judge_model = judge_model or cfg.dpo.judge_model
         self._api_key = api_key
         self._client = None
@@ -83,6 +83,46 @@ class LLMJudge:
             self._backend = "gemini"
         else:
             self._backend = "openai"
+
+        # ── Token Budgeting ──
+        self._total_input_tokens: int = 0
+        self._total_output_tokens: int = 0
+        self._total_calls: int = 0
+        self._budget_limit_usd: float = budget_limit_usd or 20.0  # 預設上限 $20
+
+        # 各模型定價（USD per 1M tokens）
+        self._pricing = {
+            "claude": {"input": 3.0, "output": 15.0},
+            "gemini": {"input": 0.15, "output": 0.60},  # Flash
+            "openai": {"input": 2.50, "output": 10.0},   # GPT-4o
+        }
+
+    @property
+    def total_cost_usd(self) -> float:
+        """目前累計花費（USD）。"""
+        p = self._pricing.get(self._backend, {"input": 3.0, "output": 15.0})
+        return (self._total_input_tokens * p["input"] + self._total_output_tokens * p["output"]) / 1_000_000
+
+    @property
+    def token_summary(self) -> dict:
+        """Token 使用摘要。"""
+        return {
+            "total_calls": self._total_calls,
+            "total_input_tokens": self._total_input_tokens,
+            "total_output_tokens": self._total_output_tokens,
+            "total_cost_usd": round(self.total_cost_usd, 4),
+            "budget_limit_usd": self._budget_limit_usd,
+            "budget_remaining_usd": round(self._budget_limit_usd - self.total_cost_usd, 4),
+        }
+
+    def _check_budget(self):
+        """檢查是否超出預算。"""
+        if self.total_cost_usd >= self._budget_limit_usd:
+            raise RuntimeError(
+                f"[LLMJudge] 已超出預算上限！"
+                f"已花費 ${self.total_cost_usd:.2f} / 上限 ${self._budget_limit_usd:.2f}"
+                f"（{self._total_calls} 次呼叫）"
+            )
 
     def _get_client(self):
         """延遲初始化 LLM client（支援 Claude / Gemini / OpenAI）。"""
@@ -304,7 +344,8 @@ class LLMJudge:
         return result
 
     def _call_llm(self, prompt: str, json_mode: bool = False) -> str:
-        """呼叫 LLM API（支援 Claude / Gemini / OpenAI）。"""
+        """呼叫 LLM API（支援 Claude / Gemini / OpenAI），含 token tracking。"""
+        self._check_budget()
         client = self._get_client()
 
         if self._backend == "claude":
@@ -317,6 +358,15 @@ class LLMJudge:
                 }
                 response = client.messages.create(**kwargs)
                 text = response.content[0].text if response.content else ""
+
+                # Token tracking（Claude 回傳 usage）
+                usage = getattr(response, "usage", None)
+                if usage:
+                    self._total_input_tokens += getattr(usage, "input_tokens", 0)
+                    self._total_output_tokens += getattr(usage, "output_tokens", 0)
+                self._total_calls += 1
+                if self._total_calls % 10 == 0:
+                    logger.info(f"[Budget] {self._total_calls} calls, ${self.total_cost_usd:.3f} / ${self._budget_limit_usd}")
                 return text
             except Exception as e:
                 logger.error(f"[LLMJudge] Claude API 呼叫失敗：{e}")
@@ -345,7 +395,12 @@ class LLMJudge:
                     contents=prompt,
                     config=config,
                 )
-                return response.text or ""
+                # Gemini token tracking（估算）
+                text = response.text or ""
+                self._total_input_tokens += len(prompt) // 3  # 粗估
+                self._total_output_tokens += len(text) // 3
+                self._total_calls += 1
+                return text
             except Exception as e:
                 logger.error(f"[LLMJudge] Gemini API 呼叫失敗：{e}")
                 return "{}"
@@ -362,7 +417,14 @@ class LLMJudge:
 
             try:
                 response = client.chat.completions.create(**kwargs)
-                return response.choices[0].message.content or ""
+                text = response.choices[0].message.content or ""
+                # OpenAI token tracking
+                usage = getattr(response, "usage", None)
+                if usage:
+                    self._total_input_tokens += getattr(usage, "prompt_tokens", 0)
+                    self._total_output_tokens += getattr(usage, "completion_tokens", 0)
+                self._total_calls += 1
+                return text
             except Exception as e:
                 logger.error(f"[LLMJudge] OpenAI API 呼叫失敗：{e}")
                 return "{}"

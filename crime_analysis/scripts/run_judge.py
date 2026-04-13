@@ -200,10 +200,12 @@ if __name__ == "__main__":
     parser.add_argument("--reports_a", type=str, help="Pairwise A 組報告目錄")
     parser.add_argument("--reports_b", type=str, help="Pairwise B 組報告目錄")
     parser.add_argument("--judge", type=str, default=None, help="Judge 模型名稱")
+    parser.add_argument("--budget", type=float, default=20.0, help="預算上限 USD（預設 $20）")
     parser.add_argument("--output_dir", type=str, default="./outputs/judge_results")
     args = parser.parse_args()
 
-    judge = LLMJudge(judge_model=args.judge)
+    judge = LLMJudge(judge_model=args.judge, budget_limit_usd=args.budget)
+    logger.info(f"Judge: {judge.judge_model} | Budget: ${args.budget}")
 
     if args.pairwise:
         if not args.reports_a or not args.reports_b:
@@ -220,3 +222,18 @@ if __name__ == "__main__":
         reports = load_reports(Path(args.reports_dir))
         logger.info(f"Rubric: {len(reports)} reports from {args.reports_dir}")
         run_rubric(judge, reports, Path(args.output_dir))
+
+    # Token 使用摘要
+    summary = judge.token_summary
+    print(f"\n{'='*60}")
+    print(f"  Token Usage Summary")
+    print(f"{'='*60}")
+    print(f"  API calls:      {summary['total_calls']}")
+    print(f"  Input tokens:   {summary['total_input_tokens']:,}")
+    print(f"  Output tokens:  {summary['total_output_tokens']:,}")
+    print(f"  Total cost:     ${summary['total_cost_usd']:.4f}")
+    print(f"  Budget remaining: ${summary['budget_remaining_usd']:.4f} / ${summary['budget_limit_usd']}")
+
+    # 存 token 使用記錄
+    with open(Path(args.output_dir) / "token_usage.json", "w") as f:
+        json.dump(summary, f, indent=2)
