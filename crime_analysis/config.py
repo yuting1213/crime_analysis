@@ -59,7 +59,7 @@ class DPOConfig:
     learning_rate: float = 5e-6
     beta: float = 0.1             # KL 懲罰係數
     max_steps: int = 2000
-    judge_model: str = "gemini-2.0-flash"  # Pairwise judge（Gemini 高速低成本）
+    judge_model: str = "claude-sonnet-4-20250514"  # LLM-as-Judge（Claude，避免 Self-Enhancement Bias）
     # ── 偏好對生成策略 ──
     pairs_per_category: int = 15  # 每個犯罪類別的偏好對數量
     generation_temperatures: List[float] = field(

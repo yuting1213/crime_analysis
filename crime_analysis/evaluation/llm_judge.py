@@ -2,9 +2,9 @@
 LLM-as-a-Judge 評估模組
 兩種評估方式：
   1. Pairwise 比較 - 用於 DPO 偏好對建構（AB/BA 雙向比較校正 Position Bias）
-  2. Rubric 評分 - 用於消融實驗量化（四個維度對應四個獎勵函數）
+  2. Rubric 評分 - 用於消融實驗量化（五維度，總分 25）
 
-Judge Model：GPT-4o（避免 Self-Enhancement Bias）
+Judge Model：Claude（避免 Self-Enhancement Bias，支援 Gemini/OpenAI fallback）
 Position Bias 控制：正反各跑一次取平均
 穩定性標記：兩次分數差距 > 3 分時警告
 """
@@ -16,12 +16,13 @@ from config import cfg
 
 logger = logging.getLogger(__name__)
 
-# Rubric 評分維度（與 dpo_trainer.py 中的定義保持一致）
+# Rubric 評分維度（5 維度，每項 1-5 分，總分 25）
 RUBRIC_DIMENSIONS = {
     "logical_consistency": "報告的推理鏈是否邏輯自洽，無矛盾（對應 Rcons）",
-    "legal_coverage": "報告是否涵蓋足夠的法律構成要件（對應 Rlegal）",
-    "evidence_citation": "是否精確標註對應的影像幀與時間點",
-    "causal_reasoning": "是否建立清晰的因果鏈（Pearl 因果階梯）",
+    "legal_coverage": "報告是否涵蓋足夠的法律構成要件並引用具體法條條號（對應 Rlegal）",
+    "evidence_citation": "是否精確標註對應的影像幀與時間點，區分觀察事實與推論",
+    "causal_reasoning": "是否建立清晰的因果鏈（前兆行為 → 犯罪實施 → 事後反應）",
+    "uncertainty_marking": "是否明確標記不確定性、分析限制、和需進一步調查的事項",
 }
 
 # 兩次評分差距超過此值時標記為不穩定
@@ -31,21 +32,15 @@ STABILITY_THRESHOLD = 3.0
 def _parse_json_response(text: str) -> Dict[str, Any]:
     """
     從 LLM 回應中提取 JSON。
-
-    處理三種常見格式：
-    1. 純 JSON 字串
-    2. ```json ... ``` 包裹
-    3. 混合文字中的 JSON 區塊
+    處理三種常見格式：純 JSON、```json``` 包裹、混合文字中的 JSON。
     """
     text = text.strip()
 
-    # 嘗試直接 parse
     try:
         return json.loads(text)
     except json.JSONDecodeError:
         pass
 
-    # 嘗試 ```json ... ```
     if "```json" in text:
         start = text.index("```json") + 7
         end = text.index("```", start)
@@ -54,7 +49,6 @@ def _parse_json_response(text: str) -> Dict[str, Any]:
         except (json.JSONDecodeError, ValueError):
             pass
 
-    # 嘗試找第一個 { 到最後一個 }
     first_brace = text.find("{")
     last_brace = text.rfind("}")
     if first_brace != -1 and last_brace != -1:
@@ -71,27 +65,19 @@ class LLMJudge:
     """
     LLM-as-a-Judge
 
-    可选 Judge Model：
-      - Claude 3.5 Sonnet（推薦）   → 推理強、無偏差、中文優秀
-      - Gemini 2.0 Flash（預設）    → 快速、便宜、Google Pro 可用
-      - GPT-4o                     → 穩定、推理強、需要 API key
+    預設 Judge Model：Claude（避免使用 Qwen 作為 Judge，防止 Self-Enhancement Bias）
+    支援：Claude / Gemini / OpenAI 三後端
 
-    理由：避免使用 Qwen（訓練模型）作為 Judge，防止 Self-Enhancement Bias
-    Judge Prompt 角色：「台灣刑事鑑識專家」（確保以台灣法律邏輯評判）
-
-    支援三種 backend：
-      - "claude-" 開頭     → 使用 Anthropic Claude API
-      - "gemini" 開頭      → 使用 google-generativeai
-      - 其他（openai 等）  → 使用 OpenAI API
+    Rubric：5 維度 × 1-5 分 = 總分 25
     """
 
     def __init__(self, judge_model: str = None, api_key: str = None):
-        self.judge_model = judge_model or cfg.dpo.judge_model  # 預設 gemini-2.0-flash
+        self.judge_model = judge_model or cfg.dpo.judge_model
         self._api_key = api_key
         self._client = None
 
         # 判斷 backend 類型
-        if "claude-" in self.judge_model.lower():
+        if "claude" in self.judge_model.lower():
             self._backend = "claude"
         elif "gemini" in self.judge_model.lower():
             self._backend = "gemini"
@@ -139,14 +125,7 @@ class LLMJudge:
     ) -> Dict[str, Any]:
         """
         Pairwise 比較。預設單向（省 token），可選 AB/BA 雙向校正。
-
-        Args:
-            double_check: True 時做 AB/BA 雙向比較（2x token 成本）
         """
-        # 截斷報告節省 token
-        report_a = report_a[:800]
-        report_b = report_b[:800]
-
         result_ab = self._call_judge(
             prompt, report_a, report_b, first_label="A", second_label="B"
         )
@@ -193,15 +172,8 @@ class LLMJudge:
         double_check: bool = False,
     ) -> Dict[str, Any]:
         """
-        Prometheus 風格的 Rubric 評分。
-        預設跑一次（省 token），可選 double_check=True 跑兩次取平均。
-
-        Args:
-            double_check: True 時跑兩次檢查穩定性（2x token 成本）
+        Prometheus 風格的 Rubric 評分（5 維度，每項 1-5 分）。
         """
-        # 截斷報告節省 token
-        report = report[:800]
-
         judge_prompt = self._build_rubric_prompt(prompt, report)
         scores_1 = self._call_rubric(judge_prompt)
 
@@ -256,9 +228,6 @@ class LLMJudge:
     ) -> Dict[str, Dict[str, float]]:
         """
         消融實驗：對每個 config 計算平均 Rubric 分數。
-
-        Returns:
-            每個 config 在每個維度的平均分 + overall + stability_rate
         """
         summary = {}
         for config_name, reports in config_reports.items():
@@ -288,7 +257,7 @@ class LLMJudge:
         first_label: str,
         second_label: str,
     ) -> Dict[str, Any]:
-        """呼叫 GPT-4o 進行 Pairwise 比較。"""
+        """呼叫 LLM 進行 Pairwise 比較。"""
         judge_prompt = self._build_pairwise_prompt(
             prompt, report_first, report_second, first_label, second_label
         )
@@ -303,7 +272,6 @@ class LLMJudge:
                 "rationale": "JSON 解析失敗",
             }
 
-        # 標準化 score keys
         score_first = parsed.get("score_first", parsed.get(f"score_{first_label.lower()}", 0.0))
         score_second = parsed.get("score_second", parsed.get(f"score_{second_label.lower()}", 0.0))
 
@@ -315,14 +283,13 @@ class LLMJudge:
         }
 
     def _call_rubric(self, judge_prompt: str) -> Dict[str, Any]:
-        """呼叫 GPT-4o 進行 Rubric 評分，回傳維度分數。"""
+        """呼叫 LLM 進行 Rubric 評分，回傳維度分數。"""
         response_text = self._call_llm(judge_prompt, json_mode=True)
         parsed = _parse_json_response(response_text)
 
         if not parsed:
             return {dim: 3 for dim in RUBRIC_DIMENSIONS}
 
-        # 確保每個維度都有合法的 1-5 分數
         result = {}
         for dim in RUBRIC_DIMENSIONS:
             score = parsed.get(dim, 3)
@@ -337,16 +304,31 @@ class LLMJudge:
         return result
 
     def _call_llm(self, prompt: str, json_mode: bool = False) -> str:
-        """呼叫 LLM API（支援 Gemini / OpenAI）。"""
+        """呼叫 LLM API（支援 Claude / Gemini / OpenAI）。"""
         client = self._get_client()
 
-        if self._backend == "gemini":
+        if self._backend == "claude":
+            try:
+                kwargs = {
+                    "model": self.judge_model,
+                    "max_tokens": 1024,
+                    "temperature": 0.3,
+                    "messages": [{"role": "user", "content": prompt}],
+                }
+                response = client.messages.create(**kwargs)
+                text = response.content[0].text if response.content else ""
+                return text
+            except Exception as e:
+                logger.error(f"[LLMJudge] Claude API 呼叫失敗：{e}")
+                return "{}"
+
+        elif self._backend == "gemini":
             try:
                 from google.genai import types
 
                 config = types.GenerateContentConfig(
                     temperature=0.3,
-                    max_output_tokens=256,
+                    max_output_tokens=1024,
                     thinking_config=types.ThinkingConfig(thinking_budget=0),
                     safety_settings=[
                         types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="OFF"),
@@ -367,12 +349,13 @@ class LLMJudge:
             except Exception as e:
                 logger.error(f"[LLMJudge] Gemini API 呼叫失敗：{e}")
                 return "{}"
-        else:
+
+        else:  # OpenAI
             kwargs = {
                 "model": self.judge_model,
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.3,
-                "max_tokens": 256,
+                "max_tokens": 1024,
             }
             if json_mode:
                 kwargs["response_format"] = {"type": "json_object"}
@@ -392,15 +375,48 @@ class LLMJudge:
         first_label: str,
         second_label: str,
     ) -> str:
-        return f"""比較兩份台灣刑事鑑定報告，以JSON回傳。
-案件：{case_prompt[:100]}
-報告{first_label}：{report_first}
-報告{second_label}：{report_second}
-JSON格式：{{"winner":"{first_label}"/"{second_label}"/"tie","score_first":1-5,"score_second":1-5,"rationale":"30字內"}}"""
+        return f"""你是一位台灣刑事鑑識專家。請比較以下兩份鑑定報告的品質。
+
+【案件描述】
+{case_prompt}
+
+【報告 {first_label}】
+{report_first}
+
+【報告 {second_label}】
+{report_second}
+
+【評分標準】
+1. 邏輯一致性：推理鏈是否自洽
+2. 法律覆蓋率：是否引用正確法條條號
+3. 證據引用：是否精確標註影像幀
+4. 因果推理：是否建立清晰因果鏈
+5. 不確定性標記：是否誠實標記分析限制
+
+請以 JSON 格式回傳：
+{{"winner":"{first_label}"或"{second_label}"或"tie","score_first":1-5,"score_second":1-5,"rationale":"50字內說明理由"}}"""
 
     def _build_rubric_prompt(self, case_prompt: str, report: str) -> str:
-        return f"""評估台灣刑事鑑定報告，每項1-5分，以JSON回傳。
-案件：{case_prompt[:100]}
-報告：{report}
-評分項：logical_consistency(邏輯)、legal_coverage(法律要件)、evidence_citation(證據引用)、causal_reasoning(因果推理)
-JSON格式：{{"logical_consistency":int,"legal_coverage":int,"evidence_citation":int,"causal_reasoning":int,"feedback":"30字內"}}"""
+        dims_json = ", ".join(f'"{d}":int' for d in RUBRIC_DIMENSIONS)
+        return f"""你是一位台灣刑事鑑識專家。請評估以下鑑定報告的品質，每項 1-5 分。
+
+【案件描述】
+{case_prompt}
+
+【鑑定報告】
+{report}
+
+【評分標準（每項 1-5 分）】
+1. logical_consistency（邏輯一致性）：推理鏈是否自洽，無矛盾
+   1=完全矛盾 2=部分矛盾 3=基本通順 4=邏輯清晰 5=完整論證含替代解釋排除
+2. legal_coverage（法律覆蓋率）：是否涵蓋足夠法律構成要件並引用具體法條條號
+   1=未提及法條 2=提及但未說明 3=基本關聯 4=完整涵蓋要件 5=引用裁判書判例
+3. evidence_citation（證據引用）：是否精確標註影像幀與時間點
+   1=無引用 2=有但不精確 3=精確引用 4=引用+視覺證據說明 5=引用+排除誤判
+4. causal_reasoning（因果推理）：是否建立清晰因果鏈
+   1=僅相關性 2=簡單因果 3=完整前因後果 4=含前兆行為 5=含反事實推論
+5. uncertainty_marking（不確定性標記）：是否誠實標記限制和不確定性
+   1=未標記 2=泛泛提及 3=列出具體限制 4=限制+影響評估 5=限制+替代解釋+後續建議
+
+請以 JSON 格式回傳：
+{{{dims_json},"feedback":"50字內整體評語"}}"""
