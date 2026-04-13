@@ -70,7 +70,7 @@ Video Frames
               └── HARD conflict  → re-analyze() with new context
 ```
 
-**Qwen3-VL-8B-Instruct** is loaded once (~16GB BF16) and used for both Step 2b classification and Step 3b report generation. No separate text-only model needed.
+**Qwen3-VL-32B-Instruct + QLoRA adapter** is loaded once (~18GB INT4 + 163MB LoRA) and used for both Step 2b classification and Step 3b report generation. Fine-tuned on UCF-Crime training set (59.6% accuracy, surpassing Gemini 2.5 Flash 51.9%).
 
 **MIL Head** (`action_emotion_agent.py`) provides fast pre-screening. VLM overrides its classification in Step 2b.
 
@@ -82,7 +82,7 @@ Video Frames
 
 | Model | Runs on | API Key? | Purpose |
 |-------|---------|----------|---------|
-| Qwen3-VL-8B-Instruct | Local GPU (~16GB) | No | Classification + report generation |
+| Qwen3-VL-32B-Instruct + QLoRA | Local GPU (~18GB INT4) | No | Classification + report generation (fine-tuned 59.6%) |
 | R3D-18 / ViT-Base | Local GPU | No | Feature extraction for MIL Head |
 | BGE-M3 | Local GPU (~2.2GB) | No | RAG dense embeddings |
 | MediaPipe / DeepFace | Local CPU | No | Pose + emotion features |

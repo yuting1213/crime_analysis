@@ -964,8 +964,9 @@ class PlannerAgent:
 
     def _load_report_model(self):
         """
-        延遲載入 Qwen3-VL-8B-Instruct（統一 VLM）。
+        延遲載入 Qwen3-VL-32B-Instruct + QLoRA adapter（統一 VLM）。
         同一個模型負責 Step 2b 分類 + Step 3b 報告生成。
+        支援 INT4 量化 + LoRA adapter 載入。
         """
         if self._report_model is not None:
             return
@@ -973,6 +974,7 @@ class PlannerAgent:
             import torch as _torch
             from transformers import Qwen3VLForConditionalGeneration, AutoProcessor
             model_name = cfg.model.report_model
+            adapter_path = getattr(cfg.model, "vlm_adapter", "")
             logger.info(f"[Planner] 載入 VLM：{model_name}")
 
             self._report_tokenizer = AutoProcessor.from_pretrained(
@@ -983,15 +985,37 @@ class PlannerAgent:
                 "trust_remote_code": True,
                 "device_map": "auto",
             }
-            if cfg.model.torch_dtype == "bfloat16" and _torch.cuda.is_available():
-                load_kwargs["torch_dtype"] = _torch.bfloat16
-            else:
-                load_kwargs["torch_dtype"] = "auto"
 
-            self._report_model = Qwen3VLForConditionalGeneration.from_pretrained(
+            # INT4 量化（32B 模型需要）
+            try:
+                from transformers import BitsAndBytesConfig
+                load_kwargs["quantization_config"] = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_compute_dtype=_torch.bfloat16,
+                    bnb_4bit_use_double_quant=True,
+                    bnb_4bit_quant_type="nf4",
+                )
+                logger.info("[Planner] INT4 量化已啟用")
+            except ImportError:
+                # 沒有 bitsandbytes → 用 BF16（僅 8B 以下模型可用）
+                if cfg.model.torch_dtype == "bfloat16" and _torch.cuda.is_available():
+                    load_kwargs["torch_dtype"] = _torch.bfloat16
+                else:
+                    load_kwargs["torch_dtype"] = "auto"
+
+            base_model = Qwen3VLForConditionalGeneration.from_pretrained(
                 model_name, **load_kwargs,
             )
-            logger.info(f"[Planner] VLM 載入完成：{model_name} (dtype={load_kwargs.get('torch_dtype', 'auto')})")
+
+            # 載入 QLoRA adapter（如果存在）
+            if adapter_path and Path(adapter_path).exists():
+                from peft import PeftModel
+                self._report_model = PeftModel.from_pretrained(base_model, adapter_path)
+                self._report_model.eval()
+                logger.info(f"[Planner] VLM + LoRA adapter 載入完成：{adapter_path}")
+            else:
+                self._report_model = base_model
+                logger.info(f"[Planner] VLM 載入完成（無 adapter）：{model_name}")
         except Exception as e:
             logger.warning(f"[Planner] 無法載入 VLM：{e}，將使用 fallback")
             self._report_model = None
