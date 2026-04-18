@@ -223,6 +223,15 @@ class PlannerAgent:
         self._skip_vlm_report: bool = False
         self._vlm_reason: str = ""
 
+        # Bias correction（由 pilot_experiment.py 用 --bias-correction 注入；
+        # None 或空 dict 代表不做校正）
+        self._bias_corrections: Optional[Dict[str, float]] = None
+
+        # 2-stage anomaly detection（由 pilot_experiment.py 用 --anomaly-threshold
+        # 注入；None 代表不 gate，全部走 13 類分類；float → escalation_score 低於
+        # 此值直接輸出 Normal 並跳過 VLM 分類 + 報告生成）
+        self._anomaly_threshold: Optional[float] = None
+
     # ── 主要入口 ─────────────────────────────────────────
 
     def run(self, frames: List, video_metadata: Dict) -> Dict[str, Any]:
@@ -274,11 +283,38 @@ class PlannerAgent:
         mil_confidence = ae_confidence
         crime_type = mil_crime_type
 
+        # ── Step 2a：2-stage anomaly gate ──
+        # 若 escalation_score 低於門檻 → 判為 Normal，跳過 VLM 分類與報告生成。
+        # 注意：用 local variable bypass_vlm_{classify,report}，不能覆寫 self._skip_*
+        # 因為 Planner instance 會在多個影片間共用。
+        escalation_score = (
+            ae_report.metadata.get("escalation_score", 0.0) if ae_report else 0.0
+        )
+        gated_normal = (
+            self._anomaly_threshold is not None
+            and escalation_score < self._anomaly_threshold
+        )
+        bypass_vlm_classify = self._skip_vlm_classify
+        bypass_vlm_report = self._skip_vlm_report
+        if gated_normal:
+            crime_type = "Normal"
+            if ae_report:
+                ae_report.crime_category = "Normal"
+                ae_report.metadata["anomaly_gated"] = True
+                ae_report.metadata["anomaly_threshold"] = self._anomaly_threshold
+            logger.info(
+                f"[Planner] Step 2a: anomaly gate triggered — "
+                f"escalation={escalation_score:.3f} < τ={self._anomaly_threshold:.3f} "
+                f"→ Normal（跳過 VLM 分類/報告）"
+            )
+            bypass_vlm_classify = True
+            bypass_vlm_report = True
+
         # 載入 Qwen3-VL（後續 Step 3b 報告生成也用同一個模型）
-        if not self._skip_vlm_classify or not self._skip_vlm_report:
+        if not bypass_vlm_classify or not bypass_vlm_report:
             self._load_report_model()
 
-        if self._report_model is not None and not self._skip_vlm_classify:
+        if self._report_model is not None and not bypass_vlm_classify:
             vlm_result = self._vlm_classify(frames, video_metadata)
             if vlm_result:
                 crime_type, vlm_conf = vlm_result
@@ -299,7 +335,7 @@ class PlannerAgent:
         # 暫時關閉（測試顯示 VLM 對構成要件全報 0 matched，反而降低準確率）
         # TODO: 改善 VLM 對法律要件的理解後重新啟用
         if False and (self._report_model is not None
-                and not self._skip_vlm_classify
+                and not bypass_vlm_classify
                 and crime_type != "Normal"
                 and self.rag):
             verified = self._rag_verify_classification(
@@ -352,7 +388,7 @@ class PlannerAgent:
             conflict_detail=conflict_detail,
         )
         temperature = video_metadata.get("temperature", cfg.model.temperature)
-        if not self._skip_vlm_report:
+        if not bypass_vlm_report:
             generated_report_text = self._call_qwen3_vl(
                 report_messages, frames, temperature=temperature,
                 video_metadata=video_metadata,
@@ -544,7 +580,14 @@ class PlannerAgent:
             None,
         )
         vlm_used = ae_report_for_cat and ae_report_for_cat.metadata.get("vlm_used", False)
-        if vlm_used:
+        anomaly_gated = (
+            ae_report_for_cat
+            and ae_report_for_cat.metadata.get("anomaly_gated", False)
+        )
+        if anomaly_gated:
+            # 2-stage gate 已判 Normal：覆蓋 Reflector / VLM 的任何分類
+            crime_type = "Normal"
+        elif vlm_used:
             crime_type = ae_report_for_cat.crime_category  # VLM 分類結果
         else:
             crime_type = final_audit.consensus_category  # fallback 到 Reflector
@@ -624,6 +667,12 @@ class PlannerAgent:
             "eval_weights": weights,
             "total_turns": self._total_turns,
             "final_category": crime_type,
+            # 2-stage anomaly detection outputs（D 計畫；供 AUROC / NDCF 評估用）
+            "escalation_score": escalation_score,
+            "anomaly_gated": bool(
+                ae_report and ae_report.metadata.get("anomaly_gated", False)
+            ),
+            "anomaly_threshold": self._anomaly_threshold,
             "is_convergent": final_audit.is_convergent,
             "conflict_type": final_audit.conflict_type,
             # 完整代理人輸出
@@ -1032,7 +1081,10 @@ class PlannerAgent:
         from PIL import Image as PILImage
 
         # 簡潔 prompt（跟 standalone 診斷完全一致，38.5% 最高準確率）
-        categories_str = ", ".join(UCF_CATEGORIES)
+        # 重要：使用字母排序對齊 scripts/test_vlm_classify.py 的 CRIME_CATEGORIES
+        # 順序，避免 VLM 受選項位置 bias 影響（Arrest043 drift 案例）。
+        # UCF_CATEGORIES 本身仍保留語義分組（MIL head index mapping 依賴它）。
+        categories_str = ", ".join(sorted(UCF_CATEGORIES))
         prompt = (
             "You are a forensic surveillance video analyst.\n"
             "Look at these frames from a CCTV video and determine what crime is occurring.\n\n"
@@ -1055,22 +1107,12 @@ class PlannerAgent:
         )
 
         # 均勻 8 幀（跟 standalone 診斷一致，MIL-guided 反而引入偏差）
+        from .frame_utils import uniform_keyframes, fallback_from_frame_list
         video_path = (video_metadata or {}).get("video_path", "")
         n_keyframes = 8
-        keyframes = []
-        if video_path and Path(video_path).exists():
-            cap = cv2.VideoCapture(video_path)
-            total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-            if total > 0:
-                indices = [int(i * total / n_keyframes) for i in range(n_keyframes)]
-                for idx in indices:
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
-                    ret, frame = cap.read()
-                    if ret:
-                        keyframes.append(PILImage.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
-            cap.release()
+        keyframes = uniform_keyframes(video_path, n_keyframes)
         if not keyframes:
-            keyframes = self._fallback_frames(frames, n_keyframes, cv2, PILImage)
+            keyframes = fallback_from_frame_list(frames, n_keyframes)
 
         video_content = [{"type": "image", "image": img} for img in keyframes]
 
@@ -1090,9 +1132,12 @@ class PlannerAgent:
             ).to(self._report_model.device)
 
             with torch.no_grad():
-                output_ids = self._report_model.generate(
+                gen_out = self._report_model.generate(
                     **inputs, max_new_tokens=128, temperature=0.1, do_sample=False,
+                    output_scores=True, return_dict_in_generate=True,
                 )
+            output_ids = gen_out.sequences
+            scores = gen_out.scores  # tuple[tensor(1, vocab_size), ...] per generation step
             generated = output_ids[0, inputs["input_ids"].shape[1]:]
             response = processor.decode(generated, skip_special_tokens=True).strip()
             response = re.sub(r"<think>.*?</think>\s*", "", response, flags=re.DOTALL).strip()
@@ -1105,26 +1150,245 @@ class PlannerAgent:
             else:
                 self._vlm_reason = ""
 
-            # 解析
+            # 解析類別
             cat_match = re.search(r"CATEGORY:\s*(\w+)", response, re.IGNORECASE)
-            conf_match = re.search(r"CONFIDENCE:\s*([\d.]+)", response, re.IGNORECASE)
-
+            predicted_cat = None
             if cat_match:
                 raw = cat_match.group(1)
                 for cat in UCF_CATEGORIES:
                     if cat.lower() == raw.lower():
-                        conf = float(conf_match.group(1)) if conf_match else 0.7
-                        return cat, min(conf, 1.0)
+                        predicted_cat = cat
+                        break
+            if predicted_cat is None:
+                # Fallback: 在 response 中找任一類別名
+                for cat in UCF_CATEGORIES:
+                    if cat.lower() in response.lower():
+                        predicted_cat = cat
+                        break
+            if predicted_cat is None:
+                return None
 
-            # Fallback: 搜尋類別名稱
-            for cat in UCF_CATEGORIES:
-                if cat.lower() in response.lower():
-                    return cat, 0.6
+            # 從 generate 的 logits 計算真實 confidence
+            # 幾何平均 p(category_token | prefix)，範圍 [0, 1]；
+            # 若抽不到則退回 0.5（中性），不再硬編 0.7
+            diag = self._classify_diagnostics(
+                scores, generated, processor.tokenizer, predicted_cat,
+                list(UCF_CATEGORIES),
+                bias_corrections=self._bias_corrections,
+            )
+            conf = diag["confidence"]
+            logger.info(
+                f"[VLM classify] conf={conf:.3f}  top1={diag['top1_prob']:.3f}  "
+                f"top2={diag['top2_prob']:.3f}  margin={diag['margin']:.3f}  "
+                f"entropy={diag['entropy']:.3f}  "
+                f"top3={diag['top3']}"
+            )
+
+            # Bias correction：校正後若 top-1 與 greedy 預測不同，覆寫並重新計算 conf
+            if self._bias_corrections and diag.get("corrected_top1"):
+                new_cat, new_prob = diag["corrected_top1"]
+                if new_cat != predicted_cat:
+                    logger.info(
+                        f"[VLM classify] bias-correct: {predicted_cat} → {new_cat}"
+                        f"  (corrected top1={new_prob:.3f}, "
+                        f"orig prob of {predicted_cat}="
+                        f"{diag['all_probs'].get(predicted_cat, 0):.3f})"
+                    )
+                    predicted_cat = new_cat
+                    conf = new_prob  # 改用校正後 softmax 機率當 confidence
+            return predicted_cat, conf
 
         except Exception as e:
             logger.warning(f"[VLM classify] 失敗：{e}")
 
         return None
+
+    @staticmethod
+    def _classify_diagnostics(
+        scores,
+        generated_ids,
+        tokenizer,
+        predicted_cat: str,
+        all_categories,
+        bias_corrections: Optional[Dict[str, float]] = None,
+    ) -> Dict:
+        """
+        對第一個類別 token 的位置抽 top-k 診斷資訊，給 calibration / 門檻調整用。
+
+        Returns dict with:
+          confidence       — 幾何平均 token prob（同 _confidence_from_scores）
+          top1_prob        — 在該位置、13 類 first-token 的 softmax 中，top-1 機率
+          top2_prob        — 同上 top-2
+          margin           — top1 − top2（越大越確定）
+          entropy          — 13 類限定的 entropy
+          top3             — [(cat, prob), ...] 前三（未校正）
+          all_probs        — {cat: prob} 13 類完整分布（未校正）
+          corrected_top1   — (cat, prob) bias 校正後的 top-1，未啟用時為 None
+          corrected_all    — {cat: prob} bias 校正後的完整分布
+        """
+        import math
+        import torch
+
+        fallback = {
+            "confidence": PlannerAgent._confidence_from_scores(
+                scores, generated_ids, tokenizer, predicted_cat
+            ),
+            "top1_prob": 0.0, "top2_prob": 0.0, "margin": 0.0,
+            "entropy": 0.0, "top3": [], "all_probs": {},
+            "corrected_top1": None, "corrected_all": {},
+        }
+        if scores is None or len(scores) == 0:
+            return fallback
+
+        # 預先建每類第一個 token 的 id（前後綴空白兩種嘗試）
+        cat_first: Dict[str, int] = {}
+        for cat in all_categories:
+            chosen = None
+            for prefix in (" ", ""):
+                try:
+                    ids = tokenizer.encode(prefix + cat, add_special_tokens=False)
+                    if ids:
+                        chosen = ids[0]
+                        break
+                except Exception:
+                    continue
+            if chosen is not None:
+                cat_first[cat] = chosen
+        if predicted_cat not in cat_first:
+            return fallback
+
+        # 找到 predicted_cat 第一個 token 在 generated_ids 的位置
+        gen_list = generated_ids.tolist() if hasattr(generated_ids, "tolist") else list(generated_ids)
+        pred_tid = cat_first[predicted_cat]
+        try:
+            decision_pos = gen_list.index(pred_tid)
+        except ValueError:
+            return fallback
+        if decision_pos >= len(scores):
+            return fallback
+
+        logits = scores[decision_pos][0]  # (vocab_size,)
+        # 限定在 13 類 first-token 上做 softmax，避免和無關 token 稀釋
+        ids_list = list(cat_first.values())
+        cat_list = list(cat_first.keys())
+        # 有些類別第一個 token id 可能重複（A 開頭的多類同 token）—— 去重並對應回最早的類
+        unique: Dict[int, str] = {}
+        for cat, tid in cat_first.items():
+            if tid not in unique:
+                unique[tid] = cat
+        unique_ids = list(unique.keys())
+        unique_cats = [unique[tid] for tid in unique_ids]
+
+        sub_logits = torch.stack([logits[tid] for tid in unique_ids])
+        probs = torch.softmax(sub_logits, dim=-1)
+        probs_list = probs.tolist()
+
+        ranked = sorted(
+            zip(unique_cats, probs_list), key=lambda x: x[1], reverse=True
+        )
+        top1_prob = ranked[0][1] if ranked else 0.0
+        top2_prob = ranked[1][1] if len(ranked) > 1 else 0.0
+        margin = top1_prob - top2_prob
+        entropy = -sum(p * math.log(max(p, 1e-12)) for p in probs_list)
+        top3 = [(c, round(p, 3)) for c, p in ranked[:3]]
+        all_probs = {cat: round(p, 4) for cat, p in zip(unique_cats, probs_list)}
+
+        # ── Bias correction（過度預測 Robbery/Burglary 的對策） ──
+        corrected_top1 = None
+        corrected_all: Dict[str, float] = {}
+        if bias_corrections:
+            bias_vec = torch.tensor(
+                [bias_corrections.get(cat, 0.0) for cat in unique_cats],
+                dtype=sub_logits.dtype, device=sub_logits.device,
+            )
+            adj_logits = sub_logits - bias_vec
+            adj_probs = torch.softmax(adj_logits, dim=-1).tolist()
+            ranked_adj = sorted(
+                zip(unique_cats, adj_probs), key=lambda x: x[1], reverse=True
+            )
+            corrected_top1 = (ranked_adj[0][0], round(float(ranked_adj[0][1]), 4))
+            corrected_all = {c: round(p, 4) for c, p in zip(unique_cats, adj_probs)}
+
+        conf_geo = PlannerAgent._confidence_from_scores(
+            scores, generated_ids, tokenizer, predicted_cat
+        )
+        return {
+            "confidence": conf_geo,
+            "top1_prob": float(top1_prob),
+            "top2_prob": float(top2_prob),
+            "margin": float(margin),
+            "entropy": float(entropy),
+            "top3": top3,
+            "all_probs": all_probs,
+            "corrected_top1": corrected_top1,
+            "corrected_all": corrected_all,
+        }
+
+    @staticmethod
+    def _confidence_from_scores(
+        scores,
+        generated_ids,
+        tokenizer,
+        predicted_cat: str,
+    ) -> float:
+        """
+        從 greedy 生成的 per-step logits 抽出預測類別 tokens 的幾何平均機率。
+
+        Returns
+        -------
+        float in [0, 1]
+            幾何平均 ∏ p(token_i | prefix) ^ (1 / n_tokens)
+            找不到匹配時回 0.5（中性）
+        """
+        import math
+        import torch
+
+        if scores is None or len(scores) == 0:
+            return 0.5
+
+        # 嘗試兩種 tokenization（前綴空白 / 無空白）以適配不同 tokenizer
+        candidates = []
+        for prefix in (" ", ""):
+            try:
+                ids = tokenizer.encode(prefix + predicted_cat, add_special_tokens=False)
+                if ids:
+                    candidates.append(ids)
+            except Exception:
+                continue
+        if not candidates:
+            return 0.5
+
+        gen_list = generated_ids.tolist() if hasattr(generated_ids, "tolist") else list(generated_ids)
+
+        start_pos = None
+        matched_ids = None
+        for target in candidates:
+            n = len(target)
+            if n == 0 or n > len(gen_list):
+                continue
+            for i in range(len(gen_list) - n + 1):
+                if gen_list[i:i + n] == target:
+                    start_pos = i
+                    matched_ids = target
+                    break
+            if start_pos is not None:
+                break
+
+        if start_pos is None or matched_ids is None:
+            return 0.5
+
+        log_probs = []
+        for offset, tid in enumerate(matched_ids):
+            step = start_pos + offset
+            if step >= len(scores):
+                break
+            logits = scores[step][0]
+            prob = torch.softmax(logits, dim=-1)[tid].item()
+            log_probs.append(math.log(max(prob, 1e-10)))
+
+        if not log_probs:
+            return 0.5
+        return float(math.exp(sum(log_probs) / len(log_probs)))
 
     def _call_qwen3_vl(
         self,

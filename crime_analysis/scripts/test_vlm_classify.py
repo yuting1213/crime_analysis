@@ -59,22 +59,10 @@ CLASSIFY_PROMPT = (
 )
 
 
-def extract_frames(video_path: str, n: int = 16) -> List[Image.Image]:
-    """從影片均勻抽取 n 幀，回傳 PIL Image list。"""
-    cap = cv2.VideoCapture(video_path)
-    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    if total <= 0:
-        cap.release()
-        return []
-    indices = [int(i * total / n) for i in range(n)]
-    frames = []
-    for idx in indices:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
-        ret, frame = cap.read()
-        if ret:
-            frames.append(Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
-    cap.release()
-    return frames
+def extract_frames(video_path: str, n: int = 8) -> List[Image.Image]:
+    """Uniformly sample *n* frames — delegates to the shared pipeline helper."""
+    from agents.frame_utils import uniform_keyframes
+    return uniform_keyframes(video_path, n)
 
 
 def parse_category(response: str) -> str:

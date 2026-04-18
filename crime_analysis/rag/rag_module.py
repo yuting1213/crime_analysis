@@ -164,11 +164,23 @@ class RAGModule:
         """
         Compute legal coverage score (Rlegal).
 
-        Two-tier scoring:
-          Tier 1 (60%): 報告是否引用了正確的法條條號（如「刑法第277條」）
-                        只計算 GROUP_LEGAL_CONTEXT 中該類別的法條
-          Tier 2 (40%): 報告是否涵蓋了法律構成要件（LEGAL_ELEMENTS）
-                        含否定偵測（「不構成」不計分）
+        Three-tier scoring (designed so ablation --no-rag produces meaningful
+        spread; no longer saturates at 1.0):
+
+          Tier 1 (40%) — Article F1
+            Precision: cited-expected overlap / cited in report
+            Recall:    cited-expected overlap / expected for this class
+            F1 = 2PR/(P+R)
+
+          Tier 2 (30%) — Element coverage with sentence-level negation
+            For each expected 構成要件 string, mark "covered" only when at
+            least one sentence containing it is not a negated conclusion
+            (e.g. "…不該當", "…不構成", "…無法滿足").
+
+          Tier 3 (30%) — Focus (1 − false-citation rate)
+            Counts 第X條 mentions that belong to OTHER classes' expected
+            articles (cross-class pollution) and linearly penalises up to 3
+            false cites.  Rewards precise citation.
 
         Parameters
         ----------
@@ -180,45 +192,88 @@ class RAGModule:
         Returns
         -------
         float
-            Weighted coverage score in [0.0, 1.0].
+            Weighted coverage score in [0.0, 1.0], rounded to 3 decimals.
         """
         import re
 
-        # ── Tier 1: 法條條號比對（60%）──
         expected_articles = GROUP_LEGAL_CONTEXT.get(crime_type, [])
-        if expected_articles:
-            # 從 "刑法第277條傷害罪" 提取條號 pattern "277"
-            article_hits = 0
-            for article_ref in expected_articles:
-                # 提取條號數字（如 277, 185-1, 320）
-                nums = re.findall(r'第(\d+(?:-\d+)?)條', article_ref)
-                for num in nums:
-                    # 報告中是否出現該條號（如 "第277條" 或 "277條"）
-                    if re.search(rf'第?\s*{re.escape(num)}\s*條', report_text):
-                        article_hits += 1
-                        break  # 每條法條只計一次
-            tier1 = article_hits / len(expected_articles)
+        elements = LEGAL_ELEMENTS.get(crime_type, [])
+
+        # Articles the report actually cites (numeric set, includes 185-1 etc.)
+        cited_nums = set(re.findall(r'第\s*(\d+(?:-\d+)?)\s*條', report_text))
+
+        # Expected article numbers for this class
+        expected_nums: set = set()
+        for article_ref in expected_articles:
+            expected_nums.update(re.findall(r'第(\d+(?:-\d+)?)條', article_ref))
+
+        # ── Tier 1: Article F1 ──
+        if expected_nums and cited_nums:
+            tp = len(cited_nums & expected_nums)
+            precision = tp / len(cited_nums)
+            recall = tp / len(expected_nums)
+            tier1 = (2 * precision * recall / (precision + recall)
+                     if (precision + recall) > 0 else 0.0)
         else:
             tier1 = 0.0
 
-        # ── Tier 2: 構成要件比對（40%）──
-        elements = LEGAL_ELEMENTS.get(crime_type, [])
+        # ── Tier 2: Element coverage with window-based negation ──
+        # 關鍵：報告常用 Markdown header 列出要件，但結論段才寫「不該當」；
+        # 因此對每個 element 檢查其後 160 字元的 window 是否出現否定結論。
+        # 另外若整份報告有 "不構成本罪" / "不成立本罪" / "不該當本罪" 等全局否定
+        # 結論，tier2 直接打 0.3 折讓評分反映最終判斷。
         if elements:
-            negation_prefixes = ("不", "無", "非", "未", "欠缺", "不具", "不構成", "排除")
+            negation_patterns = (
+                "不該當", "不構成", "不成立", "未該當", "未構成",
+                "無法滿足", "無法成立", "未具備", "欠缺",
+                "不具有", "不具備"
+            )
+            window = 160
             covered = 0
             for el in elements:
-                if el not in report_text:
-                    continue
-                idx = report_text.index(el)
-                context_before = report_text[max(0, idx - 4):idx]
-                if any(context_before.endswith(neg) for neg in negation_prefixes):
-                    continue
-                covered += 1
+                pos = 0
+                found_positive = False
+                while True:
+                    idx = report_text.find(el, pos)
+                    if idx < 0:
+                        break
+                    context = report_text[idx: idx + len(el) + window]
+                    if not any(neg in context for neg in negation_patterns):
+                        found_positive = True
+                        break
+                    pos = idx + len(el)
+                if found_positive:
+                    covered += 1
             tier2 = covered / len(elements)
+
+            # 全局結論否定：報告若對「本罪 / 本案 / 本件」下了不成立結論，
+            # 即使元件字面出現過，也應該大幅扣分
+            global_neg = any(
+                f"{neg}本{scope}" in report_text or f"本{scope}{neg}" in report_text
+                for neg in ("不構成", "不成立", "不該當", "無法適用")
+                for scope in ("罪", "案", "件")
+            )
+            if global_neg:
+                tier2 *= 0.3
         else:
             tier2 = 0.0
 
-        rlegal = 0.6 * tier1 + 0.4 * tier2
+        # ── Tier 3: Focus (false-citation penalty) ──
+        # 跨類別污染的 universe：其他 12 類別的法條
+        other_class_nums: set = set()
+        for ctype, refs in GROUP_LEGAL_CONTEXT.items():
+            if ctype == crime_type:
+                continue
+            for ref in refs:
+                other_class_nums.update(re.findall(r'第(\d+(?:-\d+)?)條', ref))
+        # 扣除本類也會用的共用法條（如 277 同時屬於 Assault / Fighting / Abuse）
+        other_class_nums -= expected_nums
+
+        false_cites = len(cited_nums & other_class_nums)
+        # 3 個以上誤引 → tier3 = 0；無誤引 → tier3 = 1
+        tier3 = max(0.0, 1.0 - false_cites / 3.0)
+
+        rlegal = 0.4 * tier1 + 0.3 * tier2 + 0.3 * tier3
         return round(rlegal, 3)
 
     # ------------------------------------------------------------------

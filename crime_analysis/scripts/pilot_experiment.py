@@ -95,6 +95,7 @@ def load_pilot_samples(
     split: str = "Test",
     include_normal: bool = False,
     exclude_ids: Optional[List[str]] = None,
+    n_normal: int = 0,
 ) -> List[Dict]:
     """
     從 UCA 標註 + UCF-Crime 影片目錄載入樣本。
@@ -104,10 +105,16 @@ def load_pilot_samples(
 
     Args:
         exclude_ids: 排除的 video_id 列表（用於正式實驗排除 Pilot 樣本）
+        n_normal: Normal 影片樣本數（>0 時自動設 include_normal=True）。
+                  僅在 UCA Test 沒有 Normal 時，會 fallback 去掃
+                  Testing_Normal_Videos_Anomaly/ 等資料夾補齊。
     """
     annotations = load_uca_annotations(split)
     if not annotations:
         return []
+
+    if n_normal > 0:
+        include_normal = True
 
     exclude_set = set(exclude_ids or [])
     per_cat = max(1, -(-n_samples // len(CRIME_CATEGORIES)))
@@ -124,7 +131,9 @@ def load_pilot_samples(
             continue
         if cat not in CRIME_CATEGORIES and cat != "Normal":
             continue
-        if category_counts.get(cat, 0) >= per_cat:
+        # Crime 類別用 per_cat；Normal 用 n_normal
+        cap = n_normal if cat == "Normal" else per_cat
+        if category_counts.get(cat, 0) >= cap:
             continue
 
         # 找影片檔案
@@ -168,9 +177,42 @@ def load_pilot_samples(
         })
         category_counts[cat] = category_counts.get(cat, 0) + 1
 
-    samples = samples[:n_samples]
+    # Fallback：若 UCA Test 沒有足夠 Normal 影片，從 Normal_Videos dirs 掃檔補齊
+    normal_have = category_counts.get("Normal", 0)
+    if n_normal > 0 and normal_have < n_normal:
+        logger.info(
+            f"UCA Test 只有 {normal_have} 個 Normal；從目錄掃檔補齊到 {n_normal}"
+        )
+        for normal_dir in ("Testing_Normal_Videos_Anomaly",
+                           "z_Normal_Videos_event",
+                           "Training_Normal_Videos_Anomaly"):
+            if category_counts.get("Normal", 0) >= n_normal:
+                break
+            dir_path = VIDEOS_DIR / normal_dir
+            if not dir_path.exists():
+                continue
+            for vp in sorted(dir_path.glob("*.mp4")):
+                if category_counts.get("Normal", 0) >= n_normal:
+                    break
+                vid = vp.stem
+                if vid in exclude_set:
+                    continue
+                samples.append({
+                    "video_path": str(vp),
+                    "video_id": vid,
+                    "ground_truth": "Normal",
+                    "metadata": {"fps": 25.0, "video_id": vid,
+                                 "duration": 0.0, "uca_segments": []},
+                })
+                category_counts["Normal"] = category_counts.get("Normal", 0) + 1
+
+    # 只對 crime 類別做 n_samples 上限；Normal 另計，不能被截斷
+    anomaly_samples = [s for s in samples if s["ground_truth"] != "Normal"]
+    normal_samples = [s for s in samples if s["ground_truth"] == "Normal"]
+    samples = anomaly_samples[:n_samples] + normal_samples[:max(n_normal, 0)]
+
     logger.info(
-        f"Pilot 樣本：{len(samples)} 個影片（目標 {n_samples}）\n"
+        f"Pilot 樣本：{len(samples)} 個影片（anomaly 目標 {n_samples} + normal {n_normal}）\n"
         f"  類別分布：{category_counts}"
     )
     return samples
@@ -244,6 +286,25 @@ def run_pilot(samples: List[Dict], output_dir: str, ablation_flags: Dict = None)
     if ablation_flags.get("no_vlm_report"):
         pipeline.planner._skip_vlm_report = True
         logger.info("[消融] VLM 報告生成已跳過，使用 fallback")
+
+    # Bias correction（非 ablation，是準確率優化；Robbery/Burglary 過度預測對策）
+    bias_file = ablation_flags.get("bias_correction")
+    if bias_file:
+        bias_path = Path(bias_file)
+        if bias_path.exists():
+            pipeline.planner._bias_corrections = json.loads(
+                bias_path.read_text(encoding="utf-8")
+            )
+            logger.info(f"[Bias] 已載入校正 priors → {bias_path}")
+        else:
+            logger.warning(f"[Bias] 找不到 {bias_path}，跳過校正")
+
+    # 2-stage anomaly gate：escalation_score < τ → Normal（不需 retrain）
+    anomaly_threshold = ablation_flags.get("anomaly_threshold")
+    if anomaly_threshold is not None:
+        pipeline.planner._anomaly_threshold = float(anomaly_threshold)
+        logger.info(f"[Anomaly gate] τ = {anomaly_threshold}")
+
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
@@ -268,20 +329,43 @@ def run_pilot(samples: List[Dict], output_dir: str, ablation_flags: Dict = None)
         uca_segments = metadata.get("uca_segments", [])
         n_uca_sentences = len(uca_segments)
 
+        # Rlegal 有兩種意涵：
+        #   rlegal (預測類別) — 報告對自己結論的內部一致性；pipeline 即時使用
+        #   rlegal_gt         — 報告相對「正確類別」法條與要件的契合度；
+        #                       評估/ablation 用，pipeline 預測錯時會明顯偏低
+        description = result.get("fact_finding", {}).get("description", "")
+        rag = getattr(getattr(pipeline, "planner", None), "rag", None)
+        if rag is not None and gt != "Normal" and description:
+            rlegal_gt = rag.compute_rlegal(gt, description)
+        else:
+            rlegal_gt = 0.0
+
+        # 2-stage anomaly detection labels + score
+        predicted = result.get("final_category", "Normal")
+        is_anomaly_gt = gt != "Normal"
+        is_anomaly_pred = predicted != "Normal"
+
         stat = {
             "video_id": video_id,
             "ground_truth": gt,
-            "predicted": result.get("final_category", "Normal"),
-            "correct": result.get("final_category") == gt,
+            "predicted": predicted,
+            "correct": predicted == gt,
             "confidence": result.get("fact_finding", {}).get("confidence", 0.0),
             "rcons": result.get("rcons", 0.0),
             "rlegal": result.get("rlegal", 0.0),
+            "rlegal_gt": rlegal_gt,
             "rcost": result.get("rcost", 0.0),
             "total_turns": result.get("total_turns", 0),
             "conflict_type": result.get("conflict_type", "NONE"),
             "is_convergent": result.get("is_convergent", False),
             "duration": metadata.get("duration", 0.0),
             "n_uca_sentences": n_uca_sentences,
+            # 2-stage anomaly detection
+            "escalation_score": result.get("escalation_score", 0.0),
+            "is_anomaly_gt": is_anomaly_gt,
+            "is_anomaly_pred": is_anomaly_pred,
+            "anomaly_correct": is_anomaly_gt == is_anomaly_pred,
+            "anomaly_gated": result.get("anomaly_gated", False),
         }
         case_stats.append(stat)
 
@@ -431,6 +515,7 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
     conf_correct = [s["confidence"] for s in case_stats if s["correct"]]
     conf_wrong = [s["confidence"] for s in case_stats if not s["correct"]]
     rlegal_list = [s["rlegal"] for s in case_stats]
+    rlegal_gt_list = [s.get("rlegal_gt", 0.0) for s in case_stats]
     rcons_list = [s["rcons"] for s in case_stats]
 
     # 按犯罪類別分組統計
@@ -475,6 +560,17 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
             "min": min(rlegal_list),
             "max": max(rlegal_list),
         },
+        "rlegal_gt": {
+            "mean": statistics.mean(rlegal_gt_list),
+            "min": min(rlegal_gt_list),
+            "max": max(rlegal_gt_list),
+            "mean_correct": statistics.mean(
+                [s["rlegal_gt"] for s in case_stats if s["correct"]]
+            ) if any(s["correct"] for s in case_stats) else 0.0,
+            "mean_wrong": statistics.mean(
+                [s["rlegal_gt"] for s in case_stats if not s["correct"]]
+            ) if any(not s["correct"] for s in case_stats) else 0.0,
+        },
         "rcons": {
             "mean": statistics.mean(rcons_list),
         },
@@ -483,6 +579,30 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
             for ct in ["NONE", "SOFT", "HARD"]
         },
     }
+
+    # ── 2-stage anomaly detection 摘要（Option D）──
+    has_normal = any(s.get("ground_truth") == "Normal" for s in case_stats)
+    has_escalation = any("escalation_score" in s for s in case_stats)
+    if has_normal and has_escalation:
+        try:
+            from evaluation.detection_metrics import (
+                auroc, minimum_ndcf, ndcf_sensitivity, binary_task_from_stats,
+            )
+            scores, labels = binary_task_from_stats(case_stats)
+            if len(scores) > 0 and labels.min() != labels.max():
+                auc = auroc(scores, labels)
+                min_cost, tau_star = minimum_ndcf(scores, labels)
+                sens = ndcf_sensitivity(scores, labels)  # optimal per ratio
+                summary["detection"] = {
+                    "n_anomaly": int(labels.sum()),
+                    "n_normal": int((labels == 0).sum()),
+                    "auroc": round(auc, 4),
+                    "min_ndcf_5_1": round(min_cost, 4),
+                    "tau_optimal": round(tau_star, 4),
+                    "sensitivity": sens,
+                }
+        except Exception as exc:
+            logger.warning(f"[Detection summary] skipped: {exc}")
 
     # ── 門檻建議 ─────────────────────────────────────────
     suggestions = []
@@ -542,9 +662,29 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
         cw = summary["confidence_wrong"]
         f.write(f"  錯誤分類：mean={cw['mean']:.3f}\n\n")
 
-        f.write("── Rlegal 統計 ──\n")
+        f.write("── Rlegal 統計（預測類別）──\n")
         rl = summary["rlegal"]
         f.write(f"  mean={rl['mean']:.3f}  range=[{rl['min']:.3f}, {rl['max']:.3f}]\n\n")
+
+        f.write("── Rlegal_GT 統計（正確類別，評估用）──\n")
+        rg = summary["rlegal_gt"]
+        f.write(f"  mean={rg['mean']:.3f}  range=[{rg['min']:.3f}, {rg['max']:.3f}]\n")
+        f.write(f"  correct 平均={rg['mean_correct']:.3f}   "
+                f"wrong 平均={rg['mean_wrong']:.3f}   "
+                f"gap={rg['mean_correct'] - rg['mean_wrong']:.3f}\n\n")
+
+        if "detection" in summary:
+            d = summary["detection"]
+            f.write("── 2-stage Anomaly Detection（Option D）──\n")
+            f.write(f"  n_anomaly={d['n_anomaly']}  n_normal={d['n_normal']}\n")
+            f.write(f"  AUROC={d['auroc']:.3f}\n")
+            f.write(f"  min NDCF (C_miss=5, C_fa=1, P_target=0.5)="
+                    f"{d['min_ndcf_5_1']:.3f} @ τ={d['tau_optimal']:.3f}\n")
+            f.write(f"  NDCF sensitivity（optimal per ratio）：\n")
+            for row in d["sensitivity"]:
+                f.write(f"    {row['c_miss']:>4.1f}:{row['c_fa']:<4.1f}  "
+                        f"NDCF={row['ndcf']:.3f}  τ={row['threshold']:.3f}\n")
+            f.write("\n")
 
         f.write("── Rcons 統計 ──\n")
         f.write(f"  mean={summary['rcons']['mean']:.3f}\n\n")
@@ -646,6 +786,20 @@ if __name__ == "__main__":
     parser.add_argument("--no-reflector", action="store_true", help="消融④：NullReflector")
     parser.add_argument("--no-vlm-report", action="store_true", help="消融⑤：用 fallback 模板報告")
     parser.add_argument(
+        "--bias-correction", default=None, metavar="PATH",
+        help="Bias prior JSON 路徑（e.g. data/bias_priors_qwen3vl_8b.json）。"
+             "啟用後會對 VLM 分類 logits 做 prior correction，壓抑過度預測類別。",
+    )
+    parser.add_argument(
+        "--anomaly-threshold", type=float, default=None, metavar="TAU",
+        help="2-stage anomaly gate：escalation_score < τ → 直接輸出 Normal，"
+             "跳過 VLM 分類 + 報告。None = 不 gate（純 13 類）。Option D 推論模式。",
+    )
+    parser.add_argument(
+        "--n-normal", type=int, default=0,
+        help="Pilot 中 Normal 影片的樣本數（預設 0 = 純 anomaly）。建議 4 配合 13 類各 4。",
+    )
+    parser.add_argument(
         "--exclude-pilot", action="store_true",
         help="排除 Pilot 的 52 個樣本（正式實驗用）",
     )
@@ -665,8 +819,9 @@ if __name__ == "__main__":
     samples = load_pilot_samples(
         n_samples=args.n_samples,
         split=args.split,
-        include_normal=args.include_normal,
+        include_normal=args.include_normal or args.n_normal > 0,
         exclude_ids=exclude_ids,
+        n_normal=args.n_normal,
     )
     if not samples:
         logger.error("無法載入樣本，請確認 UCA 資料集路徑")
@@ -679,10 +834,17 @@ if __name__ == "__main__":
         "no_vlm": args.no_vlm,
         "no_reflector": args.no_reflector,
         "no_vlm_report": args.no_vlm_report,
+        "bias_correction": args.bias_correction,
+        "anomaly_threshold": args.anomaly_threshold,
     }
-    active = [k for k, v in ablation_flags.items() if v]
+    active = [k for k, v in ablation_flags.items()
+              if v and k not in {"bias_correction", "anomaly_threshold"}]
     if active:
         logger.info(f"消融模式：{', '.join(active)}")
+    if args.bias_correction:
+        logger.info(f"Bias correction：{args.bias_correction}")
+    if args.anomaly_threshold is not None:
+        logger.info(f"Anomaly gate τ：{args.anomaly_threshold}")
 
     result = run_pilot(samples, args.output_dir, ablation_flags=ablation_flags)
 
