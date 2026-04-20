@@ -23,8 +23,17 @@ import json
 import logging
 import re
 import statistics
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional
+
+# 自動從 .env 載入 API keys；shell exports 仍優先
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+try:
+    from env_loader import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)

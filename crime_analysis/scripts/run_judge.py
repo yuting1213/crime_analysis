@@ -3,7 +3,7 @@ LLM-as-Judge 批次評分腳本
 
 用法：
     cd crime_analysis
-    export ANTHROPIC_API_KEY="your-key"
+    # 推薦：把 ANTHROPIC_API_KEY（或其他 judge 所需 key）寫進 crime_analysis/.env
 
     # 評分單一實驗的報告
     python -m scripts.run_judge --reports_dir outputs/pilot_reports
@@ -25,6 +25,13 @@ from pathlib import Path
 from typing import Dict, List
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# 自動從 .env 載入 API keys；shell exports 仍優先
+try:
+    from env_loader import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 from evaluation.llm_judge import LLMJudge, RUBRIC_DIMENSIONS
 

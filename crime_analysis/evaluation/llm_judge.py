@@ -12,6 +12,13 @@ from typing import Any, Dict, List, Optional
 import logging
 import json
 
+# 自動從 .env 載入 API keys；shell exports 仍優先（override=False）
+try:
+    from env_loader import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # env_loader 可能在部分 import 路徑下不可達，讓使用者自行 export
+
 from config import cfg
 
 logger = logging.getLogger(__name__)

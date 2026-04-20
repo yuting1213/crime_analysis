@@ -19,6 +19,13 @@ from typing import Any, Dict, List, Optional
 
 import torch
 
+# 自動從 .env 載入 API keys；shell exports 仍優先
+try:
+    from env_loader import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from config import cfg
 from agents import (
     EnvironmentAgent, ActionEmotionAgent,

@@ -3,7 +3,7 @@
 
 用法：
     cd crime_analysis
-    export GEMINI_API_KEY="your-key"
+    # 推薦：把 GEMINI_API_KEY 寫進 crime_analysis/.env（見 env_loader.py）
     python -m scripts.run_gemini_baseline --n_samples 154 --split Test --seed 42
 
 功能：
@@ -24,6 +24,10 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# 自動從 .env 載入 API keys（shell exports 仍優先）
+from env_loader import load_dotenv  # noqa: E402
+load_dotenv()
 
 from scripts.pilot_experiment import (
     load_pilot_samples, extract_frames, _save_case_report,
