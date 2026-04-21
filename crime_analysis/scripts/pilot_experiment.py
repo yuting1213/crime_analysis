@@ -258,8 +258,56 @@ def extract_frames(video_path: str, n_frames: int = 32) -> List:
 
 # ── 執行實驗 ─────────────────────────────────────────────────
 
-def run_pilot(samples: List[Dict], output_dir: str, ablation_flags: Dict = None) -> Dict:
-    """對每個 pilot 樣本執行 pipeline.analyze()，收集統計數據。"""
+def _load_resume_state(stats_path: Path):
+    """
+    Return (case_stats, done_ids) loaded from *stats_path*.
+
+    Gracefully handles missing / corrupt files → returns ([], set()).
+    Exposed as a top-level helper so tests can validate without touching
+    GPU-heavy pipeline internals.
+    """
+    if not stats_path.exists():
+        return [], set()
+    try:
+        stats = json.loads(stats_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        logger.warning(f"[Resume] 讀 {stats_path} 失敗（{exc}），從頭開始")
+        return [], set()
+    if not isinstance(stats, list):
+        logger.warning(f"[Resume] {stats_path} 格式異常（非 list），從頭開始")
+        return [], set()
+    done = {s["video_id"] for s in stats if isinstance(s, dict) and "video_id" in s}
+    return stats, done
+
+
+def _atomic_write_stats(stats_path: Path, case_stats: List[Dict]) -> None:
+    """
+    Atomic pilot_stats.json writeback: write to .json.tmp then rename.
+    Crash-safe: stats_path either matches the previous snapshot or the new one.
+    """
+    try:
+        tmp = stats_path.with_suffix(".json.tmp")
+        tmp.write_text(
+            json.dumps(case_stats, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        tmp.replace(stats_path)
+    except Exception as exc:
+        logger.warning(f"[Checkpoint] 寫入失敗（{exc}）")
+
+
+def run_pilot(
+    samples: List[Dict],
+    output_dir: str,
+    ablation_flags: Dict = None,
+    resume: bool = False,
+) -> Dict:
+    """
+    對每個 pilot 樣本執行 pipeline.analyze()，收集統計數據。
+
+    resume=True 時：讀 output_dir/pilot_stats.json，已完成的 video_id 跳過；
+    每跑完一題 checkpoint 寫回，crash 只損失最多 1 題。
+    """
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -316,12 +364,26 @@ def run_pilot(samples: List[Dict], output_dir: str, ablation_flags: Dict = None)
 
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
+    stats_path = output_path / "pilot_stats.json"
 
-    case_stats = []
+    # ── Resume 模式：從 pilot_stats.json 載入已完成記錄，跳過這些 video_id ──
+    if resume:
+        case_stats, done_ids = _load_resume_state(stats_path)
+        if done_ids:
+            logger.info(f"[Resume] 載入 {len(done_ids)} 筆既有結果，會跳過這些 video")
+    else:
+        case_stats = []
+        done_ids = set()
+
+    def _checkpoint() -> None:
+        _atomic_write_stats(stats_path, case_stats)
 
     for i, sample in enumerate(samples):
         video_id = sample["video_id"]
         gt = sample["ground_truth"]
+        if video_id in done_ids:
+            logger.info(f"[Pilot {i+1}/{len(samples)}] {video_id} — SKIP（resume）")
+            continue
         logger.info(f"[Pilot {i+1}/{len(samples)}] {video_id} ({gt})")
 
         frames = extract_frames(sample["video_path"])
@@ -377,9 +439,13 @@ def run_pilot(samples: List[Dict], output_dir: str, ablation_flags: Dict = None)
             "anomaly_gated": result.get("anomaly_gated", False),
         }
         case_stats.append(stat)
+        done_ids.add(video_id)
 
         # ── 輸出完整鑑定報告 ────────────────────────────
         _save_case_report(result, video_id, gt, metadata, output_path)
+
+        # ── Incremental checkpoint：每題寫一次 pilot_stats.json ──
+        _checkpoint()
 
     # ── 統計分析 ─────────────────────────────────────────
     if not case_stats:
@@ -812,6 +878,11 @@ if __name__ == "__main__":
         "--exclude-pilot", action="store_true",
         help="排除 Pilot 的 52 個樣本（正式實驗用）",
     )
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="從 output_dir/pilot_stats.json 續跑；已完成的 video_id 跳過。"
+             "每題都會 checkpoint，crash 時最多損失一題。",
+    )
     args = parser.parse_args()
 
     # 固定隨機種子
@@ -855,7 +926,11 @@ if __name__ == "__main__":
     if args.anomaly_threshold is not None:
         logger.info(f"Anomaly gate τ：{args.anomaly_threshold}")
 
-    result = run_pilot(samples, args.output_dir, ablation_flags=ablation_flags)
+    result = run_pilot(
+        samples, args.output_dir,
+        ablation_flags=ablation_flags,
+        resume=args.resume,
+    )
 
     # 輸出 confusion matrix
     stats_path = Path(args.output_dir) / "pilot_stats.json"
