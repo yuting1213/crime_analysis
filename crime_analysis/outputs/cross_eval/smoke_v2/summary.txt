@@ -1,0 +1,21 @@
+============================================================================
+ Cross-Evaluation Summary (symmetric 2-judge)
+============================================================================
+
+n_reports: 2
+judges:    ['gemini']
+
+── Per-model overall (0–1 scale) ──
+
+  qwen:
+    gemini     mean=0.202  std=0.034  n=2
+    averaged   mean=0.202  std=0.034  n=2
+
+  gemini:
+    gemini     mean=0.554  std=0.244  n=2
+    averaged   mean=0.554  std=0.244  n=2
+
+── Cross-model comparison (averaged over judges) ──
+  qwen_mean                mean=0.202  n=2
+  gemini_mean              mean=0.554  n=2
+  qwen_minus_gemini        = -0.3512

@@ -1,0 +1,93 @@
+[
+  {
+    "video_id": "Abuse037_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse038_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse039_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse040_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse041_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse042_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest043_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest044_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest046_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest048_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest049_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest050_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest051_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  }
+]

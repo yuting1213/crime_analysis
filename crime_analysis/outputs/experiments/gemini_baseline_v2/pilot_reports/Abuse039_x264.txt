@@ -1,0 +1,97 @@
+======================================================================
+  鑑定報告：Abuse039_x264
+======================================================================
+
+  正確答案：Abuse
+  模型判定：Normal  ✗
+  信心程度：0.00%
+  報告生成：gemini-baseline
+
+──────────────────────────────────────────────────────────────────────
+  一、鑑定報告（gemini-baseline）
+──────────────────────────────────────────────────────────────────────
+
+
+
+──────────────────────────────────────────────────────────────────────
+  一-b、ActionEmotion Agent 行為摘要
+──────────────────────────────────────────────────────────────────────
+
+（無）
+
+──────────────────────────────────────────────────────────────────────
+  二、行為分析
+──────────────────────────────────────────────────────────────────────
+
+  因果鏈：
+  升溫分數：0.00
+  事前指標：（無）
+  事後指標：（無）
+
+──────────────────────────────────────────────────────────────────────
+  三、法律適用
+──────────────────────────────────────────────────────────────────────
+
+  適用法條：（無）
+  構成要件：（無）
+  Rlegal：0.000
+
+──────────────────────────────────────────────────────────────────────
+  四、系統指標
+──────────────────────────────────────────────────────────────────────
+
+  Rcons：1.000
+  Rcost：0.000
+  對話輪次：1
+  衝突類型：NONE
+  是否收斂：True
+
+──────────────────────────────────────────────────────────────────────
+  五、不確定性與限制
+──────────────────────────────────────────────────────────────────────
+
+  【低信心項目】（無）
+  【衝突證據】（無）
+  【證據不足】（無）
+
+──────────────────────────────────────────────────────────────────────
+  附錄：UCA 時序標註（Ground Truth）
+──────────────────────────────────────────────────────────────────────
+
+  [0.0s – 7.5s] A yellow-haired woman in black clothes walked into the room
+  [7.5s – 12.6s] A black-haired woman in black clothes walked into the room. She stood on the black footprints in the center of the room.
+  [12.6s – 39.3s] The yellow-haired woman walked to the black-haired woman. She stood next to the black-haired woman and took something from the black-haired woman.
+  [19.5s – 26.3s] The man in black standing at the door walked into the room and walked in front of the two women.
+  [39.3s – 46.8s] The yellow-haired woman walked behind the black-haired woman, and the man in black walked to the blue door
+  [49.3s – 55.2s] The yellow-haired woman and the man in black looked at the white paper on the silver table at the door
+  [55.2s – 76.1s] The yellow-haired woman walked to the side of the black-haired woman and handed the things in her hands to the man in black. The man in black was sorting the plastic bags on the silver table at the door.
+  [76.1s – 80.2s] The yellow-haired woman walked to the machine next to the room and took an item placed on the machine
+  [84.8s – 87.1s] The yellow-haired woman stood next to the black-haired woman, scanning the black-haired woman up and down with the machine in her hand, and the man in black stood behind the black-haired woman.
+  [97.5s – 103.5s] The black-haired woman walked forward and stood next to a machine. The yellow-haired woman and the man in black also took a few steps forward and stood next to the wall.
+  [104.5s – 126.7s] How many people maintain this posture
+  [128.2s – 142.5s] The black-haired woman turned around and then stood
+  [142.5s – 156.4s] The black-haired woman spins in circles and then stands
+  [156.4s – 174.6s] The black-haired woman turned around and then stood
+  [178.3s – 184.2s] The black-haired woman took a few steps towards the center of the room, and then the yellow-haired woman pushed the black-haired woman to the wall.
+  [184.2s – 194.5s] The black-haired woman is standing by the wall, and the yellow-haired woman is standing behind her
+  [194.5s – 217.1s] The man in black stands behind the black-haired woman, and the yellow-haired woman stands behind the black-haired woman
+  [217.1s – 223.3s] The yellow-haired woman took a step back, then walked to the side of the black-haired woman
+  [228.8s – 237.2s] The yellow-haired woman walked to the door, and then walked back to the man in black
+  [237.8s – 270.2s] The yellow-haired woman and the man in black have been gesturing to the black-haired woman and saying something.
+  [271.5s – 280.6s] The black-haired woman standing by the wall took off her shirt, and then the yellow-haired woman and the man in black put their clothes aside
+  [281.9s – 314.2s] The man in black is supporting the wall with one hand, and the yellow-haired woman is standing behind the black-haired woman. The two of them continue to talk.
+  [316.3s – 341.1s] The black-haired woman bent over the wall, and the yellow-haired woman was behind her, checking the black-haired woman's whole body.
+  [320.5s – 340.8s] The man in black stood next to the machine on the left side of the room. Then the man in black took the shoes from the conveyor belt of the machine and left the room.
+  [344.3s – 351.8s] The yellow-haired woman took something from the black-haired woman, then walked to the door and threw the thing in her hand into the plastic bag held by the man in black.
+  [351.2s – 363.2s] The black-haired woman walked to the door, then walked to the machine on the left side of the room
+  [363.2s – 379.8s] The black-haired woman picked up the clothes on the machine conveyor belt and tried to put them on her body
+  [379.8s – 392.1s] The yellow-haired woman rushed over and beat the black-haired woman, and then the man in black joined in, and the two pushed the black-haired woman to the ground.
+  [392.1s – 395.7s]  Several people walked into the room, and they walked to the person fighting in the center of the room.
+  [397.2s – 402.6s] A man in black walked into the room, walked to the blue door, opened the hanging box, and took out a piece of white paper
+  [402.6s – 408.1s] The man next to the blue door walked to the crowd in the center of the room.
+  [409.7s – 432.1s] A group of people continued to beat the black-haired lady, while the man holding the white paper stood aside and watched.
+  [433.7s – 438.2s] A group of men in black in the center of the room stood up. Among them was a man with a hood, who took a few steps forward.
+  [438.2s – 458.6s] The person wearing the hood fell to the ground, and several people in black were pressing on her.
+  [458.6s – 471.0s] The people in black left the room one after another
+
+======================================================================

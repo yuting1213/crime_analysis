@@ -1,0 +1,53 @@
+{
+  "qwen3vl_32b": {
+    "n": 406,
+    "confusion": {
+      "TP": 113,
+      "FP": 2,
+      "FN": 93,
+      "TN": 198
+    },
+    "precision": 0.9826,
+    "recall": 0.5485,
+    "f1": 0.704,
+    "accuracy": 0.766,
+    "class_accuracy_14way": 0.6478,
+    "model": "qwen3vl_32b"
+  },
+  "gemma4_26b_a4b": {
+    "n": 406,
+    "confusion": {
+      "TP": 0,
+      "FP": 0,
+      "FN": 206,
+      "TN": 200
+    },
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "accuracy": 0.4926,
+    "class_accuracy_14way": 0.4926,
+    "model": "gemma4_26b_a4b",
+    "display_name": "Gemma-4-26B-A4B-it (INT4)",
+    "elapsed_seconds": 135251.6,
+    "samples_run_this_session": 406
+  },
+  "internvl3_38b": {
+    "n": 406,
+    "confusion": {
+      "TP": 0,
+      "FP": 0,
+      "FN": 206,
+      "TN": 200
+    },
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "accuracy": 0.4926,
+    "class_accuracy_14way": 0.4926,
+    "model": "internvl3_38b",
+    "display_name": "InternVL3-38B-hf (INT4)",
+    "elapsed_seconds": 211.7,
+    "samples_run_this_session": 406
+  }
+}

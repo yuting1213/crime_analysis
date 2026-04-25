@@ -131,6 +131,37 @@ class DataConfig:
     frame_size: tuple = (224, 224)
 
 
+# ── 類別性質分類（台灣刑法對應性）──────────────────────────
+# UCF-Crime 13 類在台灣刑法下的性質分類。用於推論階段決定是否進入
+# H-RAG + Reflector；僅 CRIME_CATEGORIES 類別進行法條檢索與構成要件審查。
+# 詳細說明見論文第三章「研究範圍與分類設計」及
+# /home/yuting/.claude/plans/ucf-polished-nova.md。
+
+# 非犯罪異常：MIL Head 仍偵測為異常，但不對應刑法罪名
+# - Arrest：畫面主體為執法行動，逮捕本身非罪名
+# - RoadAccidents：屬交通管理法規或民事責任
+# - Explosion：畫面無法單獨判定犯意（可能為意外）
+NON_CRIME_CATEGORIES: frozenset = frozenset({
+    "Arrest", "RoadAccidents", "Explosion",
+})
+
+# 犯罪類別（10 類）：進入完整 H-RAG + Reflector 流程
+CRIME_CATEGORIES: frozenset = frozenset({
+    "Robbery", "Stealing", "Burglary", "Abuse", "Assault",
+    "Vandalism", "Fighting", "Arson", "Shoplifting", "Shooting",
+})
+
+
+def is_crime(category: str) -> bool:
+    """是否為刑法可對應之犯罪類別（決定是否進入 H-RAG + Reflector）。"""
+    return category in CRIME_CATEGORIES
+
+
+def is_non_crime_anomaly(category: str) -> bool:
+    """是否為非犯罪類異常（仍視為異常，但不進入法條檢索）。"""
+    return category in NON_CRIME_CATEGORIES
+
+
 @dataclass
 class Config:
     model: ModelConfig = field(default_factory=ModelConfig)

@@ -23,7 +23,51 @@ from config import cfg
 
 logger = logging.getLogger(__name__)
 
-# Rubric 評分維度（5 維度，每項 1-5 分，總分 25）
+# ── 7 題 Rubric（2026-04-23 更新）──────────────────────────
+# 每題有具體 anchor + 浮動最高分；評分後正規化到 0–1 相加取平均得 overall。
+# 設計理由：
+#   - 法律無絕對 GT，Q1 評「情景合理性」而非「絕對正確」
+#   - Q2 要件覆蓋率 max 依報告自己主張的罪名（動態 k）
+#   - Q7 用 UCA 情景描述當事實 GT（唯一錨點題）
+#   - 與人類評分者用相同 rubric，ICC 才有意義
+#
+# Q2 的 max_score=None 表示動態：由 open_book_context 裡法條的 elements 決定
+RUBRIC_QUESTIONS = {
+    "q1_legal_relevance": {
+        "max_score": 3,
+        "description": "法條引用情景合理性（A=3 條號+項完整且對情景合理；B=2 條號正確但格式不完整；C=1 條號本身有效但對情景不相關；D=0 未引用）",
+    },
+    "q2_element_coverage": {
+        "max_score": None,   # 動態，由報告主張罪名的要件數 k 決定
+        "description": "構成要件覆蓋率（每覆蓋一個要件 1 分；要件清單依報告自己主張的罪名）",
+    },
+    "q3_evidence_traceability": {
+        "max_score": 3,
+        "description": "影像證據可追溯性（A=3 全部主張有幀號；B=2 多數>50%；C=1 少數<50%；D=0 無）",
+    },
+    "q4_causal_chain": {
+        "max_score": 4,
+        "description": "因果鏈完整性（犯罪前/中/後各 1 分 + 三階段有清楚因果連結 +1 分，共 4 分）",
+    },
+    "q5_uncertainty_marking": {
+        "max_score": 3,
+        "description": "不確定性標記適當性（A=3 有說明限制+建議複查；B=2 有提但無具體原因；C=3 影片品質好不需標記；D=0 影片有問題卻仍強肯定）",
+    },
+    "q6_judicial_language": {
+        "max_score": 3,
+        "description": "司法語言規範性（A=3 用語精確、主體統一；B=2 1-2 處口語化；C=1 多處口語但有實質內容；D=0 術語明顯錯誤）",
+    },
+    "q7_scenario_fidelity": {
+        "max_score": 3,
+        "description": "情景事實吻合度（對照 UCA 情景 GT。A=3 全部事實吻合；B=2 絕大部分吻合 1-2 處小出入；C=1 多處出入或過度推論；D=0 明顯與情景矛盾）",
+    },
+}
+
+# 正規化差距門檻（超過視為兩次評分不穩定）
+# raw 最大差 2 分、max=7 題平均後約 0.29
+STABILITY_THRESHOLD_NORM = 0.29
+
+# ── Backward compat（舊 5 維 rubric；DPO 相關 legacy code 可能還用到）──
 RUBRIC_DIMENSIONS = {
     "logical_consistency": "報告的推理鏈是否邏輯自洽，無矛盾（對應 Rcons）",
     "legal_coverage": "報告是否涵蓋足夠的法律構成要件並引用具體法條條號（對應 Rlegal）",
@@ -31,9 +75,7 @@ RUBRIC_DIMENSIONS = {
     "causal_reasoning": "是否建立清晰的因果鏈（前兆行為 → 犯罪實施 → 事後反應）",
     "uncertainty_marking": "是否明確標記不確定性、分析限制、和需進一步調查的事項",
 }
-
-# 兩次評分差距超過此值時標記為不穩定
-STABILITY_THRESHOLD = 3.0
+STABILITY_THRESHOLD = 3.0  # 舊 raw 1-5 差距門檻（for pairwise_compare double-check 等舊路徑）
 
 
 def _parse_json_response(text: str) -> Dict[str, Any]:
@@ -209,7 +251,7 @@ class LLMJudge:
             "video_id": video_id,
         }
 
-    # ── Rubric 評分（單份報告）────────────────────────────
+    # ── Rubric 評分（7 題 rubric，支援 open-book 參考）────────
 
     def rubric_score(
         self,
@@ -217,41 +259,92 @@ class LLMJudge:
         report: str,
         crime_type: str = "",
         double_check: bool = False,
+        open_book_context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Prometheus 風格的 Rubric 評分（5 維度，每項 1-5 分）。
-        """
-        judge_prompt = self._build_rubric_prompt(prompt, report)
-        scores_1 = self._call_rubric(judge_prompt)
+        7 題 Rubric 評分（2026-04-23 版）。
 
-        if not double_check:
-            dim_scores = {dim: float(scores_1.get(dim, 3)) for dim in RUBRIC_DIMENSIONS}
-            overall = sum(dim_scores.values()) / len(dim_scores)
-            return {
-                "dimension_scores": dim_scores,
-                "overall_score": overall,
-                "feedback": scores_1.get("feedback", ""),
-                "is_stable": True,
+        open_book_context（選填）格式：
+            {
+              "scenario_description": "...",  # UCA 情景描述
+              "cited_articles": [             # 報告引用的法條
+                {"article": "刑法第 277 條", "full_text": "...", "elements": [...]}
+              ],
             }
 
+        回傳：
+            q_scores:   {q_key: raw_score}
+            q_max:      {q_key: max}                   # Q2 動態
+            q_norm:     {q_key: normalized [0,1]}
+            overall:    平均正規化分數 [0,1]
+            feedback:   裁判文字評語
+            is_stable:  兩次評分 max_norm_diff < STABILITY_THRESHOLD_NORM
+        """
+        # 決定 Q2 的 max_score（若報告引用法條帶有 elements 清單，依其長度）
+        q2_max = 4  # 預設 fallback
+        if open_book_context and open_book_context.get("cited_articles"):
+            elements_counts = [
+                len(a.get("elements", []))
+                for a in open_book_context["cited_articles"]
+                if a.get("elements")
+            ]
+            if elements_counts:
+                q2_max = max(elements_counts)   # 取引用法條中要件最多者
+        q_max = {
+            k: (q2_max if k == "q2_element_coverage" else v["max_score"])
+            for k, v in RUBRIC_QUESTIONS.items()
+        }
+
+        judge_prompt = self._build_rubric_prompt(prompt, report, open_book_context, q_max)
+        scores_1 = self._call_rubric(judge_prompt, q_max)
+
+        if not double_check:
+            return self._pack_rubric_result(scores_1, None, q_max, scores_1.get("feedback", ""))
+
         # 穩定性檢查（2x token）
-        scores_2 = self._call_rubric(judge_prompt)
-        avg_scores = {}
-        for dim in RUBRIC_DIMENSIONS:
-            avg_scores[dim] = (scores_1.get(dim, 3) + scores_2.get(dim, 3)) / 2
+        scores_2 = self._call_rubric(judge_prompt, q_max)
+        return self._pack_rubric_result(scores_1, scores_2, q_max, scores_1.get("feedback", ""))
 
-        overall = sum(avg_scores.values()) / len(avg_scores)
-        max_diff = max(
-            abs(scores_1.get(dim, 3) - scores_2.get(dim, 3))
-            for dim in RUBRIC_DIMENSIONS
-        )
-        is_stable = max_diff < STABILITY_THRESHOLD
+    @staticmethod
+    def _pack_rubric_result(
+        scores_1: Dict[str, int],
+        scores_2: Optional[Dict[str, int]],
+        q_max: Dict[str, int],
+        feedback: str,
+    ) -> Dict[str, Any]:
+        """把一次或兩次評分壓成最終 dict。"""
+        q_raw_avg = {}
+        q_norm = {}
+        max_norm_diff = 0.0
 
+        for q_key in RUBRIC_QUESTIONS:
+            max_s = q_max[q_key]
+            # 中間分 fallback：ceiling 除 2，避免 max_s=1 時給 0
+            midpoint = (max_s + 1) // 2 if max_s else 0
+            raw_1 = scores_1.get(q_key, midpoint)
+            if scores_2 is not None:
+                raw_2 = scores_2.get(q_key, midpoint)
+                raw_avg = (raw_1 + raw_2) / 2
+                n1 = raw_1 / max_s if max_s else 0
+                n2 = raw_2 / max_s if max_s else 0
+                max_norm_diff = max(max_norm_diff, abs(n1 - n2))
+            else:
+                raw_avg = raw_1
+            q_raw_avg[q_key] = raw_avg
+            q_norm[q_key] = raw_avg / max_s if max_s else 0
+
+        overall = sum(q_norm.values()) / len(q_norm) if q_norm else 0
         return {
-            "dimension_scores": avg_scores,
-            "overall_score": overall,
-            "feedback": scores_1.get("feedback", ""),
-            "is_stable": is_stable,
+            "q_scores": q_raw_avg,
+            "q_max": q_max,
+            "q_norm": q_norm,
+            "overall": overall,
+            "feedback": feedback,
+            "is_stable": (scores_2 is None) or (max_norm_diff < STABILITY_THRESHOLD_NORM),
+            "max_norm_diff": max_norm_diff if scores_2 is not None else 0.0,
+            # ── 與舊欄位相容（run_judge.py 舊呼叫可能讀這些）──
+            "dimension_scores": q_raw_avg,
+            "overall_score": overall * 5,  # 換回舊「1-5 比例」讓舊碼不爆
         }
 
     def batch_rubric_score(
@@ -329,23 +422,31 @@ class LLMJudge:
             "rationale": parsed.get("rationale", ""),
         }
 
-    def _call_rubric(self, judge_prompt: str) -> Dict[str, Any]:
-        """呼叫 LLM 進行 Rubric 評分，回傳維度分數。"""
+    def _call_rubric(self, judge_prompt: str, q_max: Dict[str, int]) -> Dict[str, Any]:
+        """呼叫 LLM 進行 7 題 Rubric 評分；回傳 raw 分數 + feedback。"""
         response_text = self._call_llm(judge_prompt, json_mode=True)
         parsed = _parse_json_response(response_text)
 
+        # midpoint fallback：ceiling 除 2 避免 max=1 時給 0
+        def _midpoint(max_s: int) -> int:
+            return (max_s + 1) // 2 if max_s else 0
+
         if not parsed:
-            return {dim: 3 for dim in RUBRIC_DIMENSIONS}
+            # fallback: 每題給中間分
+            fallback = {q_key: _midpoint(q_max[q_key]) for q_key in RUBRIC_QUESTIONS}
+            fallback["feedback"] = "[parse failed]"
+            return fallback
 
         result = {}
-        for dim in RUBRIC_DIMENSIONS:
-            score = parsed.get(dim, 3)
+        for q_key in RUBRIC_QUESTIONS:
+            max_s = q_max[q_key]
+            raw = parsed.get(q_key, _midpoint(max_s))
             try:
-                score = int(float(score))
-                score = max(1, min(5, score))
+                raw_int = int(float(raw))
+                raw_int = max(0, min(max_s, raw_int))
             except (ValueError, TypeError):
-                score = 3
-            result[dim] = score
+                raw_int = _midpoint(max_s)
+            result[q_key] = raw_int
 
         result["feedback"] = parsed.get("feedback", "")
         return result
@@ -465,27 +566,96 @@ class LLMJudge:
 請以 JSON 格式回傳：
 {{"winner":"{first_label}"或"{second_label}"或"tie","score_first":1-5,"score_second":1-5,"rationale":"50字內說明理由"}}"""
 
-    def _build_rubric_prompt(self, case_prompt: str, report: str) -> str:
-        dims_json = ", ".join(f'"{d}":int' for d in RUBRIC_DIMENSIONS)
-        return f"""你是一位台灣刑事鑑識專家。請評估以下鑑定報告的品質，每項 1-5 分。
+    def _build_rubric_prompt(
+        self,
+        case_prompt: str,
+        report: str,
+        open_book_context: Optional[Dict[str, Any]] = None,
+        q_max: Optional[Dict[str, int]] = None,
+    ) -> str:
+        """7 題 rubric prompt，含 open-book γ 參考資料。"""
+        q_max = q_max or {
+            k: (v["max_score"] or 4) for k, v in RUBRIC_QUESTIONS.items()
+        }
 
-【案件描述】
+        # Open-book 參考資料（情景 + 引用法條）
+        reference_block = ""
+        if open_book_context:
+            lines = ["【參考資料】"]
+            scenario = open_book_context.get("scenario_description", "")
+            if scenario:
+                lines.append(f"\nUCA 情景描述（事實 GT）：\n{scenario}")
+
+            articles = open_book_context.get("cited_articles", [])
+            if articles:
+                lines.append("\n報告中引用的法條全文：")
+                for art in articles:
+                    lines.append(f"\n{art.get('article', '?')}")
+                    if art.get("full_text"):
+                        lines.append(f"  條文：{art['full_text']}")
+                    if art.get("elements"):
+                        lines.append(f"  構成要件（共 {len(art['elements'])} 項）：")
+                        for i, e in enumerate(art["elements"], 1):
+                            lines.append(f"    {i}. {e}")
+            reference_block = "\n".join(lines) + "\n"
+
+        # JSON schema 提示
+        schema_items = []
+        for q_key in RUBRIC_QUESTIONS:
+            schema_items.append(f'"{q_key}":0-{q_max[q_key]}')
+        schema_json = ",".join(schema_items) + ',"feedback":"50字內整體評語"'
+
+        return f"""你是一位台灣刑事鑑識評分專家。請用 7 題 rubric 評估以下鑑定報告。
+
+{reference_block}
+【案件類別】
 {case_prompt}
 
-【鑑定報告】
+【待評估報告】
 {report}
 
-【評分標準（每項 1-5 分）】
-1. logical_consistency（邏輯一致性）：推理鏈是否自洽，無矛盾
-   1=完全矛盾 2=部分矛盾 3=基本通順 4=邏輯清晰 5=完整論證含替代解釋排除
-2. legal_coverage（法律覆蓋率）：是否涵蓋足夠法律構成要件並引用具體法條條號
-   1=未提及法條 2=提及但未說明 3=基本關聯 4=完整涵蓋要件 5=引用裁判書判例
-3. evidence_citation（證據引用）：是否精確標註影像幀與時間點
-   1=無引用 2=有但不精確 3=精確引用 4=引用+視覺證據說明 5=引用+排除誤判
-4. causal_reasoning（因果推理）：是否建立清晰因果鏈
-   1=僅相關性 2=簡單因果 3=完整前因後果 4=含前兆行為 5=含反事實推論
-5. uncertainty_marking（不確定性標記）：是否誠實標記限制和不確定性
-   1=未標記 2=泛泛提及 3=列出具體限制 4=限制+影響評估 5=限制+替代解釋+後續建議
+【評分規則（每題請給 raw 分數，整數）】
 
-請以 JSON 格式回傳：
-{{{dims_json},"feedback":"50字內整體評語"}}"""
+Q1 法條引用情景合理性（0–3）：
+  3=條號+項完整，且對情景合理
+  2=條號正確但格式不完整（如只寫「刑法 277 條」）
+  1=條號本身有效但對情景不相關
+  0=完全未引用法條
+
+Q2 構成要件覆蓋率（0–{q_max['q2_element_coverage']}）：
+  每覆蓋一個構成要件得 1 分
+  要件清單：依【報告自己主張的罪名】對應的要件（見上方參考資料）
+  最高 {q_max['q2_element_coverage']}（該罪名的要件總數）
+
+Q3 影像證據可追溯性（0–3）：
+  3=所有主要法律主張都有具體幀號／時間點對應
+  2=多數主張有幀號（>50%）
+  1=少數主張有幀號（<50%）
+  0=完全無幀號或具體時間點
+
+Q4 因果鏈完整性（0–4）：
+  犯罪前階段（情緒前兆、準備行為）：+1 分
+  犯罪行為本身：+1 分
+  犯罪後階段（逃跑、被害人反應）：+1 分
+  三階段都有且因果連結清楚：再 +1 分（共 4 分）
+
+Q5 不確定性標記適當性（0–3）：
+  3=明確說明視覺限制並建議人工複查，或影片品質確實良好不需標記（視情況）
+  2=有提到不確定性但沒具體原因
+  1=其他中間情況
+  0=影片有遮蔽／過暗等明顯問題卻仍給出強烈肯定結論
+
+Q6 司法語言規範性（0–3）：
+  3=用語精確、主體統一（行為人／被害人）、動詞精確（施以／造成）
+  2=整體專業但 1–2 處口語化
+  1=多處口語但內容仍有實質意義
+  0=用語混亂、術語使用明顯錯誤
+
+Q7 情景事實吻合度（0–3，對照上方 UCA 情景 GT）：
+  3=全部事實皆吻合情景
+  2=絕大部分吻合，1–2 處小出入
+  1=多處出入或過度推論
+  0=明顯與情景矛盾
+
+請以 JSON 格式回傳（整數分數，不要加 quote）：
+{{{schema_json}}}"""

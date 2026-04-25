@@ -45,7 +45,7 @@ from agents.action_emotion_agent import (
     FusionEncoder, FUSION_DIM, NUM_CLASSES, NUM_SNIPPETS,
     FRAMES_PER_CLIP, R3D_DIM, UCF_CATEGORIES,
 )
-from scripts.pilot_experiment import VIDEOS_DIR, UCA_ROOT, CRIME_CATEGORIES
+from scripts.pilot_experiment import VIDEOS_DIR, UCA_ROOT, UCF_CATEGORIES as CRIME_CATEGORIES
 
 # ── 設定 ─────────────────────────────────────────────────────
 FEATURE_CACHE_DIR = Path("./outputs/feature_cache")
@@ -797,15 +797,38 @@ def _save_state_dict(model: nn.Module, path: Path):
 def _mil_ranking_loss(
     scores_a: torch.Tensor,
     scores_n: torch.Tensor,
-    mu1: float = 8e-5,
-    mu2: float = 8e-5,
+    mu1: float = 0.0,   # kept for backward compat; ignored in BCE version
+    mu2: float = 0.0,   # kept for backward compat; ignored in BCE version
 ) -> torch.Tensor:
-    """MIL ranking loss (Elmetwally et al. 2025)。"""
-    l1 = torch.clamp(1.0 - scores_a.max() + scores_n.max(), min=0.0)
-    l2 = torch.clamp(1.0 - scores_a.max() + scores_a.min(), min=0.0)
-    smoothness = ((scores_a[1:] - scores_a[:-1]) ** 2).sum()
-    sparsity = scores_a.sum()
-    return l1 + l2 + mu1 * smoothness + mu2 * sparsity
+    """Per-video BCE anomaly loss (fixed 2026-04-25).
+
+    Original implementation was Sultani 2018 / Elmetwally 2025 MIL ranking loss
+    designed for snippet-level features (32 snippets × score per video). Our
+    setup uses ONE feature vector per video (1386D fused R3D + ViT + pose +
+    emotion), so the snippet-level semantics break down:
+      - sparsity = scores_a.sum() drove all anomaly scores → 0 (Xavier-init level)
+      - smoothness over batch dim is meaningless (no temporal order)
+      - l1/l2 still made sense for batch-level MIL but were dominated by sparsity
+
+    Empirically (pilot_v3 onwards): escalation_head outputs ≈0 for ALL classes,
+    making the 2-stage anomaly gate unusable; crime_head also poorly calibrated
+    (conf 0.32–0.69 for typical predictions).
+
+    BCE is the natural per-video binary classification loss:
+      anomaly videos → target 1, normal videos → target 0.
+    Output is already in [0,1] (sigmoid), so use plain BCE with epsilon clamp.
+    """
+    # F.binary_cross_entropy is hard-blocked under any autocast context (PyTorch
+    # raises even if inputs are float32). Wrap with autocast(enabled=False) to
+    # disable the autocast region for the BCE computation. BCEWithLogits would
+    # avoid this entirely but requires removing the sigmoid from escalation_head,
+    # which we keep for inference parity (other code paths read sigmoid output).
+    targets_a = torch.ones_like(scores_a, dtype=torch.float32)
+    targets_n = torch.zeros_like(scores_n, dtype=torch.float32)
+    all_scores = torch.cat([scores_a, scores_n]).float().clamp(1e-7, 1 - 1e-7)
+    all_targets = torch.cat([targets_a, targets_n])
+    with torch.amp.autocast("cuda", enabled=False):
+        return F.binary_cross_entropy(all_scores, all_targets)
 
 
 # ── Main ─────────────────────────────────────────────────────

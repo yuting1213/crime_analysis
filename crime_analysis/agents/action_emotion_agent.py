@@ -300,7 +300,7 @@ class ActionEmotionAgent(BaseAgent):
             fusion_output = self._fusion_encoder(x)  # (1, 512)
 
         # ── 分類（MIL Head 初篩，VLM 覆核由 Planner Step 2b 負責）──
-        crime_type, confidence = self._classify_crime(fusion_output)
+        crime_type, confidence, mil_top3 = self._classify_crime(fusion_output)
         mil_crime_type, mil_confidence = crime_type, confidence
 
         # ── snippet 分數（使用 R3D snippets 的異常分數）──
@@ -347,6 +347,7 @@ class ActionEmotionAgent(BaseAgent):
                 "snippet_scores":         snippet_scores,
                 "mil_crime_type":         mil_crime_type,
                 "mil_confidence":         mil_confidence,
+                "mil_top3":               mil_top3,
                 "vlm_used":              crime_type != mil_crime_type,
             },
         )
@@ -653,9 +654,13 @@ class ActionEmotionAgent(BaseAgent):
     # ── 分類與升溫計算 ─────────────────────────────────────
     # VLM 分類已移至 Planner Step 2b（Qwen3-VL 統一模型）
 
-    def _classify_crime(self, fusion_output: torch.Tensor) -> Tuple[str, float]:
+    def _classify_crime(
+        self, fusion_output: torch.Tensor
+    ) -> Tuple[str, float, List[Tuple[str, float]]]:
         """
-        crime_head: (1, 512) → softmax → argmax → (crime_type, confidence)
+        crime_head: (1, 512) → softmax → argmax → (crime_type, confidence, top3)
+
+        top3 是 [(cat, prob)] × 3，依機率遞減，供 RAG priming 使用。
         """
         with torch.no_grad():
             probs = self._crime_head(fusion_output)  # (1, 13)
@@ -664,7 +669,12 @@ class ActionEmotionAgent(BaseAgent):
         top_idx = int(np.argmax(probs_np))
         crime_type = UCF_CATEGORIES[top_idx]
         confidence = float(probs_np[top_idx])
-        return crime_type, round(confidence, 4)
+
+        # top-3（含 top-1 本身）供 Pre-classification RAG Priming 使用
+        order = np.argsort(-probs_np)[:3]
+        top3 = [(UCF_CATEGORIES[int(i)], round(float(probs_np[int(i)]), 4)) for i in order]
+
+        return crime_type, round(confidence, 4), top3
 
     def _compute_snippet_anomaly_scores(self, frames: List[np.ndarray]) -> List[float]:
         """

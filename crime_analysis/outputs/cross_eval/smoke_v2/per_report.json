@@ -1,0 +1,152 @@
+[
+  {
+    "video_id": "Abuse037_x264",
+    "qwen_gt": "Abuse",
+    "qwen_predicted": "Normal",
+    "qwen_scores": {
+      "gemini": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 0,
+          "q2_element_coverage": 0,
+          "q3_evidence_traceability": 2,
+          "q4_causal_chain": 1,
+          "q5_uncertainty_marking": 0,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 0
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.0,
+          "q2_element_coverage": 0.0,
+          "q3_evidence_traceability": 0.6666666666666666,
+          "q4_causal_chain": 0.25,
+          "q5_uncertainty_marking": 0.0,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.0
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.17857142857142858,
+        "feedback": "報告將虐待動物情境誤判為公共安全爆炸，法條引用與構成要件完全不符，且對影像事實的解讀嚴重偏離。雖有幀號，但因果鏈與結論皆與事實脫節。"
+      }
+    },
+    "gemini_gt": "Abuse",
+    "gemini_predicted": "Abuse",
+    "gemini_scores": {
+      "gemini": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 1,
+          "q2_element_coverage": 2,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 2,
+          "q5_uncertainty_marking": 1,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 1
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.3333333333333333,
+          "q2_element_coverage": 0.5,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.5,
+          "q5_uncertainty_marking": 0.3333333333333333,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.3333333333333333
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.38095238095238093,
+        "feedback": "[parse failed]"
+      }
+    }
+  },
+  {
+    "video_id": "Abuse038_x264",
+    "qwen_gt": "Abuse",
+    "qwen_predicted": "RoadAccidents",
+    "qwen_scores": {
+      "gemini": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 0,
+          "q2_element_coverage": 0,
+          "q3_evidence_traceability": 0,
+          "q4_causal_chain": 1,
+          "q5_uncertainty_marking": 2,
+          "q6_judicial_language": 2,
+          "q7_scenario_fidelity": 0
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.0,
+          "q2_element_coverage": 0.0,
+          "q3_evidence_traceability": 0.0,
+          "q4_causal_chain": 0.25,
+          "q5_uncertainty_marking": 0.6666666666666666,
+          "q6_judicial_language": 0.6666666666666666,
+          "q7_scenario_fidelity": 0.0
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.2261904761904762,
+        "feedback": "報告未引用法條且構成要件覆蓋率為零。對原始情景事實的吻合度極低，幾乎完全偏離。影像證據缺乏時間點追溯，但有提及不確定性。語言專業度尚可。"
+      }
+    },
+    "gemini_gt": "Abuse",
+    "gemini_predicted": "Abuse",
+    "gemini_scores": {
+      "gemini": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 3,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 0
+        },
+        "q_norm": {
+          "q1_legal_relevance": 1.0,
+          "q2_element_coverage": 1.0,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.75,
+          "q5_uncertainty_marking": 1.0,
+          "q6_judicial_language": 1.0,
+          "q7_scenario_fidelity": 0.0
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.7261904761904763,
+        "feedback": "報告結構完整，法律分析深入，但對原始情景描述的理解有根本性偏差，導致事實認定與GT嚴重不符。"
+      }
+    }
+  }
+]

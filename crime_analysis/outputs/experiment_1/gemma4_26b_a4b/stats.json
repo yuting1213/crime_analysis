@@ -1,0 +1,2844 @@
+[
+  {
+    "video_id": "Abuse037_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse038_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse039_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse040_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image frames are heavily distorted, obscured by a grey mask, and do not contain legible visual information to identify any scene or activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse041_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image appears to be a corrupted or highly distorted sequence of frames that does not clearly depict any scene, person, or activity. Based on the visual information available, there is no identifiable criminal, hazardous, or law-enforcement activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Abuse042_x264",
+    "ground_truth": "Abuse",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are extremely distorted, heavily pixelated, and obscured by digital artifacts, making it impossible to discern any actual visual content, subjects, or actions. Due to the lack of discernible imagery, no criminal, hazardous, or law-enforcement activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest043_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest044_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest046_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest048_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest049_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest050_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image is a corrupted file consisting of repetitive digital patterns and artifacts, making it impossible to analyze as a video or a scene.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Arrest051_x264",
+    "ground_truth": "Arrest",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson020_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson021_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson022_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson023_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson024_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson025_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided images are heavily corrupted, consisting almost entirely of grey noise with illegible, fragmented color artifacts. There is no discernible visual information to identify people, objects, or actions.\n\nBased on the inability to identify any criminal, hazardous, or law-enforcement activity due to the image quality:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson026_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson027_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson028_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson029_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image sequence is highly distorted and consists of blurred, unrecognizable abstract shapes and colors. It does not contain visible human subjects, objects, or events that can be identified as criminal or hazardous activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson030_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson031_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson032_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson034_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson035_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson036_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson037_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided images appear to be corrupted, highly distorted, or composed of repetitive patterns and static that do not show discernible human or environmental activity. Due to the lack of visible content, no criminal or hazardous activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson038_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Arson039_x264",
+    "ground_truth": "Arson",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault027_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault028_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault029_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault030_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault031_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault032_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault033_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault034_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault035_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault036_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault037_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault038_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault039_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Assault040_x264",
+    "ground_truth": "Assault",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary065_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary066_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary067_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary068_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary069_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary070_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary071_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary072_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary073_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary074_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary075_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames consist of a solid gray color with repeating text patterns, containing no visible imagery, people, or actions. Because there is no discernible activity, it does not meet the criteria for any criminal or hazardous category.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary076_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary077_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary078_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary079_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary080_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary081_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary082_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary083_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary084_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image consists of a series of repeated, highly corrupted, and uninterpretable frames that do not show any discernible visual content. Due to the lack of visible imagery, no activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary085_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary086_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Burglary087_x264",
+    "ground_truth": "Burglary",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion007_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion008_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion009_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion010_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion011_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion012_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion013_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion014_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion015_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion016_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion017_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion018_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion019_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion020_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion021_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image sequence is illegible and consists of repeated, distorted, and layered digital artifacts that do not depict any discernible visual scene. Therefore, no activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion022_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion023_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion024_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion025_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion026_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion027_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided images are corrupted, repetitive, and do not contain discernible video content. Based on the available visual information:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion028_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Explosion029_x264",
+    "ground_truth": "Explosion",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Fighting039_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Fighting040_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Fighting041_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Fighting042_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Fighting043_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Fighting044_x264",
+    "ground_truth": "Fighting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents109_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents110_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents111_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents112_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents113_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents114_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided images are heavily corrupted, illegible, and do not contain any discernible visual information. Consequently, it is impossible to identify any activity or subjects.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents115_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents116_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents117_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents118_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents119_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents120_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image appears to be a heavily corrupted or glitched file, consisting of repetitive patterns and noise that do not represent a clear video scene. Because the footage does not show any discernible activity, it cannot be classified under the specific criminal or hazardous categories provided.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents121_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents122_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided frames are highly distorted, corrupted, and do not contain discernible visual information or any discernible activity. Based on the visible content, there is no evidence of criminal, hazardous, or law-enforcement activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents123_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents124_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents125_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents126_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents127_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image is highly corrupted and contains only fragmented, illegible pixels that do not constitute a recognizable video or scene. Based on the visible content:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents128_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image consists of a repeated watermark pattern and does not show any discernible visual content or video frames. Therefore, no activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents129_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents130_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are heavily distorted, extremely blurry, and visually illegible, making it impossible to identify any discernible action, person, or object.\n\nSince no criminal, hazardous, or law-enforcement activity can be identified due to the image quality:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents131_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents132_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents133_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents134_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents135_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents136_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents137_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents138_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents139_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided images are heavily corrupted and consist primarily of gray static, illegible text, and fragmented colors. There is no discernible visual information that depicts people, objects, or activities.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents140_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents141_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are extremely low-resolution, heavily pixelated, and largely consist of solid gray blocks with indistinct colorful artifacts. Due to the severe lack of visual clarity, it is impossible to discern any identifiable human actions, objects, or environments.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents142_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "RoadAccidents143_x264",
+    "ground_truth": "RoadAccidents",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided frames consist of repetitive, illegible, and low-quality patterns that do not show any identifiable action, people, or environments. Because no criminal, hazardous, or law-enforcement activity can be detected from this imagery, the scene is classified as follows:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery085_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery086_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery087_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery088_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery089_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery090_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery091_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery092_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image contains heavily corrupted, fragmented, and unrecognizable frames that do not depict any discernible scene, person, or activity. It is impossible to identify any actions or context within these technical artifacts.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery093_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image is highly corrupted and contains unrecognizable, pixelated fragments that do not depict any identifiable scene or activity. Because there is no visible content to classify as a crime or hazard, the result is:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery094_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery095_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery096_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image is heavily corrupted/distorted and does not show any discernible content. Based on the visual information available:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery097_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery098_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are extremely distorted, illegible, and contain no discernable visual information. Based on the inability to observe any activity, the scene falls into the following category.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery099_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image sequence is severely corrupted and does not contain any discernible visual information or identifiable objects. It consists of a repeating, highly distorted, and illegible pattern.\n\nBecause no activity can be identified, the category is:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery100_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery101_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image is a single frame containing a heavily repeated, distorted pattern of characters, making it impossible to identify a scene or activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery102_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery103_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery104_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery105_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery106_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery107_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery108_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery109_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are highly distorted, illegible, and do not contain any discernible visual information or activity. As no criminal, hazardous, or law-enforcement activity can be identified due to the image quality:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery110_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery111_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Robbery112_x264",
+    "ground_truth": "Robbery",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting033_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting034_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting036_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting037_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames consist of repetitive, illegible watermarks and a solid grey background. There is no visible content or activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting038_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting039_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting040_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are highly distorted, illegible, and consist primarily of repeating patterns and noise. No visible subjects, actions, or environments can be identified to determine a category.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting041_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting042_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting043_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting044_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shooting046_x264",
+    "ground_truth": "Shooting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shoplifting034_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image appears to be a corrupted or heavily glitched file, consisting of repeating patterns and digital artifacts that do not show a clear scene or activity. Due to the lack of visible content, it is impossible to identify any specific event.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Shoplifting036_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shoplifting037_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shoplifting038_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are highly distorted and illegible, making it impossible to identify any subjects or activities. However, based on the lack of discernable criminal, hazardous, or law-enforcement activity in the visual information available:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Shoplifting039_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shoplifting040_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Shoplifting041_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are highly corrupted and unintelligible, making it impossible to identify any scene, person, or activity. Therefore, a definitive classification cannot be made based on visual evidence.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Shoplifting042_x264",
+    "ground_truth": "Shoplifting",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing078_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing079_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing080_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing081_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing082_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing083_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing084_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing086_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided images are highly corrupted/distorted and do not contain discernible visual information to identify any activity. However, based on the instruction to classify the scene:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing087_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames are highly obscured and appear to consist of static or corrupted digital artifacts (noise) rather than a discernible video sequence. There is no visible person, object, or activity that can be interpreted as a criminal, hazardous, or law-enforcement event.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing088_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing089_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video frames consist of a single, solid gray color with some repetitive text-like artifacts, and do not contain any visible scenes or activity. Based on the lack of any discernible activity, the classification is:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing091_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Stealing092_x264",
+    "ground_truth": "Stealing",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism031_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided video is extremely distorted, low-resolution, and appears to be a repetitive, glitchy pattern rather than actual surveillance footage. It does not depict any discernible human activity, objects, or events.\n\nBased on the visual information available:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism032_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism033_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided frames are heavily distorted, repetitive, and do not contain any visible scene or subjects. Based on the available visual information:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism034_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism035_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism036_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided images are severely distorted, corrupted, or incomplete, showing only fragmented colored pixels and blurred patterns. There is no discernible human activity, criminal action, or physical environment visible to categorize.\n\nBased on the lack of identifiable activity:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism038_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism039_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism040_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism041_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "The provided image is a repetitive pattern of text/symbols and does not contain a video or any discernible scene. Based on the instruction to classify the footage:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism042_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Vandalism043_x264",
+    "ground_truth": "Vandalism",
+    "predicted": "Normal",
+    "correct": false,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_929_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos534_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos535_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos536_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos537_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos538_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are heavily distorted and illegible. They do not contain any discernible visual information or activity to categorize.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos539_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos540_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos541_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos542_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos544_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos545_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos546_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos547_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image is a highly repetitive, abstract pattern of glowing shapes and does not contain any video frames or discernible real-world activity. It does not show any criminal, hazardous, or law-enforcement activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos548_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos549_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos550_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos551_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos552_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos553_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are extremely low quality, heavily pixelated, and largely obscured by a grey overlay, making it impossible to discern any meaningful visual content or activity.\n\nBased on the visible information:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos554_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos555_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos556_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos557_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are extremely low resolution and heavily distorted, making it impossible to discern any identifiable action or subject matter. Due to the illegibility and lack of visual content, no activity can be determined.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos558_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos559_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos560_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos561_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos562_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos563_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos564_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos565_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos566_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos567_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos568_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos569_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos570_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos571_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos572_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos573_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are extremely low-quality, heavily obscured, and corrupted, making it impossible to discern any visual information or activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos574_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos575_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos577_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos578_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos579_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos580_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos581_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos582_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos583_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos584_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image is extremely corrupted, consisting of heavily distorted, repetitive, and overlapping patterns that do not form a discernible video or scene. It is impossible to identify any activity, criminal or otherwise.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos585_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos586_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos587_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos588_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos589_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos590_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of highly distorted, illegible, and repetitive abstract patterns that do not depict a discernible scene or any type of activity. Due to the complete lack of visual information or a coherent subject, it is impossible to identify any activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos591_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos592_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos593_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos594_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos598_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos599_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos600_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of several identical, heavily distorted, and pattern-filled frames that do not contain discernible visual information. Due to the extreme degradation and lack of visible subjects or actions, no criminal, hazardous, or law-enforcement activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos601_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image sequence is heavily corrupted/glitched, making it impossible to discern any discernible scene, action, or subject matter. As there is no visible activity to categorize as criminal, hazardous, or law-enforcement related:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos602_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos604_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos605_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are heavily corrupted and contain only abstract, repetitive, and illegible visual patterns. They do not depict any recognizable scene, person, or activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos608_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos609_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images appear to be highly distorted, repetitive, and do not show any recognizable scene, people, or activity. They do not contain any visual evidence of criminal, hazardous, or law-enforcement activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos610_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image is a corrupted or highly distorted file consisting of repeating, garbled patterns and color blocks that do not constitute a video or a visible scene. It does not show any recognizable human, vehicle, or environmental activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos611_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of heavily corrupted, illegible frames that do not depict any recognizable scenes or activities. Therefore, it is impossible to determine a category based on the visible content.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos612_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos613_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos614_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos615_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are heavily distorted, low-resolution, and largely illegible. Due to the extreme level of pixelation and the nature of the visual noise, it is impossible to identify any specific persons, actions, or objects required for a forensic determination.\n\nBased on the inability to identify any criminal, hazardous, or"
+  },
+  {
+    "video_id": "Normal_Videos616_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos617_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of several heavily distorted, low-resolution, and overlapping frames that are illegible. Due to the severe image degradation, it is impossible to identify any people, actions, or objects.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos618_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos619_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos620_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are highly distorted, consisting of repeated, illegible textures and a grey background. There is no discernible human, vehicle, or environmental activity that could be classified into any of the listed categories.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos622_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos623_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos624_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos625_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos626_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos627_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos628_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos629_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos630_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos631_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos632_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos633_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos635_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided video frames are heavily corrupted, consisting of grey patches and distorted, unidentifiable fragments. It is impossible to discern any meaningful visual information, subjects, or actions.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos636_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos637_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos638_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_015_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_050_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_100_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_129_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_150_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of repetitive, distorted patterns and does not show any discernible scene or activity. Based on the content provided:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_246_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_247_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_248_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_251_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_289_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_310_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_312_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "Category: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_317_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_345_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_352_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_360_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_365_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_401_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_417_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided video frames are extremely degraded, illegible, and do not show any discernible subjects or activities. Due to the lack of visual information, no category can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_439_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_452_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_453_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_478_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_576_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_597_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_603_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_606_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_621_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_634_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_641_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_656_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_696_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_704_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_722_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_745_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided video frames are extremely degraded, heavily pixelated, and blurred, making it impossible to identify any subjects, actions, or environments. Due to the lack of visual information, no criminal, hazardous, or law-enforcement activity can be detected.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_758_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_781_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_798_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_801_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_828_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_831_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_877_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_881_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_885_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_892_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided frames are extremely degraded, heavily pixelated, and contain repetitive, illegible patterns that do not depict any discernible human or environmental activity. Based on the visual information available, there is no evidence of criminal, hazardous, or law-enforcement activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_905_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_912_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_913_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided video frames are extremely low quality, highly pixelated, and mostly consist of grey/patterned noise, making it impossible to discern any actual visual content or human/object interaction.\n\nHowever, based on the lack of discernable criminal, hazardous, or law-enforcement activity in the available visual information:"
+  },
+  {
+    "video_id": "Normal_Videos_914_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos_929_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos001_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos002_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos004_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos005_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos007_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos008_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos009_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of repeating, illegible patterns and does not contain any discernible visual information related to human activity, objects, or events. Therefore, no criminal or law-enforcement activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos011_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image contains heavily distorted, overlapping, and illegible visual information that does not depict any discernible scene or activity. Based on the inability to identify any specific actions or subjects:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos012_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image is a corrupted or glitchy file that does not contain any discernible visual information or video frames. It appears to be a repeated pattern of distorted textures and colors.\n\nAs no scene can be identified, I cannot classify it into a specific category.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos013_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos016_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos017_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of repeated, heavily distorted, and pixelated fragments that do not contain a discernible video or scene. It is impossible to identify any activity or category from these frames.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos020_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "Based on the visual information provided in these frames, it is not possible to determine the content as the image is illegible/distorted. However, since no criminal, hazardous, or law-enforcement activity is visible:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos021_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos022_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of repeated, distorted, and tiled fragments of the same scene, which appear to be a rendering error or a corrupted video file. Because the image is illegible and contains no discernible content, no activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos023_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image is a corrupted file consisting of repeating patterns of distorted text and noise, making it impossible to identify any scene or activity. \n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos026_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos028_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos029_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos030_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos031_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are highly obscured, pixelated, and contain insufficient visual information to identify any subjects, actions, or environmental details. Due to the lack of discernible content, a determination cannot be made.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos032_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image is extremely low quality, blurry, and contains repeated patterns that make it impossible to identify any subjects or activities. Based on the available visual information, there is no evidence of criminal or hazardous activity.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos035_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos036_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos037_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image is a repetitive, distorted pattern of text and colored shapes that does not contain any discernible video footage or scene content. Based on the instructions provided, since there is no visible criminal or hazardous activity shown:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos038_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos039_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos040_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of several repeated, overlapping, and heavily distorted text patterns layered over a dark background. There are no visible people, actions, or physical scenes to analyze. Because there is no identifiable human or criminal activity present, the scene does not fall into any of the specified crime categories.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos043_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos044_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos045_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos046_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos047_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos049_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided image consists of identical, highly repetitive, and distorted frames that do not show any discernible content. Therefore, no criminal, hazardous, or law-enforcement activity can be detected.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos052_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos053_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided video frames are extremely degraded, mostly consisting of a gray background and fragmented, unidentifiable visual artifacts. No discernible human activity, objects, or events can be seen.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos054_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos055_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos057_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided video frames are heavily corrupted, consisting of repetitive, distorted, and illegible graphical artifacts. Due to the extreme level of digital noise and lack of discernible visual content, it is impossible to identify any action, individuals, or environments.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos058_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos060_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos061_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are heavily distorted, blurred, and consist of repetitive, illegible patterns and color blocks. There is no identifiable visual information, human activity, or scene content present in these frames to perform an analysis.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos062_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "I cannot provide an analysis of this footage. The image provided is illegible and appears to be corrupted or heavily obscured, making it impossible to identify any activity or category."
+  },
+  {
+    "video_id": "Normal_Videos064_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos065_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos066_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos068_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided video frames are highly degraded, blurry, and contain no discernible visual information or recognizable subjects. Therefore, no criminal, hazardous, or law-enforcement activity can be identified.\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos069_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos071_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "The provided images are highly corrupted, illegible, and do not contain recognizable visual information. Based on the lack of any visible activity:\n\nCATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos072_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos073_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos074_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos075_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  },
+  {
+    "video_id": "Normal_Videos076_x264",
+    "ground_truth": "Normal",
+    "predicted": "Normal",
+    "correct": true,
+    "response": "CATEGORY: Normal"
+  }
+]

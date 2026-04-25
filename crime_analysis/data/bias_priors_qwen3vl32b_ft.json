@@ -1,0 +1,17 @@
+{
+  "_comment": "v6 (2026-04-26): Pilot v9 vs v6 RCA showed v6's bias priors v3 yields best 14-way (48.2%) and crime-only (42.5%); v9 with priors v5 + retrained MIL got 37.5% / 27.5% — better non-crime FP control (8.3%) but worse fine-grained classification. Plan B: revert to v3 priors but keep v9's pipeline improvements (BCE-trained MIL, priming guard 0.5, GAP_HARD 0.5, MIL_CONF_MIN 0.4). Goal: combine v6's classification accuracy with v9's anomaly detection improvements.",
+  "Abuse": -1.0986122886681098,
+  "Arrest": 0.0,
+  "Arson": -0.587786664902119,
+  "Assault": 0.0,
+  "Burglary": 0.20067069546215105,
+  "Explosion": 0.0,
+  "Fighting": -0.587786664902119,
+  "Normal": 0.0,
+  "RoadAccidents": 0.0,
+  "Robbery": 0.3677247801253172,
+  "Shooting": 0.3677247801253172,
+  "Shoplifting": -0.25131442828090605,
+  "Stealing": 0.20067069546215105,
+  "Vandalism": -0.587786664902119
+}

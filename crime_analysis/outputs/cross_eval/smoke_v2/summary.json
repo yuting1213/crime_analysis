@@ -1,0 +1,50 @@
+{
+  "n_reports": 2,
+  "judges": [
+    "gemini"
+  ],
+  "per_model": {
+    "qwen": {
+      "by_judge": {
+        "gemini": {
+          "mean": 0.2024,
+          "std": 0.0337,
+          "n": 2
+        }
+      },
+      "averaged": {
+        "mean": 0.2024,
+        "std": 0.0337,
+        "n": 2
+      }
+    },
+    "gemini": {
+      "by_judge": {
+        "gemini": {
+          "mean": 0.5536,
+          "std": 0.2441,
+          "n": 2
+        }
+      },
+      "averaged": {
+        "mean": 0.5536,
+        "std": 0.2441,
+        "n": 2
+      }
+    }
+  },
+  "cross_judge_agreement_pearson": {},
+  "cross_model_comparison": {
+    "qwen_mean": {
+      "mean": 0.2024,
+      "std": 0.0337,
+      "n": 2
+    },
+    "gemini_mean": {
+      "mean": 0.5536,
+      "std": 0.2441,
+      "n": 2
+    },
+    "qwen_minus_gemini": -0.3512
+  }
+}

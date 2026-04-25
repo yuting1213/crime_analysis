@@ -44,8 +44,11 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent  # scripts → crime_a
 UCA_ROOT = REPO_ROOT / "UCA"
 VIDEOS_DIR = UCA_ROOT / "UCF_Crimes" / "UCF_Crimes" / "Videos"
 
-# 犯罪類別（不含 Normal）
-CRIME_CATEGORIES = [
+from config import is_crime, is_non_crime_anomaly
+
+# UCF-Crime 13 類資料夾名稱（含非犯罪類；供 data iteration 使用）
+# 不等同於 config.CRIME_CATEGORIES（10 類刑法可對應犯罪）
+UCF_CATEGORIES = [
     "Abuse", "Arrest", "Arson", "Assault", "Burglary",
     "Explosion", "Fighting", "RoadAccidents", "Robbery",
     "Shooting", "Shoplifting", "Stealing", "Vandalism",
@@ -126,7 +129,7 @@ def load_pilot_samples(
         include_normal = True
 
     exclude_set = set(exclude_ids or [])
-    per_cat = max(1, -(-n_samples // len(CRIME_CATEGORIES)))
+    per_cat = max(1, -(-n_samples // len(UCF_CATEGORIES)))
     category_counts: Dict[str, int] = {}
     samples = []
 
@@ -138,7 +141,7 @@ def load_pilot_samples(
 
         if cat == "Normal" and not include_normal:
             continue
-        if cat not in CRIME_CATEGORIES and cat != "Normal":
+        if cat not in UCF_CATEGORIES and cat != "Normal":
             continue
         # Crime 類別用 per_cat；Normal 用 n_normal
         cap = n_normal if cat == "Normal" else per_cat
@@ -406,7 +409,8 @@ def run_pilot(
         #                       評估/ablation 用，pipeline 預測錯時會明顯偏低
         description = result.get("fact_finding", {}).get("description", "")
         rag = getattr(getattr(pipeline, "planner", None), "rag", None)
-        if rag is not None and gt != "Normal" and description:
+        # 非犯罪類（Arrest/RoadAccidents/Explosion）與 Normal 不計 rlegal_gt
+        if rag is not None and is_crime(gt) and description:
             rlegal_gt = rag.compute_rlegal(gt, description)
         else:
             rlegal_gt = 0.0
@@ -415,6 +419,12 @@ def run_pilot(
         predicted = result.get("final_category", "Normal")
         is_anomaly_gt = gt != "Normal"
         is_anomaly_pred = predicted != "Normal"
+
+        # 類別性質旗標（供 FP control 分析）
+        gt_is_crime = is_crime(gt)
+        gt_is_non_crime = is_non_crime_anomaly(gt)
+        pred_is_crime = is_crime(predicted)
+        pred_is_non_crime = is_non_crime_anomaly(predicted)
 
         stat = {
             "video_id": video_id,
@@ -437,6 +447,13 @@ def run_pilot(
             "is_anomaly_pred": is_anomaly_pred,
             "anomaly_correct": is_anomaly_gt == is_anomaly_pred,
             "anomaly_gated": result.get("anomaly_gated", False),
+            # 類別性質旗標（非犯罪 FP 控制組分析用）
+            "gt_is_crime": gt_is_crime,
+            "gt_is_non_crime": gt_is_non_crime,
+            "pred_is_crime": pred_is_crime,
+            "pred_is_non_crime": pred_is_non_crime,
+            "is_non_crime_anomaly": result.get("is_non_crime_anomaly", False),
+            "event_category": result.get("event_category", "unknown"),
         }
         case_stats.append(stat)
         done_ids.add(video_id)
@@ -609,10 +626,64 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
         for cat, d in cat_stats.items()
     }
 
+    # ── 非犯罪類穩健性（FP control）統計 ──
+    # 依論文第三章「研究範圍與分類設計」，僅 10 類犯罪進入法條檢索；
+    # Arrest / RoadAccidents / Explosion 為非犯罪類，在此作 FP 控制組。
+    crime_cases = [s for s in case_stats if s.get("gt_is_crime")]
+    non_crime_cases = [s for s in case_stats if s.get("gt_is_non_crime")]
+    normal_cases = [s for s in case_stats if s["ground_truth"] == "Normal"]
+
+    crime_only_accuracy = (
+        sum(1 for s in crime_cases if s["correct"]) / len(crime_cases)
+        if crime_cases else 0.0
+    )
+    # Non-crime → Crime 誤判率：GT 為非犯罪但 predicted 為 crime 類別
+    non_crime_to_crime_fp = (
+        sum(1 for s in non_crime_cases if s.get("pred_is_crime"))
+        / len(non_crime_cases)
+        if non_crime_cases else 0.0
+    )
+    # Non-crime 3-way accuracy：GT 在 non-crime，predicted 同類才算對
+    non_crime_3way_accuracy = (
+        sum(1 for s in non_crime_cases if s["correct"]) / len(non_crime_cases)
+        if non_crime_cases else 0.0
+    )
+
+    # ── Binary video-level anomaly detection metrics ─────────────
+    # 與學長論文 Table 4-3 對照用（anomaly = gt != "Normal"）
+    _tp = _fp = _fn = _tn = 0
+    for s in case_stats:
+        anom_gt = s["ground_truth"] != "Normal"
+        anom_pred = s["predicted"] != "Normal"
+        if anom_gt and anom_pred:       _tp += 1
+        elif not anom_gt and anom_pred: _fp += 1
+        elif anom_gt and not anom_pred: _fn += 1
+        else:                            _tn += 1
+    _prec = _tp / (_tp + _fp) if (_tp + _fp) else 0.0
+    _rec  = _tp / (_tp + _fn) if (_tp + _fn) else 0.0
+    _f1   = 2 * _prec * _rec / (_prec + _rec) if (_prec + _rec) else 0.0
+    _acc  = (_tp + _tn) / len(case_stats) if case_stats else 0.0
+    binary_metrics = {
+        "TP": _tp, "FP": _fp, "FN": _fn, "TN": _tn,
+        "precision": round(_prec, 4),
+        "recall":    round(_rec, 4),
+        "f1":        round(_f1, 4),
+        "accuracy":  round(_acc, 4),
+    }
+
     summary = {
         "n_samples": len(case_stats),
         "accuracy": sum(1 for s in case_stats if s["correct"]) / len(case_stats),
         "per_category_accuracy": per_cat_acc,
+        # ── FP control / 範圍限縮指標（論文第四章「非犯罪類別穩健性分析」）──
+        "crime_only_accuracy": crime_only_accuracy,  # 10-way crime accuracy
+        "non_crime_to_crime_fp_rate": non_crime_to_crime_fp,  # 越低越好
+        "non_crime_3way_accuracy": non_crime_3way_accuracy,
+        "n_crime_cases": len(crime_cases),
+        "n_non_crime_cases": len(non_crime_cases),
+        "n_normal_cases": len(normal_cases),
+        # ── Binary video-level (vs senior's Table 4-3) ────────────
+        "binary_anomaly_detection": binary_metrics,
         "turns": {
             "mean": statistics.mean(turns_list),
             "median": statistics.median(turns_list),
@@ -636,15 +707,19 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
             "max": max(rlegal_list),
         },
         "rlegal_gt": {
-            "mean": statistics.mean(rlegal_gt_list),
-            "min": min(rlegal_gt_list),
-            "max": max(rlegal_gt_list),
+            # rlegal_gt 僅對 crime 類別計算，故以下統計也限於 crime cases
+            "mean": statistics.mean(
+                [s["rlegal_gt"] for s in crime_cases]
+            ) if crime_cases else 0.0,
+            "min": min([s["rlegal_gt"] for s in crime_cases]) if crime_cases else 0.0,
+            "max": max([s["rlegal_gt"] for s in crime_cases]) if crime_cases else 0.0,
             "mean_correct": statistics.mean(
-                [s["rlegal_gt"] for s in case_stats if s["correct"]]
-            ) if any(s["correct"] for s in case_stats) else 0.0,
+                [s["rlegal_gt"] for s in crime_cases if s["correct"]]
+            ) if any(s["correct"] for s in crime_cases) else 0.0,
             "mean_wrong": statistics.mean(
-                [s["rlegal_gt"] for s in case_stats if not s["correct"]]
-            ) if any(not s["correct"] for s in case_stats) else 0.0,
+                [s["rlegal_gt"] for s in crime_cases if not s["correct"]]
+            ) if any(not s["correct"] for s in crime_cases) else 0.0,
+            "n_crime_cases": len(crime_cases),
         },
         "rcons": {
             "mean": statistics.mean(rcons_list),
@@ -718,12 +793,44 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
         f.write("Pilot Experiment Summary\n")
         f.write("=" * 60 + "\n\n")
         f.write(f"樣本數：{summary['n_samples']}\n")
-        f.write(f"整體準確率：{summary['accuracy']:.1%}\n\n")
+        f.write(f"整體準確率：{summary['accuracy']:.1%}"
+                f"（14-way: 10 crime + 3 non-crime + Normal）\n")
+        f.write(
+            f"  crime-only accuracy：{summary['crime_only_accuracy']:.1%}"
+            f" （10-way，n={summary['n_crime_cases']}）\n"
+        )
+        f.write(
+            f"  non-crime 3-way accuracy：{summary['non_crime_3way_accuracy']:.1%}"
+            f" （n={summary['n_non_crime_cases']}）\n"
+        )
+        f.write(
+            f"  non-crime → crime FP rate：{summary['non_crime_to_crime_fp_rate']:.1%}"
+            f" （FP control，越低越好）\n\n"
+        )
 
-        f.write("── 各類別準確率 ──\n")
+        # ── Binary video-level（對照學長論文 Table 4-3）──
+        bm = summary["binary_anomaly_detection"]
+        f.write("── Binary video-level anomaly detection（vs 學長 Table 4-3）──\n")
+        f.write(f"  TP={bm['TP']}  FP={bm['FP']}  FN={bm['FN']}  TN={bm['TN']}\n")
+        f.write(
+            f"  Precision={bm['precision']:.3f}  Recall={bm['recall']:.3f}  "
+            f"F1={bm['f1']:.3f}  Accuracy={bm['accuracy']:.3f}\n"
+        )
+        f.write("  參考（學長實驗一 VLM baseline）：\n")
+        f.write("    InternVL3.5    P=0.837  R=0.869  F1=0.852  Acc=0.850\n")
+        f.write("    Qwen3-VL-8B    P=0.978  R=0.715  F1=0.826  Acc=0.850\n")
+        f.write("    Gemma3n-E4B    P=0.500  R=1.000  F1=0.666  Acc=0.500\n\n")
+
+        f.write("── 各類別準確率（*=非犯罪類，N=Normal）──\n")
         for cat, acc in sorted(per_cat_acc.items()):
             cs = cat_stats[cat]
-            f.write(f"  {cat:<16} {acc:>6.1%} ({cs['correct']}/{cs['total']})\n")
+            if is_non_crime_anomaly(cat):
+                tag = "*"
+            elif cat == "Normal":
+                tag = "N"
+            else:
+                tag = " "
+            f.write(f"  {tag} {cat:<14} {acc:>6.1%} ({cs['correct']}/{cs['total']})\n")
 
         f.write("\n── 對話輪次統計 ──\n")
         t = summary["turns"]
@@ -741,9 +848,11 @@ def _compute_summary(case_stats: List[Dict], output_path: Path) -> Dict:
         rl = summary["rlegal"]
         f.write(f"  mean={rl['mean']:.3f}  range=[{rl['min']:.3f}, {rl['max']:.3f}]\n\n")
 
-        f.write("── Rlegal_GT 統計（正確類別，評估用）──\n")
+        f.write("── Rlegal_GT 統計（正確類別，評估用；僅 crime 類計算）──\n")
         rg = summary["rlegal_gt"]
-        f.write(f"  mean={rg['mean']:.3f}  range=[{rg['min']:.3f}, {rg['max']:.3f}]\n")
+        f.write(f"  n_crime_cases={rg.get('n_crime_cases', 0)}  "
+                f"mean={rg['mean']:.3f}  "
+                f"range=[{rg['min']:.3f}, {rg['max']:.3f}]\n")
         f.write(f"  correct 平均={rg['mean_correct']:.3f}   "
                 f"wrong 平均={rg['mean_wrong']:.3f}   "
                 f"gap={rg['mean_correct'] - rg['mean_wrong']:.3f}\n\n")

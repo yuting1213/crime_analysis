@@ -1,0 +1,45 @@
+[
+  {
+    "name": "baseline",
+    "n": 0
+  },
+  {
+    "name": "Gemini 2.0F",
+    "n": 52,
+    "accuracy": 0.5192307692307693,
+    "macro_f1": 0.4952991452991453,
+    "auroc": NaN,
+    "min_ndcf_5_1": NaN,
+    "min_ndcf_10_1": NaN,
+    "mean_turns": 1.0,
+    "mean_rcons": 1.0,
+    "mean_rlegal_gt": 0.0,
+    "ece": 0.4125000000000006
+  },
+  {
+    "name": "FT 32B standalone",
+    "n": 52,
+    "accuracy": 0.5961538461538461,
+    "macro_f1": 0.58998778998779,
+    "auroc": NaN,
+    "min_ndcf_5_1": NaN,
+    "min_ndcf_10_1": NaN,
+    "mean_turns": 0.0,
+    "mean_rcons": 0.0,
+    "mean_rlegal_gt": 0.0,
+    "ece": 0.0
+  },
+  {
+    "name": "Old pilot",
+    "n": 13,
+    "accuracy": 0.3076923076923077,
+    "macro_f1": 0.21428571428571427,
+    "auroc": NaN,
+    "min_ndcf_5_1": NaN,
+    "min_ndcf_10_1": NaN,
+    "mean_turns": 3.3846153846153846,
+    "mean_rcons": 0.9055653846153846,
+    "mean_rlegal_gt": 0.0,
+    "ece": 0.39230769230769225
+  }
+]

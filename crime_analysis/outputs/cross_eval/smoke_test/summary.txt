@@ -1,0 +1,24 @@
+========================================================================
+ Cross-Evaluation Summary
+========================================================================
+
+n_reports: 3
+
+── Per-model overall (mean ± std on 0–1 scale) ──
+
+  qwen_reports:
+    judged by claude   → mean=0.381  std=0.000  n=3
+    judged by gemini   → mean=0.226  std=0.048  n=3
+
+  gemini_reports:
+    judged by claude   → mean=0.381  std=0.000  n=3
+    judged by qwen     → mean=0.837  std=0.134  n=3
+
+── Cross-judge agreement (Pearson r) ──
+  qwen_reports_claude_vs_gemini: 0.000
+  gemini_reports_claude_vs_qwen: 0.000
+
+── Cross-model comparison (via Claude judge) ──
+  Qwen   mean=0.381  n=3
+  Gemini mean=0.381  n=3
+  Qwen − Gemini = +0.000

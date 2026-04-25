@@ -1,0 +1,18 @@
+{
+  "n": 406,
+  "confusion": {
+    "TP": 0,
+    "FP": 0,
+    "FN": 206,
+    "TN": 200
+  },
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "accuracy": 0.4926,
+  "class_accuracy_14way": 0.4926,
+  "model": "internvl3_38b",
+  "display_name": "InternVL3-38B-hf (INT4)",
+  "elapsed_seconds": 211.7,
+  "samples_run_this_session": 406
+}

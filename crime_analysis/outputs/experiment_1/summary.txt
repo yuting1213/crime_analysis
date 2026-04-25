@@ -1,0 +1,19 @@
+==========================================================================================
+ Experiment 1 — Pre-trained VLM Baseline (video-level binary anomaly detection)
+==========================================================================================
+
+Model                           n  Precision     Recall       F1      Acc   14-way
+------------------------------------------------------------------------------------------
+qwen3vl_32b                   406      0.983      0.548    0.704    0.766    0.648
+gemma4_26b_a4b                406      0.000      0.000    0.000    0.493    0.493
+internvl3_38b                 406      0.000      0.000    0.000    0.493    0.493
+
+Confusion matrices:
+  qwen3vl_32b                   TP=113  FP=2  FN=93  TN=198
+  gemma4_26b_a4b                TP=0  FP=0  FN=206  TN=200
+  internvl3_38b                 TP=0  FP=0  FN=206  TN=200
+
+Reference — senior's Table 4-3 (pretrained VLM baseline):
+  InternVL3.5           P=0.837  R=0.869  F1=0.852  Acc=0.850
+  Qwen3-VL (8B)         P=0.978  R=0.715  F1=0.826  Acc=0.850
+  Gemma3n-E4B           P=0.500  R=1.000  F1=0.666  Acc=0.500

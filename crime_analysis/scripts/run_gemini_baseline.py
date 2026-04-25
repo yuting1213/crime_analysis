@@ -153,6 +153,8 @@ def run_gemini_baseline(
             import re as _re
             pred_match = _re.search(r"模型判定：(\w+)", content)
             predicted = pred_match.group(1) if pred_match else "Normal"
+            is_anomaly_gt = gt != "Normal"
+            is_anomaly_pred = predicted != "Normal"
             stat = {
                 "video_id": video_id, "ground_truth": gt,
                 "predicted": predicted, "correct": predicted == gt,
@@ -160,6 +162,11 @@ def run_gemini_baseline(
                 "total_turns": 1, "conflict_type": "NONE", "is_convergent": True,
                 "duration": sample["metadata"].get("duration", 0.0),
                 "n_uca_sentences": len(sample["metadata"].get("uca_segments", [])),
+                "escalation_score": 0.0,
+                "is_anomaly_gt": is_anomaly_gt,
+                "is_anomaly_pred": is_anomaly_pred,
+                "anomaly_correct": is_anomaly_gt == is_anomaly_pred,
+                "anomaly_gated": False,
             }
             case_stats.append(stat)
             logger.info(f"  已存在 → {predicted} ({'V' if predicted == gt else 'X'})，跳過")
@@ -179,6 +186,8 @@ def run_gemini_baseline(
 
         predicted = result["category"]
         correct = predicted == gt
+        is_anomaly_gt = gt != "Normal"
+        is_anomaly_pred = predicted != "Normal"
 
         stat = {
             "video_id": video_id,
@@ -194,6 +203,12 @@ def run_gemini_baseline(
             "is_convergent": True,
             "duration": sample["metadata"].get("duration", 0.0),
             "n_uca_sentences": len(sample["metadata"].get("uca_segments", [])),
+            # Option D anomaly-detection 欄位（跟 pilot_v2 對等）
+            "escalation_score": 0.0,  # Gemini 沒有 MIL escalation
+            "is_anomaly_gt": is_anomaly_gt,
+            "is_anomaly_pred": is_anomaly_pred,
+            "anomaly_correct": is_anomaly_gt == is_anomaly_pred,
+            "anomaly_gated": False,
         }
         case_stats.append(stat)
 
@@ -249,6 +264,10 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output_dir", default="./outputs/experiments/gemini_baseline")
     parser.add_argument("--model", default="gemini-2.5-flash")
+    parser.add_argument(
+        "--n-normal", type=int, default=0,
+        help="Normal 影片樣本數（用於 anomaly detection 評估，跟 pilot_v2 對等）",
+    )
     args = parser.parse_args()
 
     api_key = os.environ.get("GEMINI_API_KEY", "")
@@ -262,7 +281,8 @@ if __name__ == "__main__":
     samples = load_pilot_samples(
         n_samples=args.n_samples,
         split=args.split,
-        include_normal=False,
+        include_normal=args.n_normal > 0,
+        n_normal=args.n_normal,
     )
     if samples:
         run_gemini_baseline(samples, args.output_dir, api_key, args.model)

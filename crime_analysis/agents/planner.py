@@ -16,15 +16,155 @@ Planner Agent - 中央規劃與協調代理（規則式）
 """
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from .base_agent import AgentReport
 from .action_emotion_agent import UCF_CATEGORIES
 from .reflector import ReflectorAgent, ReflectorOutput
-from config import cfg
+from config import cfg, is_crime, is_non_crime_anomaly, NON_CRIME_CATEGORIES
 from rag.rag_module import LEGAL_ELEMENTS, GROUP_LEGAL_CONTEXT
 
+# ── VLM 分類用類別清單（13 類 UCF + Normal）────────────────
+# 不等同於 action_emotion_agent.UCF_CATEGORIES（13 類，MIL head 權重維度綁定）。
+# 這裡多加 Normal 讓 VLM 可以主動回答「場景正常，無異常事件」，
+# 避免當 VLM 對所有類別都不確定時仍被迫挑一個 crime 造成 FP。
+VLM_CATEGORIES = list(UCF_CATEGORIES) + ["Normal"]
+
 logger = logging.getLogger(__name__)
+
+
+# ── Visual-to-Legal mapping 載入 ──────────────────────────
+# 把 data/rag/mappings/visual_to_legal.json 的專家手編 visual cue
+# 注入 VLM classify prompt，做 visual grounding。
+# 同樣的 mapping 也會被 LLM-as-Judge 的 open-book γ 使用（見
+# scripts/run_cross_evaluation.py），確保 VLM 與 Judge 看同一份
+# 視覺-法律對應表，評分可對稱審計。
+_VISUAL_TO_LEGAL_CACHE: Optional[Dict] = None
+
+
+def _load_visual_to_legal() -> Dict:
+    global _VISUAL_TO_LEGAL_CACHE
+    if _VISUAL_TO_LEGAL_CACHE is not None:
+        return _VISUAL_TO_LEGAL_CACHE
+    import json as _json
+    path = Path("data/rag/mappings/visual_to_legal.json")
+    if not path.exists():
+        logger.warning(f"[visual_to_legal] 找不到 {path}，VLM prompt 會少 visual grounding")
+        _VISUAL_TO_LEGAL_CACHE = {}
+        return {}
+    data = _json.loads(path.read_text(encoding="utf-8"))
+    # 過濾掉 _description / _usage 等 meta key
+    _VISUAL_TO_LEGAL_CACHE = {k: v for k, v in data.items() if not k.startswith("_")}
+    return _VISUAL_TO_LEGAL_CACHE
+
+
+def format_priming_section(mil_top3: List[Tuple[str, float]]) -> str:
+    """
+    Pre-classification RAG Priming（Fix F1, 2026-04-24）。
+
+    從 MIL Head top-3 預測 + `visual_to_legal.json` 取出對應 visual cues，
+    作為 VLM 分類的先驗提示。與 `format_visual_cues_section` 的全類別定義互補：
+      - 全類別定義：VLM 需要知道所有選項
+      - Priming：聚焦 MIL 認為最可能的 3 類，告訴 VLM「特別留意這些特徵」
+
+    設計注意：
+      - 用「preliminary analysis」字樣避免 VLM 盲從
+      - 保留 VLM 根據畫面推翻的空間（不強制）
+      - MIL top-1 conf 過低（< 0.5）時 top-3 屬於 MIL 「無意見」雜訊，跳過 priming
+        以避免錯誤先驗汙染 VLM（pilot_v8 觀察：MIL conf 0.32–0.69 時 priming
+        會把錯誤類別 Visual cues 強塞給 VLM，導致 VLM 跟著錯，14-way 從 v6 的
+        48.2% 降到 33.9%）。
+    """
+    if not mil_top3:
+        return ""
+    top1_conf = mil_top3[0][1] if mil_top3 else 0.0
+    PRIMING_MIN_CONF = 0.5  # 從 0.2 提升至 0.5（pilot_v8 RCA, 2026-04-25）
+    if top1_conf < PRIMING_MIN_CONF:
+        return ""
+
+    data = _load_visual_to_legal()
+    lines = [
+        "Preliminary feature analysis (motion + appearance embeddings) suggests the scene is most likely one of these:",
+    ]
+    for cat, prob in mil_top3:
+        entry = data.get(cat)
+        cue_bits = []
+        if entry:
+            mappings = entry.get("visual_mappings", [])
+            direct_cues = [
+                m["visual_cue"] for m in mappings
+                if m.get("evidence_type") == "直接證據" and m.get("visual_cue")
+            ]
+            cue_bits = direct_cues[:2]
+        cues_str = "；".join(cue_bits) if cue_bits else "(no cue data)"
+        lines.append(f"  • {cat} (prior={prob:.2f}): look for — {cues_str}")
+    lines.append(
+        "Use these hints to focus attention, BUT rely on what you actually see "
+        "in the frames. If the scene clearly does not match any of the above, "
+        "choose the most fitting category from the full list."
+    )
+    return "\n".join(lines)
+
+
+def format_visual_cues_section(categories: List[str]) -> str:
+    """
+    從 visual_to_legal.json 產出 VLM prompt 用的 Category Definitions section。
+
+    格式（每行一類）：
+        - Cat (刑法第X條/刑法第Y條): direct_cue_1；direct_cue_2 ...
+    """
+    data = _load_visual_to_legal()
+    lines = []
+    for cat in categories:
+        if cat == "Normal":
+            # Normal 是 residual class，列出「看到哪些 cue 就不要選 Normal」
+            # 每類取第一個 direct-evidence cue（使用完整 cue，避免全形括號被切斷）
+            excl_bits = []
+            for other_cat in categories:
+                if other_cat == "Normal" or other_cat not in data:
+                    continue
+                mappings = data[other_cat].get("visual_mappings", [])
+                for m in mappings:
+                    if m.get("evidence_type") == "直接證據" and m.get("visual_cue"):
+                        excl_bits.append(f"{other_cat}: {m['visual_cue']}")
+                        break
+            excl_str = "；".join(excl_bits)
+            lines.append(
+                f"- Normal: Clearly ordinary scene with NO suspicious behavior. "
+                f"**Do NOT pick Normal if you see ANY of** — {excl_str}."
+            )
+            continue
+        entry = data.get(cat)
+        if not entry:
+            lines.append(f"- {cat}: (no cue data)")
+            continue
+        articles = entry.get("applicable_articles", [])
+        articles_str = "／".join(articles[:2])
+        mappings = entry.get("visual_mappings", [])
+        direct_cues = [
+            m["visual_cue"] for m in mappings
+            if m.get("evidence_type") == "直接證據" and m.get("visual_cue")
+        ]
+        cues_str = "；".join(direct_cues[:3])
+        lines.append(f"- {cat}（{articles_str}）：{cues_str}")
+
+    # 重要 disambiguation（VLM 歷史混淆對）
+    lines.append("")
+    lines.append("IMPORTANT disambiguation (VLM has shown confusion on these pairs):")
+    lines.append(
+        "  • Shooting events often occur near parked vehicles — "
+        "do NOT default to RoadAccidents just because cars appear."
+    )
+    lines.append(
+        "  • Arson requires VISIBLE flames/smoke/ignition action — "
+        "if you only see generic property damage, it's Vandalism, not Arson."
+    )
+    lines.append(
+        "  • Burglary requires evidence of unauthorized entry (forced, "
+        "broken windows, climbing) — if entry is normal, it may be "
+        "Shoplifting (in stores) or Stealing (elsewhere)."
+    )
+    return "\n".join(lines)
 
 # ── 評估權重（依犯罪類型，供 evaluate() 使用）────────────────
 EVAL_WEIGHTS = {
@@ -163,6 +303,55 @@ def build_report_prompt(
     ]
 
 
+# ── Non-Crime 異常描述 Prompt ──────────────────────────────
+# 用於 Arrest / RoadAccidents / Explosion 等非犯罪類異常。
+# 不涉及構成要件與法條對應，僅產出可觀察事實描述。
+NON_CRIME_SYSTEM_PROMPT = """\
+你是一位影片事件描述專家。當系統判定影片為「非犯罪類異常事件」時，\
+請根據畫面內容撰寫客觀的事實描述，不作任何刑法上的推論。
+"""
+
+NON_CRIME_USER_TEMPLATE = """\
+## 案件資訊
+- 案件編號：{case_id}
+- 事件類型：{event_type}（非犯罪類異常）
+- 分析信心：{confidence:.2f}
+
+## 描述要求
+1. 以繁體中文撰寫
+2. 僅描述影片可觀察事實，不作法律推論、不引用法條
+3. 涵蓋：人物、動作、場所、關鍵行為與時間順序
+
+## 輸出格式
+### 一、事件摘要
+（一句話說明事件性質，例如「交通事故」「執法人員逮捕行動」「不明原因爆炸」）
+
+### 二、可觀察事實
+（描述畫面中發生的事，包含人物、動作、場景）
+
+### 三、備註
+本事件經系統判定為非犯罪類異常（{event_type}），不進入刑法條文對應流程，\
+亦不進行構成要件審查。
+"""
+
+
+def build_non_crime_report_prompt(
+    case_id: str,
+    event_type: str,
+    confidence: float,
+) -> List[Dict[str, str]]:
+    """組裝非犯罪異常之描述 chat messages（不含法條、構成要件）。"""
+    user_content = NON_CRIME_USER_TEMPLATE.format(
+        case_id=case_id,
+        event_type=event_type,
+        confidence=confidence,
+    )
+    return [
+        {"role": "system", "content": NON_CRIME_SYSTEM_PROMPT},
+        {"role": "user",   "content": user_content},
+    ]
+
+
 def _extract_uca_guided_frames(video_path, uca_segments, n_frames, cv2_mod, pil_mod):
     """從影片用 UCA 引導抽幀（70% 犯罪時段 + 30% 背景），回傳 PIL Image list。"""
     if not video_path or not Path(video_path).exists():
@@ -212,7 +401,7 @@ class PlannerAgent:
         self.reflector = reflector
         self.rag = rag_module          # RAGModule（由 pipeline 注入）
         self._total_turns: int = 0
-        self._rcost_threshold_high: int = 6  # Pilot P75
+        self._rcost_threshold_high: int = 4  # pilot_v6 turns p75
 
         # Step 3b 報告生成模型（延遲載入）
         self._report_tokenizer = None
@@ -315,9 +504,32 @@ class PlannerAgent:
             self._load_report_model()
 
         if self._report_model is not None and not bypass_vlm_classify:
-            vlm_result = self._vlm_classify(frames, video_metadata)
+            vlm_result = self._vlm_classify(frames, video_metadata, ae_report=ae_report)
             if vlm_result:
                 crime_type, vlm_conf = vlm_result
+                # ── MIL + VLM Weighted Ensemble ──
+                # 當 VLM 信心 < 0.7 且 MIL 給不同類別 + MIL 信心夠高（>0.55），
+                # 走加權投票而非 VLM-only。歷史證據：MIL alone 15.4% + VLM alone
+                # 34.6% → ensemble 42.3%（CLAUDE.md 紀錄）
+                ensemble_used = False
+                ensemble_score = {}
+                if (
+                    vlm_conf < 0.7
+                    and mil_crime_type != crime_type
+                    and mil_confidence > 0.55
+                    and mil_crime_type not in ("Normal", "")
+                ):
+                    # 加權：VLM 0.7 + MIL 0.3，分數高者勝
+                    ensemble_score[crime_type] = ensemble_score.get(crime_type, 0) + 0.7 * vlm_conf
+                    ensemble_score[mil_crime_type] = ensemble_score.get(mil_crime_type, 0) + 0.3 * mil_confidence
+                    winner = max(ensemble_score, key=ensemble_score.get)
+                    if winner != crime_type:
+                        logger.info(
+                            f"[Planner] Step 2b ensemble: VLM={crime_type}({vlm_conf:.2f}) "
+                            f"+ MIL={mil_crime_type}({mil_confidence:.2f}) → {winner}"
+                        )
+                        crime_type = winner
+                        ensemble_used = True
                 ae_confidence = vlm_conf
                 if ae_report:
                     ae_report.crime_category = crime_type
@@ -325,42 +537,93 @@ class PlannerAgent:
                     ae_report.metadata["mil_crime_type"] = mil_crime_type
                     ae_report.metadata["mil_confidence"] = mil_confidence
                     ae_report.metadata["vlm_used"] = True
-                logger.info(
-                    f"[Planner] Step 2b: VLM 分類 MIL={mil_crime_type}({mil_confidence:.2f}) "
-                    f"→ VLM={crime_type}({vlm_conf:.2f})"
-                )
+                    ae_report.metadata["ensemble_used"] = ensemble_used
+                    ae_report.metadata["ensemble_score"] = ensemble_score
+                if not ensemble_used:
+                    logger.info(
+                        f"[Planner] Step 2b: VLM 分類 MIL={mil_crime_type}({mil_confidence:.2f}) "
+                        f"→ VLM={crime_type}({vlm_conf:.2f})"
+                    )
                 self._total_turns += 1
 
-        # ── Step 2c-2d：RAG-guided Classification Verification ──
-        # 暫時關閉（測試顯示 VLM 對構成要件全報 0 matched，反而降低準確率）
-        # TODO: 改善 VLM 對法律要件的理解後重新啟用
-        if False and (self._report_model is not None
+                # ── VLM 判定為 Normal：跳過 Step 3b 的犯罪報告生成 ──
+                # VLM 主動回 Normal 代表系統認為場景無異常，不需要產出犯罪鑑定報告。
+                # 仍會進入 _synthesize_final_report 組一份 Normal 最終報告。
+                if crime_type == "Normal":
+                    bypass_vlm_report = True
+                    if ae_report:
+                        ae_report.metadata["vlm_predicted_normal"] = True
+                    logger.info(
+                        "[Planner] Step 2b: VLM 判定 Normal → 跳過犯罪報告生成"
+                    )
+
+        # ── Step 2c-2d：RAG-guided Classification Verification（verify-only）──
+        # 對所有信心 > 0.3 的 crime 類做要件符合度檢核，結果存入 ae_report.metadata：
+        #   metadata["rag_element_match"]        = (matched, total) | None
+        #   metadata["rag_element_match_ratio"]  = matched/total    | None
+        # Reflector L2 會用此 ratio 觸發 SOFT（ratio 低 + 高信心 = 分類可能錯誤）
+        # 並在 Dempster-Shafer _mass 中對 m("crime") 做校準乘數。
+        # **不強換分類**（Fix #3, pilot_v3 Shooting033 案例）— 見 _rag_verify_classification。
+        if (self._report_model is not None
                 and not bypass_vlm_classify
-                and crime_type != "Normal"
-                and self.rag):
-            verified = self._rag_verify_classification(
+                and is_crime(crime_type)
+                and self.rag
+                and ae_confidence > 0.3):
+            rag_result = self._rag_verify_classification(
                 frames, video_metadata, crime_type,
             )
-            if verified and verified != crime_type:
-                old_type = crime_type
-                crime_type = verified
-                if ae_report:
-                    ae_report.crime_category = crime_type
-                    ae_report.metadata["rag_verified"] = True
-                    ae_report.metadata["pre_verify_type"] = old_type
-                logger.info(
-                    f"[Planner] Step 2d: RAG 驗證修正 {old_type} → {crime_type}"
+            if rag_result is not None and ae_report is not None:
+                matched, total = rag_result
+                ratio = matched / max(total, 1)
+                ae_report.metadata["rag_element_match"] = (matched, total)
+                ae_report.metadata["rag_element_match_ratio"] = ratio
+
+        # ── Non-Crime 短路分支 ──────────────────────────────
+        # crime_type ∈ {Arrest, RoadAccidents, Explosion}：系統仍視為異常
+        # （MIL Head 已偵測到），但不進入 H-RAG + Rlegal + Reflector。
+        # 僅生成事實描述並直接回傳最終報告。
+        # 詳見 /home/yuting/.claude/plans/ucf-polished-nova.md。
+        if is_non_crime_anomaly(crime_type):
+            logger.info(
+                f"[Planner] Non-crime anomaly detected: {crime_type} → "
+                f"skip H-RAG + Rlegal + Reflector"
+            )
+            temperature = video_metadata.get("temperature", cfg.model.temperature)
+            non_crime_text = ""
+            if self._report_model is not None and not bypass_vlm_report:
+                non_crime_messages = build_non_crime_report_prompt(
+                    case_id=case_id,
+                    event_type=crime_type,
+                    confidence=ae_confidence,
                 )
-                self._total_turns += 1
+                non_crime_text = self._call_qwen3_vl(
+                    non_crime_messages, frames, temperature=temperature,
+                    video_metadata=video_metadata,
+                )
+            if not non_crime_text:
+                non_crime_text = (
+                    f"本案經系統判定為非犯罪類異常事件（{crime_type}），"
+                    f"未進入刑法條文對應流程。"
+                )
+                self._report_method = "non-crime-template"
             else:
-                logger.info(f"[Planner] Step 2c: RAG 驗證通過 → {crime_type}")
+                self._report_method = "qwen3-vl-non-crime"
+            return self._synthesize_non_crime_report(
+                case_id=case_id,
+                crime_type=crime_type,
+                ae_confidence=ae_confidence,
+                ae_report=ae_report,
+                reports=list(reports.values()),
+                generated_report_text=non_crime_text,
+                low_reliability=low_reliability,
+            )
 
         # ── Step 3：法律整合（3a RAG → 3b 報告生成 → 3c Rlegal）──
         rag_results: Dict = {"laws": [], "judgments": []}
         rlegal = 0.0
 
         # Step 3a：RAG 查詢取候選法條
-        if ae_confidence >= cfg.inference.confidence_low_threshold and self.rag and crime_type != "Normal":
+        if ae_confidence >= cfg.inference.confidence_low_threshold and self.rag and is_crime(crime_type):
             rationale = ae_report.metadata.get("rationale", "") if ae_report else ""
             query_text = (
                 self.rag.generate_hypothetical_doc(rationale, crime_type)
@@ -414,7 +677,8 @@ class PlannerAgent:
         # ── 注意：rlegal 是 Planner 計算後注入 ae_report.metadata 的 ──
         #    不是 ActionEmotionAgent 自行輸出的欄位。
         #    ae_report.metadata["rlegal"] 只有在 Planner Step 3c 執行後才存在。
-        if self.rag and crime_type != "Normal":
+        # 非犯罪類已在 Step 2d 後短路離開，此處僅處理 CRIME_CATEGORIES。
+        if self.rag and is_crime(crime_type):
             rlegal = self.rag.compute_rlegal(crime_type, generated_report_text)
             if ae_report:
                 # Planner 注入（非 ActionEmotionAgent 輸出）
@@ -588,7 +852,28 @@ class PlannerAgent:
             # 2-stage gate 已判 Normal：覆蓋 Reflector / VLM 的任何分類
             crime_type = "Normal"
         elif vlm_used:
-            crime_type = ae_report_for_cat.crime_category  # VLM 分類結果
+            # ── HARD conflict re-vote ──
+            # Pilot v2 觀察：10/56 HARD 衝突發生但 VLM 仍是 final_category。
+            # 改進：HARD 且 VLM confidence < 0.6 時，採信 Reflector consensus
+            # （MIL 加 audit 的綜合判斷）。high-conf VLM (≥ 0.6) 仍用 VLM 結果。
+            vlm_cat = ae_report_for_cat.crime_category
+            vlm_conf = ae_report_for_cat.confidence
+            ref_consensus = final_audit.consensus_category
+            if (
+                final_audit.conflict_type == "HARD"
+                and vlm_conf < 0.6
+                and ref_consensus
+                and ref_consensus != vlm_cat
+                and ref_consensus != "Normal"
+            ):
+                logger.info(
+                    f"[Planner] HARD revote: VLM={vlm_cat}({vlm_conf:.2f}) "
+                    f"→ Reflector consensus={ref_consensus}"
+                )
+                crime_type = ref_consensus
+                ae_report_for_cat.metadata["hard_revote"] = True
+            else:
+                crime_type = vlm_cat
         else:
             crime_type = final_audit.consensus_category  # fallback 到 Reflector
         weights = self._get_eval_weights(crime_type)
@@ -667,6 +952,9 @@ class PlannerAgent:
             "eval_weights": weights,
             "total_turns": self._total_turns,
             "final_category": crime_type,
+            # 類別性質旗標（供 evaluation script 過濾；非犯罪類別會在 run() 中短路）
+            "is_non_crime_anomaly": False,
+            "event_category": "normal" if crime_type == "Normal" else "crime",
             # 2-stage anomaly detection outputs（D 計畫；供 AUROC / NDCF 評估用）
             "escalation_score": escalation_score,
             "anomaly_gated": bool(
@@ -685,6 +973,108 @@ class PlannerAgent:
         logger.info(
             f"[Planner] 最終報告 | case={case_id} | category={crime_type} | "
             f"rcons={rcons:.3f} | rlegal={rlegal:.3f} | rcost={rcost:.3f} | turns={self._total_turns}"
+        )
+        return final_report
+
+    # ── Non-Crime 最終報告整合 ───────────────────────────
+    #
+    # 非犯罪類（Arrest / RoadAccidents / Explosion）短路分支使用。
+    # 不經 Reflector 審核，不做 Rlegal / 法條引用；輸出與 _synthesize_final_report
+    # 同形狀，差異在：
+    #   - is_non_crime_anomaly = True
+    #   - legal_classification 所有欄位空置
+    #   - rcons = 1.0 (無衝突)、rlegal = 0.0、conflict_type = "NONE"
+
+    def _synthesize_non_crime_report(
+        self,
+        case_id: str,
+        crime_type: str,
+        ae_confidence: float,
+        ae_report: Optional[AgentReport],
+        reports: List[AgentReport],
+        generated_report_text: str,
+        low_reliability: bool,
+    ) -> Dict[str, Any]:
+        weights = self._get_eval_weights(crime_type)
+        rcost = compute_rcost(
+            self._total_turns,
+            threshold_low=4,
+            threshold_high=self._rcost_threshold_high,
+        )
+
+        causal_chain = ae_report.metadata.get("causal_chain", "") if ae_report else ""
+        escalation_score = ae_report.metadata.get("escalation_score", 0.0) if ae_report else 0.0
+        rationale = ae_report.metadata.get("rationale", "") if ae_report else ""
+
+        # 保持與 _build_uncertainty_notes 同樣的 Dict[str, List[str]] 結構，
+        # 供 _save_case_report 用 .get() 查表渲染。
+        low_conf = []
+        insufficient = [
+            f"本案為非犯罪類異常（{crime_type}），未進行構成要件審查與法條對應"
+        ]
+        if low_reliability:
+            insufficient.append("環境可信度過低，視覺證據品質不足")
+        for r in reports:
+            if getattr(r, "confidence", 1.0) < 0.6 and r.crime_category != "ENVIRONMENTAL_ASSESSMENT":
+                low_conf.append(f"{r.agent_name}: conf={r.confidence:.2f}")
+        uncertainty_notes = {
+            "low_confidence_items": low_conf,
+            "conflicting_evidence": [],
+            "insufficient_evidence": insufficient,
+        }
+
+        final_report = {
+            "case_id": case_id,
+            "fact_finding": {
+                "description": generated_report_text,
+                "rationale": rationale,
+                "supporting_frames": self._collect_key_frames(reports),
+                "confidence": ae_confidence,
+            },
+            "behavior_analysis": {
+                "causal_chain": causal_chain,
+                "escalation_score": escalation_score,
+                "pre_crime_indicators": (
+                    ae_report.metadata.get("pre_crime_indicators", []) if ae_report else []
+                ),
+                "post_crime_indicators": (
+                    ae_report.metadata.get("post_crime_indicators", []) if ae_report else []
+                ),
+                "crime_group": ae_report.metadata.get("crime_group", "") if ae_report else "",
+                "severity": ae_report.metadata.get("crime_type_severity", "") if ae_report else "",
+            },
+            "legal_classification": {
+                "applicable_articles": [],
+                "elements_covered": [],
+                "coverage_rate": 0.0,
+                "rag_laws": [],
+            },
+            "uncertainty_notes": uncertainty_notes,
+            "rcons":  1.0,
+            "rlegal": 0.0,
+            "rcost":  rcost,
+            "eval_weights": weights,
+            "total_turns": self._total_turns,
+            "final_category": crime_type,
+            # 非犯罪異常旗標（供 evaluation script 過濾）
+            "is_non_crime_anomaly": True,
+            "event_category": "non_crime",
+            "escalation_score": escalation_score,
+            "anomaly_gated": bool(
+                ae_report and ae_report.metadata.get("anomaly_gated", False)
+            ),
+            "anomaly_threshold": self._anomaly_threshold,
+            "is_convergent": True,
+            "conflict_type": "NONE",
+            "report_generation_method": getattr(self, "_report_method", "unknown"),
+            "agent_reports": [r.to_dict() for r in reports],
+            "audit_log": [],
+            "debate_log": self.reflector.get_debate_log(),
+        }
+
+        logger.info(
+            f"[Planner] 最終報告（非犯罪） | case={case_id} | category={crime_type} | "
+            f"confidence={ae_confidence:.3f} | turns={self._total_turns}"
         )
         return final_report
 
@@ -868,14 +1258,14 @@ class PlannerAgent:
         frames: List,
         video_metadata: Dict,
         initial_category: str,
-    ) -> Optional[str]:
+    ) -> Optional[Tuple[int, int]]:
         """
         Step 2c-2d: 用 RAG 的法律構成要件驗證 VLM 分類。
 
-        流程：
-        1. 查出 initial_category 的構成要件
-        2. 問 VLM：「你在影片中看到這些要件嗎？」
-        3. 如果多數要件不符合 → 讓 VLM 重新選擇類別
+        回傳：
+            `(matched, total)` 解析成功時的要件匹配統計，供 Reflector Rcons
+            校準 + 低匹配率 SOFT 觸發；解析失敗或不適用回傳 None。
+            **不強換分類**（Fix #3, pilot_v3 Shooting033 案例）。
         """
         if self._report_model is None or self._report_tokenizer is None:
             return None
@@ -901,36 +1291,18 @@ class PlannerAgent:
             indices = [int(i * n / 8) for i in range(8)]
             keyframes = [PILImage.fromarray(cv2.cvtColor(valid[idx], cv2.COLOR_BGR2RGB)) for idx in indices]
 
-        # 找出 top-3 候選類別（排除 initial_category，提供有限選項）
-        from rag.rag_module import GROUP_LEGAL_CONTEXT
-        # 同群組的替代類別
-        crime_groups = {
-            "violent": {"Assault", "Fighting", "Shooting", "Robbery", "Abuse", "Arrest"},
-            "property": {"Stealing", "Shoplifting", "Burglary", "Vandalism"},
-            "public_safety": {"Arson", "Explosion", "RoadAccidents"},
-        }
-        current_group = ""
-        for g, cats in crime_groups.items():
-            if initial_category in cats:
-                current_group = g
-                break
-        # 同群組的替代 + 其他群組各一
-        alternatives = [c for c in crime_groups.get(current_group, set()) if c != initial_category][:3]
-
         elements_str = "\n".join(f"- {e}" for e in elements)
-        alt_str = ", ".join(alternatives) if alternatives else ", ".join(UCF_CATEGORIES[:5])
 
+        # 僅驗證要件符合度，不強迫 VLM 改換類別（見 pilot_v3 Shooting033 案例）。
+        # 若要件不符，後續流程會保留 VLM 原判，由信心分數與 Reflector 處理。
         verify_prompt = (
             f"You classified this CCTV footage as: {initial_category}\n\n"
             f"Required legal elements for {initial_category}:\n"
             f"{elements_str}\n\n"
             f"Look at these frames carefully. For each element, is it VISIBLE?\n"
             f"Count how many elements you can actually see.\n\n"
-            f"If you can see MOST elements → keep {initial_category}\n"
-            f"If you CANNOT see most elements → choose from: {alt_str}\n\n"
-            f"Reply:\n"
-            f"ELEMENTS_MATCHED: <number>/{len(elements)}\n"
-            f"FINAL_CATEGORY: <category name>"
+            f"Reply with ONLY:\n"
+            f"ELEMENTS_MATCHED: <number>/{len(elements)}"
         )
 
         messages = [{
@@ -964,18 +1336,24 @@ class PlannerAgent:
                 matched = int(em_match.group(1))
                 total_el = int(em_match.group(2))
                 ratio = matched / max(total_el, 1)
-                # 如果超過一半要件符合 → 保留原分類
                 if ratio >= 0.5:
-                    logger.info(f"[RAG verify] {matched}/{total_el} 要件符合 → 保留 {initial_category}")
-                    return None
+                    logger.info(
+                        f"[RAG verify] {matched}/{total_el} 要件符合 → 保留 {initial_category}"
+                    )
+                    return (matched, total_el)
+                # 要件不足：不強換另一類別（pilot_v3 Shooting033 案例）。
+                # 回傳 (matched, total) 供 Reflector 做 Rcons 校準與 SOFT 觸發，
+                # 但 VLM 分類本身仍保留。
+                logger.info(
+                    f"[RAG verify] {matched}/{total_el} 要件符合 → 要件不足，"
+                    f"保留 VLM 原判 {initial_category}（Reflector 會降低 Rcons）"
+                )
+                return (matched, total_el)
 
-            # 解析 FINAL_CATEGORY
-            cat_match = re.search(r"FINAL_CATEGORY:\s*(\w+)", response, re.IGNORECASE)
-            if cat_match:
-                raw = cat_match.group(1)
-                for cat in UCF_CATEGORIES:
-                    if cat.lower() == raw.lower():
-                        return cat
+            # ELEMENTS_MATCHED 格式解析失敗：保守保留原判
+            logger.warning(
+                f"[RAG verify] 無法解析 ELEMENTS_MATCHED → 保留 {initial_category}"
+            )
 
         except Exception as e:
             logger.warning(f"[RAG verify] 失敗：{e}")
@@ -1069,10 +1447,17 @@ class PlannerAgent:
             logger.warning(f"[Planner] 無法載入 VLM：{e}，將使用 fallback")
             self._report_model = None
 
-    def _vlm_classify(self, frames: List, video_metadata: Dict = None) -> Optional[tuple]:
+    def _vlm_classify(
+        self,
+        frames: List,
+        video_metadata: Dict = None,
+        ae_report=None,
+    ) -> Optional[tuple]:
         """
         Qwen3-VL 犯罪分類。
         優先使用原生影片輸入（動態資訊），fallback 到 8 張靜態幀。
+
+        ae_report 若提供，會讀 metadata["mil_top3"] 做 Pre-classification RAG Priming。
         """
         if self._report_model is None or self._report_tokenizer is None:
             return None
@@ -1080,31 +1465,35 @@ class PlannerAgent:
         import torch, re, cv2
         from PIL import Image as PILImage
 
-        # 簡潔 prompt（跟 standalone 診斷完全一致，38.5% 最高準確率）
-        # 重要：使用字母排序對齊 scripts/test_vlm_classify.py 的 CRIME_CATEGORIES
-        # 順序，避免 VLM 受選項位置 bias 影響（Arrest043 drift 案例）。
-        # UCF_CATEGORIES 本身仍保留語義分組（MIL head index mapping 依賴它）。
-        categories_str = ", ".join(sorted(UCF_CATEGORIES))
-        prompt = (
-            "You are a forensic surveillance video analyst.\n"
-            "Look at these frames from a CCTV video and determine what crime is occurring.\n\n"
-            f"Choose ONE category from: {categories_str}\n\n"
-            "Category definitions:\n"
-            "- Assault: One person attacking another (one-sided)\n"
-            "- Robbery: Forcibly taking someone's belongings\n"
-            "- Stealing: Secretly taking items\n"
-            "- Shoplifting: Concealing store merchandise\n"
-            "- Burglary: Breaking into a building/car\n"
-            "- Fighting: Mutual physical combat (both sides)\n"
-            "- Arson: Deliberately setting fire\n"
-            "- Explosion: Sudden blast with smoke/debris\n"
-            "- RoadAccidents: Vehicle collision\n"
-            "- Vandalism: Deliberately damaging property\n"
-            "- Abuse: Sustained harm to vulnerable person\n"
-            "- Shooting: Gunfire, weapon visible\n"
-            "- Arrest: Law enforcement restraining suspect\n\n"
-            "Reply with ONLY: CATEGORY: <name>"
-        )
+        # Prompt with auto-generated visual cue section from
+        # data/rag/mappings/visual_to_legal.json (專家手編 visual → legal mapping)
+        # — same source fed to LLM-as-Judge open-book γ for symmetric auditability.
+        categories_str = ", ".join(sorted(VLM_CATEGORIES))
+        cue_section = format_visual_cues_section(sorted(VLM_CATEGORIES))
+
+        # Pre-classification RAG Priming：若 MIL top-3 可用，加入先驗提示
+        priming_section = ""
+        if ae_report is not None:
+            mil_top3 = ae_report.metadata.get("mil_top3", [])
+            priming_section = format_priming_section(mil_top3)
+
+        prompt_parts = [
+            "You are a forensic surveillance video analyst.",
+            "Look at these frames from a CCTV video and determine what category the scene falls into.",
+            "If the footage shows no criminal, hazardous, or law-enforcement activity, reply Normal.",
+            "",
+        ]
+        if priming_section:
+            prompt_parts += [priming_section, ""]
+        prompt_parts += [
+            f"Choose ONE category from: {categories_str}",
+            "",
+            "Category definitions (visual cues → applicable articles):",
+            cue_section,
+            "",
+            "Reply with ONLY: CATEGORY: <name>",
+        ]
+        prompt = "\n".join(prompt_parts)
 
         # 均勻 8 幀（跟 standalone 診斷一致，MIL-guided 反而引入偏差）
         from .frame_utils import uniform_keyframes, fallback_from_frame_list
@@ -1150,18 +1539,18 @@ class PlannerAgent:
             else:
                 self._vlm_reason = ""
 
-            # 解析類別
+            # 解析類別（含 Normal）
             cat_match = re.search(r"CATEGORY:\s*(\w+)", response, re.IGNORECASE)
             predicted_cat = None
             if cat_match:
                 raw = cat_match.group(1)
-                for cat in UCF_CATEGORIES:
+                for cat in VLM_CATEGORIES:
                     if cat.lower() == raw.lower():
                         predicted_cat = cat
                         break
             if predicted_cat is None:
                 # Fallback: 在 response 中找任一類別名
-                for cat in UCF_CATEGORIES:
+                for cat in VLM_CATEGORIES:
                     if cat.lower() in response.lower():
                         predicted_cat = cat
                         break
@@ -1173,7 +1562,7 @@ class PlannerAgent:
             # 若抽不到則退回 0.5（中性），不再硬編 0.7
             diag = self._classify_diagnostics(
                 scores, generated, processor.tokenizer, predicted_cat,
-                list(UCF_CATEGORIES),
+                list(VLM_CATEGORIES),
                 bias_corrections=self._bias_corrections,
             )
             conf = diag["confidence"]

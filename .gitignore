@@ -53,8 +53,21 @@ UCA/UCF_Crimes/UCF_Crimes/Videos/
 # 特徵快取（動態產生）
 crime_analysis/outputs/feature_cache/
 crime_analysis/outputs/mil_weights/
+crime_analysis/outputs/mil_weights_v*/
 crime_analysis/outputs/pilot_*.json
 crime_analysis/outputs/pilot_*.txt
+crime_analysis/outputs/pilot_v*/
+crime_analysis/outputs/vlm_finetune/
+
+# 備份檔
+*.bak
+*.json.bak
+
+# 暫存 / 一次性 shell 腳本（位於 repo root）
+/train_and_v9.sh
+/gemma4_no_normal.sh
+/internvl3_after_v9.sh
+/no_normal_ablation.sh
 
 # Claude Code local settings
 .claude/settings.local.json

@@ -1,0 +1,416 @@
+[
+  {
+    "video_id": "Abuse037_x264",
+    "ground_truth": "Abuse",
+    "qwen_predicted": "Normal",
+    "gemini_predicted": "Abuse",
+    "qwen_judged_by": {
+      "gemini": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 0,
+          "q2_element_coverage": 0,
+          "q3_evidence_traceability": 2,
+          "q4_causal_chain": 1,
+          "q5_uncertainty_marking": 0,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 0
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.0,
+          "q2_element_coverage": 0.0,
+          "q3_evidence_traceability": 0.6666666666666666,
+          "q4_causal_chain": 0.25,
+          "q5_uncertainty_marking": 0.0,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.0
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.17857142857142858,
+        "feedback": "報告對情景事實的判斷與原始描述嚴重不符，且法條引用與構成要件完全缺失。因果鏈描述與影片內容脫節，司法語言亦有口語化問題。"
+      },
+      "claude": {
+        "judge_model": "claude-sonnet-4-20250514",
+        "q_scores": {
+          "q1_legal_relevance": 1,
+          "q2_element_coverage": 2,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 2,
+          "q5_uncertainty_marking": 1,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 1
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.3333333333333333,
+          "q2_element_coverage": 0.5,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.5,
+          "q5_uncertainty_marking": 0.3333333333333333,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.3333333333333333
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.38095238095238093,
+        "feedback": "[parse failed]"
+      }
+    },
+    "gemini_judged_by": {
+      "qwen": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 2
+        },
+        "q_norm": {
+          "q1_legal_relevance": 1.0,
+          "q2_element_coverage": 1.0,
+          "q3_evidence_traceability": 1.0,
+          "q4_causal_chain": 1.0,
+          "q5_uncertainty_marking": 1.0,
+          "q6_judicial_language": 1.0,
+          "q7_scenario_fidelity": 0.6666666666666666
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.9523809523809524,
+        "feedback": "報告內容詳盡，法條引用精確，構成要件分析完整，並充分考量不確定性。事實認定與影片時間點結合良好，但部分細節與UCA情景描述略有出入。"
+      },
+      "claude": {
+        "judge_model": "claude-sonnet-4-20250514",
+        "q_scores": {
+          "q1_legal_relevance": 1,
+          "q2_element_coverage": 2,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 2,
+          "q5_uncertainty_marking": 1,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 1
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.3333333333333333,
+          "q2_element_coverage": 0.5,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.5,
+          "q5_uncertainty_marking": 0.3333333333333333,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.3333333333333333
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.38095238095238093,
+        "feedback": "[parse failed]"
+      }
+    }
+  },
+  {
+    "video_id": "Abuse038_x264",
+    "ground_truth": "Abuse",
+    "qwen_predicted": "RoadAccidents",
+    "gemini_predicted": "Abuse",
+    "qwen_judged_by": {
+      "gemini": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 0,
+          "q2_element_coverage": 0,
+          "q3_evidence_traceability": 0,
+          "q4_causal_chain": 1,
+          "q5_uncertainty_marking": 2,
+          "q6_judicial_language": 2,
+          "q7_scenario_fidelity": 0
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.0,
+          "q2_element_coverage": 0.0,
+          "q3_evidence_traceability": 0.0,
+          "q4_causal_chain": 0.25,
+          "q5_uncertainty_marking": 0.6666666666666666,
+          "q6_judicial_language": 0.6666666666666666,
+          "q7_scenario_fidelity": 0.0
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.2261904761904762,
+        "feedback": "報告未引用法條，對構成要件無覆蓋。影像證據缺乏時間點，因果鏈不完整。情景事實與參考資料嚴重不符，需大幅修正。"
+      },
+      "claude": {
+        "judge_model": "claude-sonnet-4-20250514",
+        "q_scores": {
+          "q1_legal_relevance": 1,
+          "q2_element_coverage": 2,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 2,
+          "q5_uncertainty_marking": 1,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 1
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.3333333333333333,
+          "q2_element_coverage": 0.5,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.5,
+          "q5_uncertainty_marking": 0.3333333333333333,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.3333333333333333
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.38095238095238093,
+        "feedback": "[parse failed]"
+      }
+    },
+    "gemini_judged_by": {
+      "qwen": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 2,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 0
+        },
+        "q_norm": {
+          "q1_legal_relevance": 1.0,
+          "q2_element_coverage": 1.0,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.5,
+          "q5_uncertainty_marking": 1.0,
+          "q6_judicial_language": 1.0,
+          "q7_scenario_fidelity": 0.0
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.6904761904761906,
+        "feedback": "報告在法律適用和不確定性標記方面表現出色，但對原始情景事實的吻合度極低，且影像證據追溯性不足，因果鏈分析也未完全符合原始情境。"
+      },
+      "claude": {
+        "judge_model": "claude-sonnet-4-20250514",
+        "q_scores": {
+          "q1_legal_relevance": 1,
+          "q2_element_coverage": 2,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 2,
+          "q5_uncertainty_marking": 1,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 1
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.3333333333333333,
+          "q2_element_coverage": 0.5,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.5,
+          "q5_uncertainty_marking": 0.3333333333333333,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.3333333333333333
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.38095238095238093,
+        "feedback": "[parse failed]"
+      }
+    }
+  },
+  {
+    "video_id": "Abuse039_x264",
+    "ground_truth": "Abuse",
+    "qwen_predicted": "Arrest",
+    "gemini_predicted": "Arrest",
+    "qwen_judged_by": {
+      "gemini": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 0,
+          "q2_element_coverage": 0,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 1,
+          "q5_uncertainty_marking": 2,
+          "q6_judicial_language": 2,
+          "q7_scenario_fidelity": 0
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.0,
+          "q2_element_coverage": 0.0,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.25,
+          "q5_uncertainty_marking": 0.6666666666666666,
+          "q6_judicial_language": 0.6666666666666666,
+          "q7_scenario_fidelity": 0.0
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.2738095238095238,
+        "feedback": "報告未引用法條，構成要件未評估。時間點標註不足，因果鏈不完整。情景事實與參考資料嚴重不符，將女性誤判為男性，且忽略關鍵暴力行為。"
+      },
+      "claude": {
+        "judge_model": "claude-sonnet-4-20250514",
+        "q_scores": {
+          "q1_legal_relevance": 1,
+          "q2_element_coverage": 2,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 2,
+          "q5_uncertainty_marking": 1,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 1
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.3333333333333333,
+          "q2_element_coverage": 0.5,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.5,
+          "q5_uncertainty_marking": 0.3333333333333333,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.3333333333333333
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.38095238095238093,
+        "feedback": "[parse failed]"
+      }
+    },
+    "gemini_judged_by": {
+      "qwen": {
+        "judge_model": "gemini-2.5-flash",
+        "q_scores": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 3,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 1
+        },
+        "q_norm": {
+          "q1_legal_relevance": 1.0,
+          "q2_element_coverage": 1.0,
+          "q3_evidence_traceability": 1.0,
+          "q4_causal_chain": 0.75,
+          "q5_uncertainty_marking": 1.0,
+          "q6_judicial_language": 1.0,
+          "q7_scenario_fidelity": 0.3333333333333333
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.869047619047619,
+        "feedback": "報告在法律分析和語言規範上表現優異，但對原始情景描述的解讀與事實出入較大，導致部分推論過度。"
+      },
+      "claude": {
+        "judge_model": "claude-sonnet-4-20250514",
+        "q_scores": {
+          "q1_legal_relevance": 1,
+          "q2_element_coverage": 2,
+          "q3_evidence_traceability": 1,
+          "q4_causal_chain": 2,
+          "q5_uncertainty_marking": 1,
+          "q6_judicial_language": 1,
+          "q7_scenario_fidelity": 1
+        },
+        "q_norm": {
+          "q1_legal_relevance": 0.3333333333333333,
+          "q2_element_coverage": 0.5,
+          "q3_evidence_traceability": 0.3333333333333333,
+          "q4_causal_chain": 0.5,
+          "q5_uncertainty_marking": 0.3333333333333333,
+          "q6_judicial_language": 0.3333333333333333,
+          "q7_scenario_fidelity": 0.3333333333333333
+        },
+        "q_max": {
+          "q1_legal_relevance": 3,
+          "q2_element_coverage": 4,
+          "q3_evidence_traceability": 3,
+          "q4_causal_chain": 4,
+          "q5_uncertainty_marking": 3,
+          "q6_judicial_language": 3,
+          "q7_scenario_fidelity": 3
+        },
+        "overall": 0.38095238095238093,
+        "feedback": "[parse failed]"
+      }
+    }
+  }
+]
